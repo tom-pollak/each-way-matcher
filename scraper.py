@@ -134,8 +134,10 @@ def make_sporting_index_bet(race):
         driver.find_element_by_class_name('ng-pristine').send_keys('2')
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
         driver.find_element_by_class_name('placeBetBtn').click()
-        driver.find_element_by_xpath(
-            "//button[contains(text(), 'Continue')]").click()
+        el = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[contains(text(), 'Continue')]")))
+        el.click()
         print('Bet made')
         sleep(3)
     driver.get(
@@ -148,7 +150,7 @@ change_to_decimal()
 # URL = driver.current_url
 count = 0
 while True:
-    count = (count + 1) % 25
+    count += 1
     # if URL == driver.current_url:
     driver.switch_to.window(driver.window_handles[0])
     sleep(REFRESH_TIME)
@@ -164,11 +166,12 @@ while True:
             print('Bet failed\n%s\n' % e)
             print('------------------------------')
 
-    else:
-        print('No bets found')
-        # so no log out
-        if count == 0:
-            driver.switch_to.window(driver.window_handles[1])
-            sleep(0.2)
-            driver.refresh()
-            sleep(5)
+    # else:
+    #     print('No bets found')
+    # So sporting index dosent logout
+    if count % 25 == 0:
+        print(f'Refreshes: {count}')
+        driver.switch_to.window(driver.window_handles[1])
+        sleep(0.2)
+        driver.refresh()
+        sleep(3)
