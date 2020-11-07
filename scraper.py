@@ -127,19 +127,21 @@ def make_sporting_index_bet(race):
         cur_odd_price = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located(
                 (By.TAG_NAME, 'wgt-live-price-raw')))
-        if float(cur_odd_price.text) != float(race['horse_odds']):
+        if float(cur_odd_price.text) == float(race['horse_odds']):
+            driver.find_element_by_class_name('ng-pristine').send_keys('2')
+            driver.find_element_by_xpath(
+                '// input[ @ type = "checkbox"]').click()
+            driver.find_element_by_class_name('placeBetBtn').click()
+            el = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//button[contains(text(), 'Continue')]")))
+            el.click()
+            print('Bet made')
+            sleep(3)
+        else:
             print(
                 f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}"
             )
-        driver.find_element_by_class_name('ng-pristine').send_keys('2')
-        driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        driver.find_element_by_class_name('placeBetBtn').click()
-        el = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//button[contains(text(), 'Continue')]")))
-        el.click()
-        print('Bet made')
-        sleep(3)
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     sleep(3)
