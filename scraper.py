@@ -11,7 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 
-REFRESH_TIME = 5
+EW_STAKE = 1 # NB the bet will be double this amount as it bets "each way"
+REFRESH_TIME = 5 # No of seconds before refreshing oddsmonkey
 chrome_options = webdriver.ChromeOptions()
 prefs = {"profile.default_content_setting_values.notifications": 2}
 chrome_options.add_experimental_option("prefs", prefs)
@@ -128,7 +129,8 @@ def make_sporting_index_bet(race):
             EC.presence_of_element_located(
                 (By.TAG_NAME, 'wgt-live-price-raw')))
         if float(cur_odd_price.text) == float(race['horse_odds']):
-            driver.find_element_by_class_name('ng-pristine').send_keys('2')
+            driver.find_element_by_class_name('ng-pristine').send_keys(
+                str(EW_STAKE))
             driver.find_element_by_xpath(
                 '// input[ @ type = "checkbox"]').click()
             driver.find_element_by_class_name('placeBetBtn').click()
