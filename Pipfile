@@ -19,8 +19,10 @@ numpy = "==1.19.4"
 pyparsing = "==2.4.7"
 Cycler = "==0.10.0"
 Pillow = "==8.0.1"
+pandas = "*"
 
 [dev-packages]
+yapf = "*"
 
 [requires]
 python_version = "3.8"

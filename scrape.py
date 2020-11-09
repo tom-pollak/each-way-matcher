@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 
-RESULTS_CSV = 'results.csv'
+RETURNS_CSV = 'returns.csv'
 
 REFRESH_TIME = 35
 START_TIME = time()
@@ -38,6 +38,14 @@ def show_info(count):
     secs = round(diff - mins * 60)
     print(f'Time alive: {hours}:{mins}:{secs}')
     print(f'Refreshes: {count}')
+
+
+def output_race():
+    print(
+        f"\nBet found: {race['horse_name']} - {race['horse_odds']} ({race['rating']}%)"
+    )
+    print(f"\t{race['date_of_race']} - {race['race_venue']}")
+    print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
 
 
 def login():
@@ -103,6 +111,14 @@ def get_balance_sporting_index(driver):
     ew_stake = float("{:.2f}".format(float(ew_stake)))
     if ew_stake < 0.1:
         ew_stake = 0.10
+
+    if float(race['rating']) >= 115:
+        ew_stake = round(ew_stake * 4, 2)
+    elif float(race['rating']) >= 110:
+        ew_stake = round(ew_stake * 3, 2)
+    elif float(race['rating']) >= 105:
+        ew_stake = round(ew_stake * 2, 2)
+
     return balance, ew_stake
 
 
@@ -117,8 +133,8 @@ def update_csv(race):
         'rating',
         'current_time',
     ]
-    with open(RESULTS_CSV, 'a+', newline='') as results_csv:
-        csv_writer = DictWriter(results_csv,
+    with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
+        csv_writer = DictWriter(returns_csv,
                                 fieldnames=csv_columns,
                                 extrasaction='ignore')
         csv_writer.writerow(race)
@@ -153,9 +169,6 @@ def find_races():
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
     ).click()
 
-    print(f'\nBet found: {horse_name} - {horse_odds} ({rating}%) ')
-    print(f'\t{date_of_race} - {race_venue}')
-    print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
     return {
         'date_of_race': date_of_race,
         'race_time': race_time,
@@ -163,8 +176,6 @@ def find_races():
         'horse_odds': horse_odds,
         'race_venue': race_venue,
         'win_exchange': win_exchange,
-        'balance': race['balance'],
-        'ew_stake': race['ew_stake'],
         'rating': rating,
         'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     }
@@ -193,6 +204,7 @@ def make_sporting_index_bet(race):
         if cur_odd_price != '':
             if float(cur_odd_price.text) == float(race['horse_odds']):
                 race['balance'], race['ew_stake'] = get_balance_sporting_index(driver)
+                output_race()
                 driver.find_element_by_class_name('ng-pristine').send_keys(
                     str(race['ew_stake']))
                 driver.find_element_by_xpath(
@@ -206,6 +218,8 @@ def make_sporting_index_bet(race):
                 driver.refresh()
                 update_csv(race)
             else:
+                race['balance'], race['ew_stake'] = get_balance_sporting_index(driver)
+                output_race()
                 print(
                     f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
                 )
@@ -238,7 +252,7 @@ def refresh_odds_monkey(driver):
 login()
 change_to_decimal()
 count = 0
-race = {}
+race = {'rating': 100}
 race['balance'], race['ew_stake'] = get_balance_sporting_index(driver)
 driver.switch_to.window(driver.window_handles[0])
 while True:
@@ -251,7 +265,7 @@ while True:
     sleep(REFRESH_TIME)
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
-        race = find_races()
+        race.update(find_races())
         try:
             race = make_sporting_index_bet(race)
         except NoSuchElementException as e:

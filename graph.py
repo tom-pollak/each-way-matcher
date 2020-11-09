@@ -1,12 +1,17 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-headers = ['balance', 'current_time']
-df = pd.read_csv('results.csv', names=headers)
-print(df)
 
-x = df['current_time']
-y = df['balance']
-plt.plot(x, y)
-plt.gcf().autofmt_xdate()
-plt.savefig('test.png')
+def plot_bal_time_series_graph(df):
+    y = df['balance']
+    plt.plot(y)
+    plt.gcf().autofmt_xdate()
+    plt.savefig('graphs/balance.png')
+
+
+df = pd.read_csv('returns.csv',
+                 header=0,
+                 parse_dates=[7],
+                 index_col=7,
+                 squeeze=True)
+plot_bal_time_series_graph(df)
