@@ -1,3 +1,8 @@
-date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance
+date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating
 08 nov 16:10,Masada Knight,6.00,stratford,0.1,6.10
 08 nov 16:10,Greatest Star,9.00,stratford,0.1,5.90
+09 nov 12:30,Smurphy Enki,2.25,chepstow,0.1,6.37
+09 nov 12:30,Fanfaron Dino,29.00,chepstow,0.1,6.17
+09 nov 15:45,Bebraveforglory,26.00,chepstow,0.1,5.97
+09 nov 12:30,Guetapan Collonges,15.00,chepstow,0.1,
+09 nov 13:30,Desert De Bruyere,29.00,chepstow,0.1,
