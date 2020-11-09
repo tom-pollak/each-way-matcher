@@ -11,6 +11,14 @@ pytz = "==2020.4"
 six = "==1.15.0"
 urllib3 = "==1.25.11"
 python-xlib = "==0.28"
+matplotlib = "==3.3.2"
+certifi = "==2020.11.8"
+evdev = "==1.3.0"
+kiwisolver = "==1.3.1"
+numpy = "==1.19.4"
+pyparsing = "==2.4.7"
+Cycler = "==0.10.0"
+Pillow = "==8.0.1"
 
 [dev-packages]
 

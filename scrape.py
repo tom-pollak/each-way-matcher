@@ -4,6 +4,7 @@ from time import sleep, time
 
 from dotenv import load_dotenv
 from csv import DictWriter
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -78,8 +79,10 @@ def login():
 def change_to_decimal():
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
-    sleep(2)
-    driver.find_element_by_xpath('//a[@class="btn-my-account"]').click()
+    WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, '//a[@class="btn-my-account"]'))).click()
+    # driver.find_element_by_xpath('//a[@class="btn-my-account"]').click()
     sleep(0.5)
     driver.find_element_by_id('decimalBtn').click()
     sleep(0.5)
@@ -110,8 +113,9 @@ def update_csv(race):
         'horse_odds',
         'race_venue',
         'ew_stake',
-        'balance'
-        'rating'
+        'balance',
+        'rating',
+        'current_time',
     ]
     with open(RESULTS_CSV, 'a+', newline='') as results_csv:
         csv_writer = DictWriter(results_csv,
@@ -148,11 +152,10 @@ def find_races():
     driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
     ).click()
-    # driver.find_element_by_id("submitLogin").click()
 
     print(f'\nBet found: {horse_name} - {horse_odds} ({rating}%) ')
     print(f'\t{date_of_race} - {race_venue}')
-    print(f'\tCurrent balance: {balance}, stake: {ew_stake}')
+    print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
     return {
         'date_of_race': date_of_race,
         'race_time': race_time,
@@ -160,7 +163,10 @@ def find_races():
         'horse_odds': horse_odds,
         'race_venue': race_venue,
         'win_exchange': win_exchange,
-        'rating': rating
+        'balance': race['balance'],
+        'ew_stake': race['ew_stake'],
+        'rating': rating,
+        'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     }
 
 
@@ -231,9 +237,9 @@ def refresh_odds_monkey(driver):
 
 login()
 change_to_decimal()
-# URL = driver.current_url
 count = 0
-balance, ew_stake = get_balance_sporting_index(driver)
+race = {}
+race['balance'], race['ew_stake'] = get_balance_sporting_index(driver)
 driver.switch_to.window(driver.window_handles[0])
 while True:
     # So sporting index dosent logout
@@ -241,7 +247,6 @@ while True:
         refresh_sporting_index(driver, count)
         show_info(count)
 
-    # if URL == driver.current_url:
     driver.switch_to.window(driver.window_handles[0])
     sleep(REFRESH_TIME)
     refresh_odds_monkey(driver)
@@ -250,6 +255,6 @@ while True:
         try:
             race = make_sporting_index_bet(race)
         except NoSuchElementException as e:
-            print('\nBet failed\n%s\n' % e)
+            print('Bet failed\n%s\n' % e)
             print('------------------------------\n')
     count += 1
