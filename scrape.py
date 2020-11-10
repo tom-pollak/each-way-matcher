@@ -195,12 +195,12 @@ def make_sporting_index_bet(race):
             EC.presence_of_element_located(
                 (By.TAG_NAME, 'wgt-live-price-raw')))
         if cur_odd_price != '':
+            race['balance'] = get_balance_sporting_index(driver)
+            race['ew_stake'], race['returns_probability'] = find_stake(race['horse_odds'],
+                                          race['rating'],
+                                          race['balance'])
+            output_race()
             if float(cur_odd_price.text) == float(race['horse_odds']):
-                race['balance'] = get_balance_sporting_index(driver)
-                race['ew_stake'], race['returns_probability'] = find_stake(race['horse_odds'],
-                                              race['rating'],
-                                              race['balance'])
-                output_race()
                 if race['ew_stake']:
                     driver.find_element_by_class_name('ng-pristine').send_keys(
                         str(race['ew_stake']))
@@ -218,8 +218,6 @@ def make_sporting_index_bet(race):
                 else:
                     print('Stake must be too small to make reliable profit')
             else:
-                race['balance'] = get_balance_sporting_index(driver)
-                output_race()
                 print(
                     f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
                 )
