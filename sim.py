@@ -29,7 +29,7 @@ def find_stake(odds, rating, balance):
         for i in range(1000):
             if simulate_bet(0.1, odds, rating, balance):
                 count += 1
-        if count >= 950:
+        if count >= 800:
             # print(0.1, count / 10)
             return 0.1, (count / 10)
         else:

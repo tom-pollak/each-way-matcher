@@ -32,12 +32,14 @@ if None in [S_INDEX_USER, S_INDEX_PASS, ODD_M_USER, ODD_M_PASS]:
     raise NameError('Update .env with a vars')
 
 
-def show_info(count):
+def show_info(count, expected_returns):
     diff = time() - START_TIME
     hours = int(diff // 60**2)
     mins = int(diff // 60 - hours * 60)
     secs = round(diff - mins * 60)
-    print(f'Time alive: {hours}:{mins}:{secs}')
+    print(
+        f'Time alive: {hours}:{mins}:{secs} - Expected returns: £{expected_returns}'
+    )
     print(f'Refreshes: {count}')
 
 
@@ -174,7 +176,7 @@ def find_races():
     }
 
 
-def make_sporting_index_bet(race):
+def make_sporting_index_bet(race, expected_returns):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
     el = WebDriverWait(driver, 30).until(
@@ -213,10 +215,14 @@ def make_sporting_index_bet(race):
                              "//button[contains(text(), 'Continue')]")))
                     el.click()
                     print('Bet made\n')
+                    expected_returns += race['ew_stake'] * race['rating']
                     driver.refresh()
                     update_csv(race)
                 else:
                     print('Stake must be too small to make reliable profit')
+                    driver.find_element_by_xpath(
+                        "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+                    ).click()
             else:
                 print(
                     f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
@@ -228,7 +234,7 @@ def make_sporting_index_bet(race):
             print('cur_odd_price is an empty string')
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
-    return race
+    return race, expected_returns
 
 
 def refresh_sporting_index(driver, count):
@@ -250,14 +256,15 @@ def refresh_odds_monkey(driver):
 login()
 change_to_decimal()
 count = 0
+expected_returns = 0
 race = {'rating': 100, 'returns_probability': 95, 'ew_stake': 0.1}
 race['balance'] = get_balance_sporting_index(driver)
 driver.switch_to.window(driver.window_handles[0])
 while True:
     # So sporting index dosent logout
-    if count % 7 == 0:
+    if count % 4 == 0:
         refresh_sporting_index(driver, count)
-        show_info(count)
+        show_info(count, expected_returns)
 
     driver.switch_to.window(driver.window_handles[0])
     sleep(REFRESH_TIME)
@@ -266,7 +273,7 @@ while True:
         race.update(find_races())
         if float(race['horse_odds']) != 100:
             try:
-                race = make_sporting_index_bet(race)
+                race, expected_returns = make_sporting_index_bet(race, expected_returns)
             except NoSuchElementException as e:
                 print('Bet failed\n%s\n' % e)
                 print('------------------------------\n')

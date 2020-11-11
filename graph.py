@@ -22,7 +22,7 @@ def plot_expected_profit(df):
     print(bal_list)
     df = pd.DataFrame(bal_list, columns=['balance', 'current_time'])
 
-    plt.plot(y)
+    plt.plot(bal_list)
     plt.gcf().autofmt_xdate()
     plt.savefig('graphs/expected-returns.png')
 
@@ -34,4 +34,4 @@ df = pd.read_csv('returns.csv',
                  squeeze=True)
 # print(df)
 plot_bal_time_series_graph(df)
-plot_expected_profit(df)
+# plot_expected_profit(df)
