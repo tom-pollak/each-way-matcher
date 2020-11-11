@@ -23,6 +23,7 @@ lxml = "*"
 requests = "*"
 GitPython = "*"
 pylint = "*"
+scipy = "*"
 
 [dev-packages]
 yapf = "*"

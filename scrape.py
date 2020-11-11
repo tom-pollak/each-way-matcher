@@ -18,6 +18,9 @@ RETURNS_CSV = 'returns.csv'
 REFRESH_TIME = 35
 START_TIME = time()
 chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument(
+    "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
+)
 prefs = {"profile.default_content_setting_values.notifications": 2}
 chrome_options.add_experimental_option("prefs", prefs)
 driver = webdriver.Chrome(options=chrome_options)
@@ -38,7 +41,7 @@ def show_info(count, expected_returns):
     mins = int(diff // 60 - hours * 60)
     secs = round(diff - mins * 60)
     print(
-        f'Time alive: {hours}:{mins}:{secs} - Expected returns: £{expected_returns}'
+        f'Time alive: {hours}:{mins}:{secs} - Expected returns: £{round(expected_returns, 2)}'
     )
     print(f'Refreshes: {count}')
 
@@ -215,7 +218,7 @@ def make_sporting_index_bet(race, expected_returns):
                              "//button[contains(text(), 'Continue')]")))
                     el.click()
                     print('Bet made\n')
-                    expected_returns += race['ew_stake'] * race['rating']
+                    expected_returns += race['ew_stake'] * race['rating'] / 100, 2
                     driver.refresh()
                     update_csv(race)
                 else:
