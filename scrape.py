@@ -51,7 +51,7 @@ def output_race():
     if not ew_stake:
         ew_stake = 'N/A'
     print(
-        f"\nBet found: {race['horse_name']} - {race['horse_odds']} ({race['rating']}%) - probability: {race['returns_probability']}"
+        f"Bet found: {race['horse_name']} - {race['horse_odds']} ({race['rating']}%) - probability: {race['returns_probability']}"
     )
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")

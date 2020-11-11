@@ -5,7 +5,12 @@ import matplotlib.pyplot as plt
 def plot_bal_time_series_graph(df):
     y = df['balance']
     # print(y)
+    # x = matplotlib.dates.date2num()
+    # formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
+
+    fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
     plt.plot(y)
+
     plt.gcf().autofmt_xdate()
     plt.savefig('graphs/balance.png')
 
@@ -27,11 +32,17 @@ def plot_expected_profit(df):
     plt.savefig('graphs/expected-returns.png')
 
 
+import datetime
+import time
+custom_date_parser = lambda x: datetime.datetime(*(time.strptime(
+    x, '%d/%m/%Y %H:%M:%S')[0:6]))
 df = pd.read_csv('returns.csv',
                  header=0,
                  parse_dates=[7],
                  index_col=7,
+                 date_parser=custom_date_parser,
                  squeeze=True)
+print(df)
 # print(df)
 plot_bal_time_series_graph(df)
 # plot_expected_profit(df)

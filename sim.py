@@ -20,14 +20,17 @@ def simulate_bet(stake, odds, rating, balance):
 
 import numpy as np
 
+import time
+
 
 def find_stake(odds, rating, balance):
+    start = time.time()
     count = 0
     stake = 0.1 * balance
     percentage_list = []
     per_list_count = 0
     old_std = False
-    while not 950 <= count <= 975 or per_list_count >= 40:
+    while per_list_count <= 40:
         count = 0
         for j in range(1000):
             if simulate_bet(stake, odds, rating, balance):
@@ -42,13 +45,15 @@ def find_stake(odds, rating, balance):
             # print(np.mean(grads))
             if np.mean(grads) <= 5:
                 # print(stake, count / 10)
-                if count >= 800:
+                print(f'\nElapsed time: {time.time() - start}')
+                if count >= 750 and stake >= 0.1:
                     return round(stake, 2), (count / 10)
                 return False, (count / 10)
             percentage_list = []
 
-    if stake < 0.1 or per_list_count >= 40:
-        return False, (count / 10)
-
-    # print(stake, count / 10)
-    return round(stake, 2), (count / 10)
+    # print(f'Elapsed time: {time.time() - start}')
+    # if stake < 0.1 or per_list_count >= 40:
+    return False, (count / 10)
+    #
+    # # print(stake, count / 10)
+    # return round(stake, 2), (count / 10)
