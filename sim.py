@@ -65,7 +65,7 @@ def find_stake(odds, rating, balance):
 
     # if stake < 0.1 or per_list_count >= 40:
     print(f'\nElapsed time: {round(time.time() - start, 2)}')
-    return stake, (count / 10)
+    return round(stake, 2), (count / 10)
     #
     # # print(stake, count / 10)
     # return round(stake, 2), (count / 10)

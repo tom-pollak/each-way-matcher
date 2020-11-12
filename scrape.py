@@ -237,6 +237,9 @@ def sporting_index_bet(race, expected_returns):
                 print(
                     f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
                 )
+                driver.find_element_by_xpath(
+                    "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+                ).click()
         else:
             print('cur_odd_price is an empty string')
     driver.get(
