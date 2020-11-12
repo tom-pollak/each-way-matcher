@@ -27,33 +27,45 @@ def find_stake(odds, rating, balance):
     start = time.time()
     count = 0
     stake = 0.1 * balance
-    percentage_list = []
-    per_list_count = 0
-    old_std = False
-    while per_list_count <= 40:
+    # percentage_list = []
+    # per_list_count = 0
+    # old_std = False
+    iterations = 0
+    while iterations <= 40 and count < 550:
         count = 0
         for j in range(1000):
             if simulate_bet(stake, odds, rating, balance):
                 count += 1
-        percentage_list.append(count)
-        stake -= (950 - count) / 1000 * stake
+        # percentage_list.append(count)
+        stake -= (750 - count) / 1000 * stake
+        iterations += 1
+        if stake < 0.1:
+            count = 0
+            for j in range(1000):
+                if simulate_bet(stake, odds, rating, balance):
+                    count += 1
+            # print(stake, count / 10)
+            print(f'\nElapsed time: {round(time.time() - start, 2)}')
+            if count > 500:
+                return 0.1, (count / 10)
+            return False, (count / 10)
         # print(stake, count / 10)
-        per_list_count += 1
+        # per_list_count += 1
 
-        if per_list_count % 5 == 0:
-            grads = np.gradient(percentage_list)
-            # print(np.mean(grads))
-            if np.mean(grads) <= 5:
-                # print(stake, count / 10)
-                print(f'\nElapsed time: {time.time() - start}')
-                if count >= 750 and stake >= 0.1:
-                    return round(stake, 2), (count / 10)
-                return False, (count / 10)
-            percentage_list = []
+        # if per_list_count % 5 == 0:
+        # grads = np.gradient(percentage_list)
+        # # print(np.mean(grads))
+        # if np.mean(grads) <= 5:
+        #     # print(stake, count / 10)
+        # print(f'\nElapsed time: {round(time.time() - start, 2)}')
+        #     if count >= 750 and stake >= 0.1:
+        #         return round(stake, 2), (count / 10)
+        # return False, (count / 10)
+        # percentage_list = []
 
-    # print(f'Elapsed time: {time.time() - start}')
     # if stake < 0.1 or per_list_count >= 40:
-    return False, (count / 10)
+    print(f'\nElapsed time: {round(time.time() - start, 2)}')
+    return stake, (count / 10)
     #
     # # print(stake, count / 10)
     # return round(stake, 2), (count / 10)

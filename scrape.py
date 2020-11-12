@@ -111,7 +111,7 @@ def change_to_decimal():
 
 def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
-    balance = WebDriverWait(driver, 20).until(
+    balance = WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.CLASS_NAME, 'btn-balance'))).text
     balance = balance.replace(' ', '')
     balance = balance.replace('£', '')
@@ -179,12 +179,37 @@ def find_races():
     }
 
 
-def make_sporting_index_bet(race, expected_returns):
+def make_sporting_index_bet(driver, race, expected_returns):
+    if race['ew_stake']:
+        driver.find_element_by_class_name('ng-pristine').send_keys(
+            str(race['ew_stake']))
+        driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
+        driver.find_element_by_class_name('placeBetBtn').click()
+        el = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[contains(text(), 'Continue')]")))
+        el.click()
+        print('Bet made\n')
+        expected_returns += race['ew_stake'] * race['rating'] / 100
+        driver.refresh()
+        update_csv(race)
+    else:
+        print('Stake must be too small to make reliable profit')
+        driver.find_element_by_xpath(
+            "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+    return expected_returns
+
+
+def get_sporting_index_page(driver):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
     el = WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable((By.LINK_TEXT, race['race_time'])))
     el.click()
+
+
+def sporting_index_bet(race, expected_returns):
+    get_sporting_index_page(driver)
     # Check if the horse on the page
     # Can happen if we choose event with same time but wrong location
 
@@ -206,33 +231,12 @@ def make_sporting_index_bet(race, expected_returns):
                                           race['balance'])
             output_race()
             if float(cur_odd_price.text) == float(race['horse_odds']):
-                if race['ew_stake']:
-                    driver.find_element_by_class_name('ng-pristine').send_keys(
-                        str(race['ew_stake']))
-                    driver.find_element_by_xpath(
-                        '// input[ @ type = "checkbox"]').click()
-                    driver.find_element_by_class_name('placeBetBtn').click()
-                    el = WebDriverWait(driver, 30).until(
-                        EC.element_to_be_clickable(
-                            (By.XPATH,
-                             "//button[contains(text(), 'Continue')]")))
-                    el.click()
-                    print('Bet made\n')
-                    expected_returns += race['ew_stake'] * race['rating'] / 100, 2
-                    driver.refresh()
-                    update_csv(race)
-                else:
-                    print('Stake must be too small to make reliable profit')
-                    driver.find_element_by_xpath(
-                        "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-                    ).click()
+                expected_returns = make_sporting_index_bet(
+                    driver, race, expected_returns)
             else:
                 print(
                     f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
                 )
-                driver.find_element_by_xpath(
-                    "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-                ).click()
         else:
             print('cur_odd_price is an empty string')
     driver.get(
@@ -260,6 +264,7 @@ login()
 change_to_decimal()
 count = 0
 expected_returns = 0
+bet = True
 race = {'rating': 100, 'returns_probability': 95, 'ew_stake': 0.1}
 race['balance'] = get_balance_sporting_index(driver)
 driver.switch_to.window(driver.window_handles[0])
@@ -270,13 +275,16 @@ while True:
         show_info(count, expected_returns)
 
     driver.switch_to.window(driver.window_handles[0])
-    sleep(REFRESH_TIME)
+    if not bet:
+        sleep(REFRESH_TIME)
+    bet = False
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races())
         if float(race['horse_odds']) != 100:
             try:
-                race, expected_returns = make_sporting_index_bet(race, expected_returns)
+                bet = True
+                race, expected_returns = sporting_index_bet(race, expected_returns)
             except NoSuchElementException as e:
                 print('Bet failed\n%s\n' % e)
                 print('------------------------------\n')
