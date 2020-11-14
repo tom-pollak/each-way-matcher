@@ -6,36 +6,35 @@ from sim import find_stake
 from dotenv import load_dotenv
 from csv import DictWriter
 from datetime import datetime
-from selenium import webdriver
+# from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 
-RETURNS_CSV = 'returns.csv'
+# RETURNS_CSV = 'returns.csv'
+#
+# REFRESH_TIME = 35
+# START_TIME = time()
+# # chrome_options = webdriver.ChromeOptions()
+# # chrome_options.add_argument(
+# #     "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
+# # )
+# # prefs = {"profile.default_content_setting_values.notifications": 2}
+# # chrome_options.add_experimental_option("prefs", prefs)
+# # driver = webdriver.Chrome(options=chrome_options)
+#
+# ODD_M_USER = os.environ.get('ODD_M_USER')
+# ODD_M_PASS = os.environ.get('ODD_M_PASS')
+# S_INDEX_USER = os.environ.get('S_INDEX_USER')
+# S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
 
-REFRESH_TIME = 35
-START_TIME = time()
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument(
-    "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
-)
-prefs = {"profile.default_content_setting_values.notifications": 2}
-chrome_options.add_experimental_option("prefs", prefs)
-driver = webdriver.Chrome(options=chrome_options)
-
-load_dotenv()
-ODD_M_USER = os.environ.get('ODD_M_USER')
-ODD_M_PASS = os.environ.get('ODD_M_PASS')
-S_INDEX_USER = os.environ.get('S_INDEX_USER')
-S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
-
-if None in [S_INDEX_USER, S_INDEX_PASS, ODD_M_USER, ODD_M_PASS]:
-    raise NameError('Update .env with a vars')
+# if None in [S_INDEX_USER, S_INDEX_PASS, ODD_M_USER, ODD_M_PASS]:
+#     raise NameError('Update .env with a vars')
 
 
-def show_info(count, expected_returns):
+def show_info(driver, count, expected_returns, START_TIME):
     diff = time() - START_TIME
     hours = int(diff // 60**2)
     mins = int(diff // 60 - hours * 60)
@@ -46,7 +45,7 @@ def show_info(count, expected_returns):
     print(f'Refreshes: {count}')
 
 
-def output_race():
+def output_race(race):
     ew_stake = race['ew_stake']
     if not ew_stake:
         ew_stake = 'N/A'
@@ -57,7 +56,7 @@ def output_race():
     print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
 
 
-def login():
+def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located(
@@ -93,7 +92,7 @@ def login():
     sleep(0.5)
 
 
-def change_to_decimal():
+def change_to_decimal(driver):
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     WebDriverWait(driver, 30).until(
@@ -119,7 +118,7 @@ def get_balance_sporting_index(driver):
     return float(balance)
 
 
-def update_csv(race):
+def update_csv(race, RETURNS_CSV):
     csv_columns = [
         'date_of_race',
         'horse_name',
@@ -128,8 +127,7 @@ def update_csv(race):
         'ew_stake',
         'balance',
         'rating',
-        'current_time',
-        'returns_probability'
+        'current_time', # 'returns_probability'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -138,7 +136,7 @@ def update_csv(race):
         csv_writer.writerow(race)
 
 
-def find_races():
+def find_races(driver):
     date_of_race = driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td'
     ).text.lower()
@@ -179,20 +177,27 @@ def find_races():
     }
 
 
-def make_sporting_index_bet(driver, race, expected_returns):
+def make_sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
     if race['ew_stake']:
         driver.find_element_by_class_name('ng-pristine').send_keys(
             str(race['ew_stake']))
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        driver.find_element_by_class_name('placeBetBtn').click()
+        try:
+            driver.find_element_by_class_name('placeBetBtn').click()
+        except NoSuchElementException:
+            print('Odds have changed')
+            driver.find_element_by_xpath(
+                "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+            ).click()
+
         el = WebDriverWait(driver, 30).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "//button[contains(text(), 'Continue')]")))
         el.click()
         print('Bet made\n')
-        expected_returns += race['ew_stake'] * race['rating'] / 100
+        expected_returns += race['ew_stake'] * (race['rating'] / 100 - 1)
         driver.refresh()
-        update_csv(race)
+        update_csv(race, RETURNS_CSV)
     else:
         print('Stake must be too small to make reliable profit')
         driver.find_element_by_xpath(
@@ -200,16 +205,16 @@ def make_sporting_index_bet(driver, race, expected_returns):
     return expected_returns
 
 
-def get_sporting_index_page(driver):
+def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
-    el = WebDriverWait(driver, 30).until(
+    el = WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((By.LINK_TEXT, race['race_time'])))
     el.click()
 
 
-def sporting_index_bet(race, expected_returns):
-    get_sporting_index_page(driver)
+def sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
+    get_sporting_index_page(driver, race)
     # Check if the horse on the page
     # Can happen if we choose event with same time but wrong location
 
@@ -229,10 +234,13 @@ def sporting_index_bet(race, expected_returns):
             race['ew_stake'], race['returns_probability'] = find_stake(race['horse_odds'],
                                           race['rating'],
                                           race['balance'])
-            output_race()
+            # race['ew_stake'] = round(race['balance'] / 200, 2)
+            # if race['ew_stake'] < 0.1:
+            #     race['ew_stake'] = 0.1
+            output_race(race)
             if float(cur_odd_price.text) == float(race['horse_odds']):
                 expected_returns = make_sporting_index_bet(
-                    driver, race, expected_returns)
+                    driver, race, expected_returns, RETURNS_CSV)
             else:
                 print(
                     f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
@@ -263,32 +271,37 @@ def refresh_odds_monkey(driver):
             'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
 
 
-login()
-change_to_decimal()
-count = 0
-expected_returns = 0
-bet = True
-race = {'rating': 100, 'returns_probability': 95, 'ew_stake': 0.1}
-race['balance'] = get_balance_sporting_index(driver)
-driver.switch_to.window(driver.window_handles[0])
-while True:
-    # So sporting index dosent logout
-    if count % 4 == 0:
-        refresh_sporting_index(driver, count)
-        show_info(count, expected_returns)
-
+def main(driver,
+         RETURNS_CSV,
+         REFRESH_TIME,
+         START_TIME,
+         ODD_M_USER,
+         ODD_M_PASS,
+         S_INDEX_USER,
+         S_INDEX_PASS):
+    load_dotenv()
+    login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS)
+    change_to_decimal(driver)
+    count = 0
+    expected_returns = 0
+    bet = True
+    race = {'rating': 100, 'returns_probability': 95, 'ew_stake': 0.1}
+    race['balance'] = get_balance_sporting_index(driver)
     driver.switch_to.window(driver.window_handles[0])
-    if not bet:
-        sleep(REFRESH_TIME)
-    bet = False
-    refresh_odds_monkey(driver)
-    if not driver.find_elements_by_class_name('rgNoRecords'):
-        race.update(find_races())
-        if float(race['horse_odds']) != 100:
-            try:
+    while True:
+        # So sporting index dosent logout
+        if count % 4 == 0:
+            refresh_sporting_index(driver, count)
+            show_info(driver, count, expected_returns, START_TIME)
+
+        driver.switch_to.window(driver.window_handles[0])
+        if not bet:
+            sleep(REFRESH_TIME)
+        bet = False
+        refresh_odds_monkey(driver)
+        if not driver.find_elements_by_class_name('rgNoRecords'):
+            race.update(find_races(driver))
+            if float(race['horse_odds']) != 100:
                 bet = True
-                race, expected_returns = sporting_index_bet(race, expected_returns)
-            except NoSuchElementException as e:
-                print('Bet failed\n%s\n' % e)
-                print('------------------------------\n')
-    count += 1
+                race, expected_returns = sporting_index_bet(driver, race, expected_returns, RETURNS_CSV)
+        count += 1
