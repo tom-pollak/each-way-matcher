@@ -1,3 +1,2 @@
 cd C:\Users\tompo\projects\each-way-matcher
-pipenv shell
-python run.py
+pipenv run python run.py
