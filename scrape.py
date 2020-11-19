@@ -127,7 +127,8 @@ def update_csv(race, RETURNS_CSV):
         'ew_stake',
         'balance',
         'rating',
-        'current_time', # 'returns_probability'
+        'current_time',
+        'returns_probability'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,

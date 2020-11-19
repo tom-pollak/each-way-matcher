@@ -84,42 +84,42 @@ date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_ti
 13 nov 19:30,Queen Amidala,11.0,dundalk,0.1,32.58,100.45,13/11/2020 18:35:44,53.9
 13 nov 19:30,Early Strike,51.0,dundalk,0.15,32.38,122.5,13/11/2020 19:26:41,59.2
 13 nov 19:30,Tio Esteban,23.0,dundalk,0.1,32.08,102.56,13/11/2020 19:29:13,53.8
-14 nov 12:03,Aphaea,126.0,wetherby,0.1,32.28,106.3,14/11/2020 10:24:44
-14 nov 12:03,Fern Hill,6.0,wetherby,0.1,32.08,100.45,14/11/2020 10:27:16
-14 nov 11:05,Cape Diamond,23.0,turffontein,0.1,31.88,101.18,14/11/2020 10:51:39
-14 nov 12:22,Fevertre,23.0,uttoxeter,0.1,31.68,102.25,14/11/2020 11:07:26
-14 nov 13:55,Butcherofstockholm,15.0,lingfield,0.1,31.48,102.17,14/11/2020 11:21:36
-14 nov 15:55,Lady Jane P,26.0,cheltenham,0.1,31.28,100.0,14/11/2020 11:22:54
-14 nov 13:32,Waterlefe Getaway,12.0,uttoxeter,0.1,31.08,102.46,14/11/2020 11:35:54
-14 nov 12:03,Hidden Commander,34.0,wetherby,0.31,30.88,101.28,14/11/2020 11:50:07
-14 nov 14:30,Defined,11.0,lingfield,0.3,30.26,103.38,14/11/2020 11:54:26
-14 nov 12:03,Mill Race King,26.0,wetherby,0.3,29.66,109.28,14/11/2020 11:56:20
-14 nov 12:03,Rockmann,126.0,wetherby,0.29,29.06,106.35,14/11/2020 12:00:07
-14 nov 14:30,Mustang Kodi,34.0,lingfield,0.28,28.48,107.41,14/11/2020 12:02:36
-14 nov 20:30,May The Sixth,21.0,wolverhampton,0.28,27.92,102.5,14/11/2020 12:02:40
-14 nov 14:23,Masteroftheheights,15.0,wetherby,0.27,27.36,102.33,14/11/2020 12:12:25
-14 nov 15:05,Satono Japan,11.0,lingfield,0.14,27.62,100.0,14/11/2020 12:39:25
-14 nov 12:50,Farclas,21.0,punchestown,0.14,27.34,104.97,14/11/2020 12:47:25
-14 nov 17:30,Arizona Gold,26.0,wolverhampton,0.14,27.96,100.0,14/11/2020 17:06:25
-14 nov 17:30,Norman Kindu,10.0,wolverhampton,0.14,27.68,101.38,14/11/2020 17:19:41
-15 nov 12:50,Run To Denmark,10.0,greyville,0.12,27.4,101.6,15/11/2020 12:35:40
-15 nov 13:45,Wolflet,11.0,southwell,0.13,27.16,102.57,15/11/2020 12:47:19
-15 nov 13:15,The Butcher Said,10.0,cheltenham,0.11,26.9,102.52,15/11/2020 13:08:12
-19 nov 12:40,De Young Warrior,29.0,wincanton,0.1,26.68,111.31,19/11/2020 12:32:48
-19 nov 14:50,Flight Alert,10.0,newcastle,0.16,26.48,107.09,19/11/2020 12:32:58
-19 nov 14:50,Silver Gunn,12.0,newcastle,0.1,26.16,105.47,19/11/2020 12:33:10
-19 nov 14:50,Silver Horn,6.5,newcastle,0.1,25.96,100.57,19/11/2020 12:33:22
-19 nov 12:40,Getmegold,10.0,wincanton,0.1,25.76,102.3,19/11/2020 12:35:57
-19 nov 12:40,Shoot To Fame,41.0,wincanton,0.1,25.56,107.59,19/11/2020 12:38:31
-19 nov 14:50,Olympus,126.0,newcastle,0.1,26.02,127.42,19/11/2020 13:39:05
-19 nov 14:50,Kondo Isami,21.0,newcastle,0.18,25.82,120.67,19/11/2020 13:39:12
-19 nov 14:50,Olympus,126.0,newcastle,0.1,25.46,127.42,19/11/2020 13:40:03
-19 nov 14:50,Kondo Isami,21.0,newcastle,0.22,25.26,125.42,19/11/2020 13:40:10
-19 nov 14:50,Silver Horn,7.0,newcastle,0.1,24.82,102.79,19/11/2020 13:40:24
-19 nov 14:50,Silver Gunn,13.0,newcastle,0.1,24.62,100.97,19/11/2020 13:40:36
-19 nov 15:42,Majestic Merlin,7.5,wincanton,0.1,24.42,100.83,19/11/2020 13:40:44
-19 nov 14:50,Flight Alert,11.0,newcastle,0.1,24.22,100.53,19/11/2020 13:40:54
-19 nov 15:42,Janus,13.0,wincanton,0.1,24.02,102.12,19/11/2020 13:51:56
-19 nov 15:55,Stowaway John,51.0,thurles,0.1,23.82,102.66,19/11/2020 14:04:18
-19 nov 15:42,Rowley Park,29.0,wincanton,0.1,27.55,102.21,19/11/2020 15:18:42
-19 nov 15:42,Test Ride,26.0,wincanton,0.1,27.35,101.98,19/11/2020 15:28:33
+14 nov 12:03,Aphaea,126.0,wetherby,0.1,32.28,106.3,14/11/2020 10:24:44,-1
+14 nov 12:03,Fern Hill,6.0,wetherby,0.1,32.08,100.45,14/11/2020 10:27:16,-1
+14 nov 11:05,Cape Diamond,23.0,turffontein,0.1,31.88,101.18,14/11/2020 10:51:39,-1
+14 nov 12:22,Fevertre,23.0,uttoxeter,0.1,31.68,102.25,14/11/2020 11:07:26,-1
+14 nov 13:55,Butcherofstockholm,15.0,lingfield,0.1,31.48,102.17,14/11/2020 11:21:36,-1
+14 nov 15:55,Lady Jane P,26.0,cheltenham,0.1,31.28,100.0,14/11/2020 11:22:54,-1
+14 nov 13:32,Waterlefe Getaway,12.0,uttoxeter,0.1,31.08,102.46,14/11/2020 11:35:54,-1
+14 nov 12:03,Hidden Commander,34.0,wetherby,0.31,30.88,101.28,14/11/2020 11:50:07,-1
+14 nov 14:30,Defined,11.0,lingfield,0.3,30.26,103.38,14/11/2020 11:54:26,-1
+14 nov 12:03,Mill Race King,26.0,wetherby,0.3,29.66,109.28,14/11/2020 11:56:20,-1
+14 nov 12:03,Rockmann,126.0,wetherby,0.29,29.06,106.35,14/11/2020 12:00:07,-1
+14 nov 14:30,Mustang Kodi,34.0,lingfield,0.28,28.48,107.41,14/11/2020 12:02:36,-1
+14 nov 20:30,May The Sixth,21.0,wolverhampton,0.28,27.92,102.5,14/11/2020 12:02:40,-1
+14 nov 14:23,Masteroftheheights,15.0,wetherby,0.27,27.36,102.33,14/11/2020 12:12:25,-1
+14 nov 15:05,Satono Japan,11.0,lingfield,0.14,27.62,100.0,14/11/2020 12:39:25,-1
+14 nov 12:50,Farclas,21.0,punchestown,0.14,27.34,104.97,14/11/2020 12:47:25,-1
+14 nov 17:30,Arizona Gold,26.0,wolverhampton,0.14,27.96,100.0,14/11/2020 17:06:25,-1
+14 nov 17:30,Norman Kindu,10.0,wolverhampton,0.14,27.68,101.38,14/11/2020 17:19:41,-1
+15 nov 12:50,Run To Denmark,10.0,greyville,0.12,27.4,101.6,15/11/2020 12:35:40,-1
+15 nov 13:45,Wolflet,11.0,southwell,0.13,27.16,102.57,15/11/2020 12:47:19,-1
+15 nov 13:15,The Butcher Said,10.0,cheltenham,0.11,26.9,102.52,15/11/2020 13:08:12,-1
+19 nov 12:40,De Young Warrior,29.0,wincanton,0.1,26.68,111.31,19/11/2020 12:32:48,-1
+19 nov 14:50,Flight Alert,10.0,newcastle,0.16,26.48,107.09,19/11/2020 12:32:58,-1
+19 nov 14:50,Silver Gunn,12.0,newcastle,0.1,26.16,105.47,19/11/2020 12:33:10,-1
+19 nov 14:50,Silver Horn,6.5,newcastle,0.1,25.96,100.57,19/11/2020 12:33:22,-1
+19 nov 12:40,Getmegold,10.0,wincanton,0.1,25.76,102.3,19/11/2020 12:35:57,-1
+19 nov 12:40,Shoot To Fame,41.0,wincanton,0.1,25.56,107.59,19/11/2020 12:38:31,-1
+19 nov 14:50,Olympus,126.0,newcastle,0.1,26.02,127.42,19/11/2020 13:39:05,-1
+19 nov 14:50,Kondo Isami,21.0,newcastle,0.18,25.82,120.67,19/11/2020 13:39:12,-1
+19 nov 14:50,Olympus,126.0,newcastle,0.1,25.46,127.42,19/11/2020 13:40:03,-1
+19 nov 14:50,Kondo Isami,21.0,newcastle,0.22,25.26,125.42,19/11/2020 13:40:10,-1
+19 nov 14:50,Silver Horn,7.0,newcastle,0.1,24.82,102.79,19/11/2020 13:40:24,-1
+19 nov 14:50,Silver Gunn,13.0,newcastle,0.1,24.62,100.97,19/11/2020 13:40:36,-1
+19 nov 15:42,Majestic Merlin,7.5,wincanton,0.1,24.42,100.83,19/11/2020 13:40:44,-1
+19 nov 14:50,Flight Alert,11.0,newcastle,0.1,24.22,100.53,19/11/2020 13:40:54,-1
+19 nov 15:42,Janus,13.0,wincanton,0.1,24.02,102.12,19/11/2020 13:51:56,-1
+19 nov 15:55,Stowaway John,51.0,thurles,0.1,23.82,102.66,19/11/2020 14:04:18,-1
+19 nov 15:42,Rowley Park,29.0,wincanton,0.1,27.55,102.21,19/11/2020 15:18:42,-1
+19 nov 15:42,Test Ride,26.0,wincanton,0.1,27.35,101.98,19/11/2020 15:28:33,-1
