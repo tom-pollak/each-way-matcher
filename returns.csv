@@ -1,15 +1,15 @@
 date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_time,returns_probability
-10 nov 12:37,Loughan,2.25,hereford,0.5,50.00,100.37,10/11/2020 08:29:45
-10 nov 12:37,Gilwen Grayson,101.00,hereford,1.96,49.00,119.06,10/11/2020 08:39:12
-10 nov 12:15,Sinndarella,6.00,huntingdon,0.45,45.08,100.67,10/11/2020 08:52:16
-10 nov 12:15,Bolt N Brown,17.00,huntingdon,0.44,44.18,102.78,10/11/2020 09:09:03
-10 nov 12:15,Persuer,81.00,huntingdon,0.43,43.30,102.09,10/11/2020 09:41:03
-10 nov 11:45,Halliberry,4.50,kenilworth,0.42,42.44,100.90,10/11/2020 11:30:59
-10 nov 14:23,Highway One,34.00,lingfield,0.84,41.60,106.03,10/11/2020 11:47:07
-10 nov 13:23,Get Your Own,15.00,lingfield,0.4,39.92,101.90,10/11/2020 11:49:48
-10 nov 13:23,Crypto,10.00,lingfield,0.39,39.12,101.38,10/11/2020 11:50:34
-10 nov 13:23,Big Bresil,6.50,lingfield,0.41,40.94,101.89,10/11/2020 11:53:18
-10 nov 14:23,Darkest Day,17.00,lingfield,0.4,40.12,100.74,10/11/2020 11:57:54
+10 nov 12:37,Loughan,2.25,hereford,0.5,50.00,100.37,10/11/2020 08:29:45,-1
+10 nov 12:37,Gilwen Grayson,101.00,hereford,1.96,49.00,119.06,10/11/2020 08:39:12,-1
+10 nov 12:15,Sinndarella,6.00,huntingdon,0.45,45.08,100.67,10/11/2020 08:52:16,-1
+10 nov 12:15,Bolt N Brown,17.00,huntingdon,0.44,44.18,102.78,10/11/2020 09:09:03,-1
+10 nov 12:15,Persuer,81.00,huntingdon,0.43,43.30,102.09,10/11/2020 09:41:03,-1
+10 nov 11:45,Halliberry,4.50,kenilworth,0.42,42.44,100.90,10/11/2020 11:30:59,-1
+10 nov 14:23,Highway One,34.00,lingfield,0.84,41.60,106.03,10/11/2020 11:47:07,-1
+10 nov 13:23,Get Your Own,15.00,lingfield,0.4,39.92,101.90,10/11/2020 11:49:48,-1
+10 nov 13:23,Crypto,10.00,lingfield,0.39,39.12,101.38,10/11/2020 11:50:34,-1
+10 nov 13:23,Big Bresil,6.50,lingfield,0.41,40.94,101.89,10/11/2020 11:53:18,-1
+10 nov 14:23,Darkest Day,17.00,lingfield,0.4,40.12,100.74,10/11/2020 11:57:54,-1
 11 nov 13:20,Zambella,13.0,bangor,0.17,41.8,104.78,11/11/2020 11:14:41,96.1
 11 nov 16:05,Took The Lot,8.0,bangor,0.35,41.46,106.47,11/11/2020 11:20:20,95.3
 11 nov 13:20,Elusive Belle,3.75,bangor,1.02,40.76,100.7,11/11/2020 11:21:13,96.1
