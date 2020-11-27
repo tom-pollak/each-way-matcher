@@ -1,5 +1,5 @@
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def plot_bal_time_series_graph(df):
@@ -34,6 +34,7 @@ def plot_expected_profit(df):
 
 import datetime
 import time
+
 custom_date_parser = lambda x: datetime.datetime(*(time.strptime(
     x, '%d/%m/%Y %H:%M:%S')[0:6]))
 df = pd.read_csv('returns.csv',

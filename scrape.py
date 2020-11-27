@@ -118,6 +118,19 @@ def get_balance_sporting_index(driver):
     return float(balance)
 
 
+def get_place(driver):
+    place = WebDriverWait(driver, 40).until(
+        EC.visibility_of_element_located((
+            By.XPATH,
+            '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[1]'
+        ))).text
+    if '5' in place:
+        place = 5
+    else:
+        place = 4
+    return place
+
+
 def update_csv(race, RETURNS_CSV):
     csv_columns = [
         'date_of_race',
@@ -146,7 +159,7 @@ def find_races(driver):
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[8]'
     ).text.lower().strip()
     sizestring = len(race_venue)
-    race_venue = race_venue[:sizestring - 5].strip()
+    race_venue = race_venue[:sizestring - 5].strip().title()
 
     horse_name = driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[9]'
@@ -209,35 +222,33 @@ def make_sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
 def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
-    el = WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable((By.LINK_TEXT, race['race_time'])))
-    el.click()
+    WebDriverWait(driver, 60).until(
+        EC.presence_of_element_located((
+            By.XPATH,
+            f"//th[contains(text(), '{race['race_venue']}')]/../../../tbody/tr/td/span/a/strong[contains(text(), '{race['race_time']}')]/.."
+        ))).click()
 
 
 def sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
     get_sporting_index_page(driver, race)
-    # Check if the horse on the page
-    # Can happen if we choose event with same time but wrong location
-
     WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'horseName')))
-    if race['horse_name'] not in driver.page_source:
-        print('No horse found\n')
-    else:
-        horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
-        driver.find_element_by_xpath(horse_name_xpath).click()
+    horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
+    driver.find_element_by_xpath(horse_name_xpath).click()
 
-        cur_odd_price = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located(
-                (By.TAG_NAME, 'wgt-live-price-raw')))
-        if cur_odd_price != '':
-            race['balance'] = get_balance_sporting_index(driver)
+    cur_odd_price = WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located((By.TAG_NAME, 'wgt-live-price-raw')))
+    if cur_odd_price != '':
+        race['balance'] = get_balance_sporting_index(driver)
+        if False:
+            pass
+        # place = get_place(driver)
+        # if place == 5 and race['horse_odds'] < 8:
+        #     print('Odds are to small for place')
+        else:
             race['ew_stake'], race['returns_probability'] = find_stake(race['horse_odds'],
                                           race['rating'],
                                           race['balance'])
-            # race['ew_stake'] = round(race['balance'] / 200, 2)
-            # if race['ew_stake'] < 0.1:
-            #     race['ew_stake'] = 0.1
             output_race(race)
             if float(cur_odd_price.text) == float(race['horse_odds']):
                 expected_returns = make_sporting_index_bet(
@@ -249,8 +260,8 @@ def sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
                 driver.find_element_by_xpath(
                     "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
                 ).click()
-        else:
-            print('cur_odd_price is an empty string')
+    else:
+        print('cur_odd_price is an empty string')
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     return race, expected_returns

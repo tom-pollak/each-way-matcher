@@ -2,7 +2,7 @@ import os
 import sys
 from time import time
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from scrape import main
 
 RETURNS_CSV = 'returns.csv'
@@ -29,7 +29,15 @@ while True:
              ODD_M_PASS,
              S_INDEX_USER,
              S_INDEX_PASS)
-    except NoSuchElementException as e:
-        print('Failed with error:')
-        print(e)
+    except KeyboardInterrupt:
+        print('Exiting')
+        sys.exit()
+    except (NoSuchElementException, TimeoutException) as e:
+        print('Element not found:', e)
         driver.quit()
+    except Exception as e:
+        print('Unknown error ocurred:')
+        print(e)
+    finally:
+        driver.quit()
+    # sys.exit() # take out
