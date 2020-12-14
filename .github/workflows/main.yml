@@ -26,9 +26,7 @@ jobs:
     - name: Install Chrome
       run: |
         sudo apt install google-chrome-stable
-    - name: Install chromedriver
-      run: |
-        seleniumbase install chromedriver
+        mv chromedrive /usr/bin/chromedriver
     - name: Run
       run: |
         python3 run.py --browser=chrome --headless -v -s
