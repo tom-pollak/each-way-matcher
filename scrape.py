@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import os
+import sys
 import sched
 from time import sleep, time
 
@@ -35,13 +37,13 @@ from selenium.common.exceptions import NoSuchElementException
 
 
 def show_info(driver, count, expected_returns, START_TIME):
+    if datetime.now().hour >= 18:
+        sys.exit()
     diff = time() - START_TIME
     hours = int(diff // 60**2)
     mins = int(diff // 60 - hours * 60)
     secs = round(diff - mins * 60)
-    print(
-        f'Time alive: {hours}:{mins}:{secs} - Expected returns: £{round(expected_returns, 2)}'
-    )
+    print(f"Time alive: {hours}:{mins}:{secs} - Expected returns: £{round(expected_returns, 2)}")
     print(f'Refreshes: {count}')
 
 
@@ -58,6 +60,7 @@ def output_race(race):
 
 def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
+    print('Got page')
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located(
             (By.ID,
@@ -90,6 +93,7 @@ def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.find_element_by_id('passwordCompact').send_keys(S_INDEX_PASS)
     driver.find_element_by_id('submitLogin').click()
     sleep(0.5)
+    print('Logged in')
 
 
 def change_to_decimal(driver):
