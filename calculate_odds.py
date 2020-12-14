@@ -23,4 +23,4 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
     return ew_stake, C * ew_stake * 2
 
 
-kelly_criterion(12, 12, 3.2, 5, 10000)
+# kelly_criterion(12, 12, 3.2, 5, 10000)
