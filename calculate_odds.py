@@ -1,13 +1,14 @@
 import math
 
 
-def kelly_criterion(horse_odds, rating, place, balance):
-    n = 0.5 * (horse_odds - 1) / place - 0.5
-    m = horse_odds * 0.5 + n
+def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
+    n = 0.5 * (horse_odds - 1) / place
+    m = horse_odds * 0.5 - 0.5 + n
+    n -= 0.5 # - the stake lost from losing win place
     print(m, n)
 
-    p = 1 / horse_odds
-    q = 1 / (((horse_odds / (rating / 100)) - 1) / place)
+    p = 1 / lay_odds
+    q = 1 / (lay_odds_place) - p
     print(p, q)
 
     A = m * n
@@ -19,7 +20,7 @@ def kelly_criterion(horse_odds, rating, place, balance):
     print(stake_proportion)
     ew_stake = stake_proportion * balance
     print(ew_stake)
-    return ew_stake
+    return ew_stake, C * ew_stake * 2
 
 
-kelly_criterion(11, 100, 5, 50)
+kelly_criterion(12, 12, 3.2, 5, 10000)

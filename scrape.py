@@ -5,6 +5,7 @@ import sched
 from time import sleep, time
 
 from sim import find_stake
+from calculate_odds import kelly_criterion
 from dotenv import load_dotenv
 from csv import DictWriter
 from datetime import datetime
@@ -43,7 +44,9 @@ def show_info(driver, count, expected_returns, START_TIME):
     hours = int(diff // 60**2)
     mins = int(diff // 60 - hours * 60)
     secs = round(diff - mins * 60)
-    print(f"Time alive: {hours}:{mins}:{secs} - Expected returns: £{round(expected_returns, 2)}")
+    print(
+        f"Time alive: {hours}:{mins}:{secs} - Expected returns: £{round(expected_returns, 2)}"
+    )
     print(f'Refreshes: {count}')
 
 
@@ -122,19 +125,6 @@ def get_balance_sporting_index(driver):
     return float(balance)
 
 
-def get_place(driver):
-    place = WebDriverWait(driver, 40).until(
-        EC.visibility_of_element_located((
-            By.XPATH,
-            '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[1]'
-        ))).text
-    if '5' in place:
-        place = 5
-    else:
-        place = 4
-    return place
-
-
 def update_csv(race, RETURNS_CSV):
     csv_columns = [
         'date_of_race',
@@ -180,6 +170,21 @@ def find_races(driver):
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[17]').text
 
     driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
+
+    lay_odds = WebDriverWait(driver, 60).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, f'//*[@id="txtLayOdds_win"]'))).text
+
+    lay_odds_place = driver.find_element_by_xpath(
+        '//*[@id="txtLayOdds_place"]').text
+
+    place = driver.find_element_by_xpath('//*[@id="txtPlacePayout"]').text
+
+    driver.find_element_by_xpath(
+        '//*[@id="RadWindowWrapper_dnn_ctr1157_View_RadWindow2"]/table/tbody/tr[1]/td[2]/table/tbody/tr/td[3]/ul/li/a'
+    ).click()
+    driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
     ).click()
 
@@ -191,35 +196,35 @@ def find_races(driver):
         'race_venue': race_venue,
         'win_exchange': win_exchange,
         'rating': float(rating),
-        'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
+        'lay_odds': float(lay_odds),
+        'lay_odds_place': float(lay_odds_place),
+        'place': float(place)
     }
 
 
 def make_sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
-    if race['ew_stake']:
-        driver.find_element_by_class_name('ng-pristine').send_keys(
-            str(race['ew_stake']))
-        driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        try:
-            driver.find_element_by_class_name('placeBetBtn').click()
-        except NoSuchElementException:
-            print('Odds have changed')
-            driver.find_element_by_xpath(
-                "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-            ).click()
-
-        el = WebDriverWait(driver, 30).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//button[contains(text(), 'Continue')]")))
-        el.click()
-        print('Bet made\n')
-        expected_returns += race['ew_stake'] * (race['rating'] / 100 - 1)
-        driver.refresh()
-        update_csv(race, RETURNS_CSV)
-    else:
-        print('Stake must be too small to make reliable profit')
+    driver.find_element_by_class_name('ng-pristine').send_keys(
+        str(race['ew_stake']))
+    driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
+    try:
+        driver.find_element_by_class_name('placeBetBtn').click()
+    except NoSuchElementException:
+        print('Odds have changed')
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+
+    el = WebDriverWait(driver, 30).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//button[contains(text(), 'Continue')]")))
+    el.click()
+    print('Bet made\n')
+    expected_returns += race['ew_stake'] * (race['rating'] / 100 - 1)
+    driver.refresh()
+    update_csv(race, RETURNS_CSV)
+    print('Stake must be too small to make reliable profit')
+    driver.find_element_by_xpath(
+        "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
     return expected_returns
 
 
@@ -244,26 +249,23 @@ def sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
         EC.presence_of_element_located((By.TAG_NAME, 'wgt-live-price-raw')))
     if cur_odd_price != '':
         race['balance'] = get_balance_sporting_index(driver)
-        if False:
-            pass
-        # place = get_place(driver)
-        # if place == 5 and race['horse_odds'] < 8:
-        #     print('Odds are to small for place')
+        race['ew_stake'], race['expected_returns'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
+        if race['ew_stake'] < 0.1:
+            print(f"Odds are too small to bet - {race['ew_stake']}")
+            return race, 0
+        output_race(race)
+        if float(cur_odd_price.text) == float(race['horse_odds']):
+            expected_returns = make_sporting_index_bet(driver,
+                                                       race,
+                                                       expected_returns,
+                                                       RETURNS_CSV)
         else:
-            race['ew_stake'], race['returns_probability'] = find_stake(race['horse_odds'],
-                                          race['rating'],
-                                          race['balance'])
-            output_race(race)
-            if float(cur_odd_price.text) == float(race['horse_odds']):
-                expected_returns = make_sporting_index_bet(
-                    driver, race, expected_returns, RETURNS_CSV)
-            else:
-                print(
-                    f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
-                )
-                driver.find_element_by_xpath(
-                    "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-                ).click()
+            print(
+                f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
+            )
+            driver.find_element_by_xpath(
+                "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+            ).click()
     else:
         print('cur_odd_price is an empty string')
     driver.get(
