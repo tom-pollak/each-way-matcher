@@ -38,14 +38,14 @@ while True:
              ODD_M_PASS,
              S_INDEX_USER,
              S_INDEX_PASS)
-    # except KeyboardInterrupt:
-    #     print('Exiting')
-        # sys.exit()
+    except KeyboardInterrupt:
+        print('Exiting')
+        sys.exit()
     except (NoSuchElementException, TimeoutException) as e:
         print('Element not found:', e)
         driver.quit()
-    # except Exception as e:
-    #     print('Unknown error ocurred:')
-    #     print(e)
+    except Exception as e:
+        print('Unknown error ocurred:')
+        print(e)
     finally:
         driver.quit()
