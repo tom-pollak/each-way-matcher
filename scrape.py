@@ -64,6 +64,7 @@ def output_race(race):
 def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
     print('Got page')
+    print(driver.page_source)
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located(
             (By.ID,
