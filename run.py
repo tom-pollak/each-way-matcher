@@ -20,12 +20,12 @@ while True:
         )
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-setuid-sandbox")
-        chrome_options.add_argument("--remote-debugging-port=9222")  # this
+        chrome_options.add_argument("--remote-debugging-port=9222") # this
         chrome_options.add_argument("--disable-dev-shm-using")
-        chrome_options.add_argument("--disable-extensions") 
-        chrome_options.add_argument("--disable-gpu") 
-        chrome_options.add_argument("start-maximized") 
-        # chrome_options.add_argument("disable-infobars") 
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("start-maximized")
+        # chrome_options.add_argument("disable-infobars")
         # chrome_options.add_argument("--headless")
         prefs = {"profile.default_content_setting_values.notifications": 2}
         chrome_options.add_experimental_option("prefs", prefs)
@@ -41,11 +41,11 @@ while True:
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()
-    except (NoSuchElementException, TimeoutException) as e:
-        print('Element not found:', e)
-        driver.quit()
+    # except (NoSuchElementException, TimeoutException) as e:
+    #     print('Element not found:', e)
+    #     driver.quit()
     #except Exception as e:
-     #   print('Unknown error ocurred:')
-      #  print(e)
+    #   print('Unknown error ocurred:')
+    #  print(e)
     finally:
         driver.quit()

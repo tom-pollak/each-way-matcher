@@ -64,7 +64,7 @@ def output_race(race):
 def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
     print('Got page')
-    print(driver.page_source)
+    # print(driver.page_source)
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located(
             (By.ID,
@@ -173,18 +173,25 @@ def find_races(driver):
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
 
+    # sleep(5)
+    # lay_odds = driver.find_element_by_xpath(
+    #     '/html/body/form/div[5]/div[3]/div/div/div[2]/div/div[2]/div/div[2]/div/input'
+    # ).get_attribute('value')
+    # lay_odds = driver.find_element_by_xpath(
+    #     '//*[@id="txtLayOdds_win"]').get_attribute('value')
+    driver.switch_to.frame('RadWindow2')
     lay_odds = WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, f'//*[@id="txtLayOdds_win"]'))).text
+        EC.presence_of_element_located(
+            (By.ID, 'txtLayOdds_win'))).get_attribute('value')
 
     lay_odds_place = driver.find_element_by_xpath(
-        '//*[@id="txtLayOdds_place"]').text
+        '//*[@id="txtLayOdds_place"]').get_attribute('value')
 
-    place = driver.find_element_by_xpath('//*[@id="txtPlacePayout"]').text
+    place = driver.find_element_by_xpath(
+        '//*[@id="txtPlacePayout"]').get_attribute('value')
 
-    driver.find_element_by_xpath(
-        '//*[@id="RadWindowWrapper_dnn_ctr1157_View_RadWindow2"]/table/tbody/tr[1]/td[2]/table/tbody/tr/td[3]/ul/li/a'
-    ).click()
+    driver.switch_to.default_content()
+    driver.find_element_by_class_name('rwCloseButton').click()
     driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
     ).click()
