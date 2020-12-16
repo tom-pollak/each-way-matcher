@@ -110,13 +110,28 @@ def lay_bets(market_id, selection_id, price, stake):
         return False
 
 
-def lay_each_way(race_time,
+def calculate_proportinate_stake(bookie_balance,
+                                 betfair_balance,
+                                 bookie_stake,
+                                 win_stake,
+                                 win_liability,
+                                 place_stake,
+                                 place_liability):
+    pass
+
+
+def lay_each_way(bookie_balance,
+                 race_time,
                  venue,
                  horse,
                  win_stake,
                  win_odds,
+                 bookie_stake,
+                 bookie_odds,
                  place_stake,
-                 place_odds):
+                 place_odds,
+                 win_liability,
+                 place_liability):
     if not isinstance(datetime.datetime.now(), race_time):
         raise Exception('race_time is not a datetime instance')
     if float(win_stake) < 2 or float(place_stake) < 2:

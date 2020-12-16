@@ -63,7 +63,7 @@ def get_sporting_index_page(driver, race):
         ))).click()
 
 
-def sporting_index_bet(driver, race, RETURNS_CSV):
+def sporting_index_bet(driver, race, RETURNS_CSV, recursive=False):
     get_sporting_index_page(driver, race)
     WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'horseName')))
@@ -71,9 +71,17 @@ def sporting_index_bet(driver, race, RETURNS_CSV):
     driver.find_element_by_xpath(horse_name_xpath).click()
 
     # change_to_decimal(driver)
-    cur_odd_price = WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located(
-            (By.TAG_NAME, 'wgt-live-price-raw'))).text
+    try:
+        cur_odd_price = WebDriverWait(driver, 60).until(
+            EC.presence_of_element_located(
+                (By.TAG_NAME, 'wgt-live-price-raw'))).text
+    except NoSuchElementException:
+        if not recursive:
+            print('live price not found')
+            return sporting_index_bet(driver, race, RETURNS_CSV, True)
+        else:
+            return race, False
+
     if cur_odd_price != '':
         cur_odd_price_frac = cur_odd_price.split('/')
         cur_odd_price = int(cur_odd_price_frac[0]) / int(

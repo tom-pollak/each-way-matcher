@@ -95,6 +95,17 @@ def find_races(driver):
     place = driver.find_element_by_xpath(
         '//*[@id="txtPlacePayout"]').get_attribute('value')
 
+    bookie_stake = driver.find_element_by_xpath(
+        '//*[@id="lblStep1"]/strong[1]').text.replace('£', '')
+    win_stake = driver.find_element_by_xpath(
+        '//*[@id="lblStep2"]/strong[1]').text.replace('£', '')
+    lay_stake = driver.find_element_by_xpath(
+        '//*[@id="lblStep3"]/b').text.replace('£', '')
+    win_liability = driver.find_element_by_xpath(
+        '//*[@id="lblStep2"]/text()[3]').text.split('£')[1]
+    place_liability = driver.find_element_by_xpath(
+        '//*[@id="lblStep3"]/text()[3]').text.split('£')[1]
+
     driver.switch_to.default_content()
     driver.find_element_by_class_name('rwCloseButton').click()
     driver.find_element_by_xpath(
@@ -173,13 +184,18 @@ def start_betfair(driver, race, bet):
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races(driver))
         bet = True
-        bet_made = lay_each_way(race['race_time'],
+        bet_made = lay_each_way(race['balance'],
+                                race['race_time'],
                                 race['race_venue'],
                                 race['horse_name'],
                                 race['win_stake'],
                                 race['win_odds'],
+                                race['bookie_stake'],
+                                race['horse_odds'],
                                 race['place_stake'],
-                                race['place_odds'])
+                                race['place_odds'],
+                                race['win_liability'],
+                                race['place_liability'])
         if bet_made:
             output_race(race)
     return bet
