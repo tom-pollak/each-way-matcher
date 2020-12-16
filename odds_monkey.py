@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, output_race
-from betfair_api import lay_each_way
+from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew
 
 
 def show_info(driver, count, START_TIME):
@@ -173,18 +173,31 @@ def start_betfair(driver, race, bet):
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races(driver))
         bet = True
-        bet_made = lay_each_way(race['balance'],
-                                race['race_time'],
-                                race['race_venue'],
-                                race['horse_name'],
-                                race['win_stake'],
-                                race['win_odds'],
-                                race['bookie_stake'],
-                                race['horse_odds'],
-                                race['place_stake'],
-                                race['place_odds'])
+        betfair_balance = get_betfair_balance()
+        stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(race['balance'],
+                                                                           betfair_balance,
+                                                                           race['bookie_stake'],
+                                                                           race['horse_odds'],
+                                                                           race['win_stake'],
+                                                                           race['win_odds'],
+                                                                           race['place_stake'],
+                                                                           race['place_odds'])
+        if not stakes_ok:
+            return bet
+        race['bookie_stake'] = bookie_stake
+        race, bet_made = sporting_index_bet(driver, race)
         if bet_made:
-            output_race(race)
+            bet_made = lay_ew(race['race_time'],
+                              race['race_venue'],
+                              race['horse_name'],
+                              race['win_odds'],
+                              win_stake,
+                              race['place_odds'],
+                              place_stake)
+        if bet_made:
+            betfair_balance = get_betfair_balance()
+            output_lay_ew(race, betfair_balance)
+        del race['bookie_stake']
     return bet
 
 
@@ -202,5 +215,8 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
         bet = start_sporting_index(driver, race, RETURNS_CSV)
         if not bet:
             sleep(REFRESH_TIME)
+        # bet = start_betfair(driver, race, bet)
+        # if not bet:
+        #     sleep(REFRESH_TIME)
         count += 1
         sys.stdout.flush()

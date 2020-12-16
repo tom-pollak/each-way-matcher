@@ -103,7 +103,7 @@ def sporting_index_bet(driver, race, retry=False):
     #     if not retry:
     #         output_race(race, bet_made=False)
     #         print('Live price not found')
-    #         return sporting_index_bet(driver, race, True)
+    #         return sporting_index_bet(driver, race, retry=True)
     #     else:
     #         return race, False
 
@@ -118,6 +118,8 @@ def sporting_index_bet(driver, race, retry=False):
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
     race['balance'] = get_balance_sporting_index(driver)
     race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
+    if 'bookie_stake' in race.keys():
+        race['ew_stake'] = race['bookie_stake']
     if race['ew_stake'] < 0.1:
         return race, False
 

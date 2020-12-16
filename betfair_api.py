@@ -3,10 +3,11 @@ import json
 import datetime
 import sys
 import os
-from dotenv import load_dotenv
 
 url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
+PERCENTAGE_BALANCE = 0.4
 
+from dotenv import load_dotenv
 load_dotenv(dotenv_path='.env')
 APP_KEY = os.environ.get('APP_KEY')
 SESS_TOK = os.environ.get('SESS_TOK')
@@ -17,7 +18,18 @@ headers = {
 }
 
 
-def call_api(jsonrpc_req):
+def output_lay_ew(race, betfair_balance):
+    print(f"Bet made: {race['horse_name']}")
+    print(f"\t{race['date_of_race']} - {race['race_venue']}")
+    print(
+        f"\tBack bookie: {race['bookie_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {race['lay_stake']} Lay place: {race['lay_odds_place']} - {race['place_stake']}"
+    )
+    print(
+        f"\tCurrent balance: {race['balance']}, stake: {race['betfair_balance']}"
+    )
+
+
+def call_api(jsonrpc_req, url=url):
     try:
         req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
         response = request.urlopen(req)
@@ -111,18 +123,22 @@ def lay_bets(market_id, selection_id, price, stake):
 
 
 def get_betfair_balance():
-    balance = 0
+    url = 'https://api.betfair.com/exchange/account/json-rpc/v1'
+    balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
+    balance_res = json.loads(call_api(balance_req, url=url))
+    balance = balance_res['result']['availableToBetBalance']
     return balance
 
 
-def calculate_proportinate_stake(bookie_balance,
-                                 betfair_balance,
-                                 bookie_stake,
-                                 bookie_odds,
-                                 win_stake,
-                                 win_odds,
-                                 place_stake,
-                                 place_odds):
+def calculate_stakes(bookie_balance,
+                     betfair_balance,
+                     bookie_stake,
+                     bookie_odds,
+                     win_stake,
+                     win_odds,
+                     place_stake,
+                     place_odds):
+    betfair_balance = get_betfair_balance()
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
     total_liability = max_win_liability + max_place_liability
@@ -131,44 +147,47 @@ def calculate_proportinate_stake(bookie_balance,
     win_ratio = win_stake / bookie_stake
     place_ratio = place_stake / bookie_stake
 
-    if total_liability > betfair_balance:
+    if total_liability > betfair_balance or bookie_stake > bookie_balance:
         liabiltity_ratio = total_liability / betfair_balance
+        balance_ratio = bookie_stake / bookie_balance
+        if balance_ratio < liabiltity_ratio:
+            liabiltity_ratio = balance_ratio
     else:
         liabiltity_ratio = 1
 
+    # maximum possible stakes
     bookie_stake *= liabiltity_ratio
     win_stake *= liabiltity_ratio
     place_stake *= liabiltity_ratio
 
     if win_stake >= 2 and place_stake >= 2 and bookie_stake >= 0.1:
-        pass
-    return bookie_stake, win_stake, place_stake
+        min_stake_proportion = max(2 / min(win_stake, place_stake),
+                                   0.1 / bookie_stake)
+        if min_stake_proportion < PERCENTAGE_BALANCE:
+            min_stake_proportion = PERCENTAGE_BALANCE
+
+            bookie_stake *= min_stake_proportion
+            win_stake *= min_stake_proportion
+            place_stake *= min_stake_proportion
+        return True, bookie_stake, win_stake, place_stake
+
+    else:
+        print('Stakes are too small to bet')
+        print(
+            f'Bookie stake: {bookie_stake} Win stake: {win_stake} Place stake: {place_stake}'
+        )
+        return False, 0, 0, 0
 
 
-def lay_each_way(bookie_balance,
-                 race_time,
-                 venue,
-                 horse,
-                 win_stake,
-                 win_odds,
-                 bookie_stake,
-                 bookie_odds,
-                 place_stake,
-                 place_odds):
+def lay_ew(race_time,
+           venue,
+           horse,
+           win_odds,
+           win_stake,
+           place_odds,
+           place_stake):
     if not isinstance(datetime.datetime.now(), race_time):
         raise Exception('race_time is not a datetime instance')
-
-    betfair_balance = get_betfair_balance()
-    bookie_stake, win_stake, place_stake= calculate_proportinate_stake(
-                                 bookie_balance, betfair_balance,
-                                 bookie_stake, bookie_odds,
-                                 win_stake, win_odds,
-                                 place_stake, place_odds)
-
-    if float(win_stake) < 2 or float(place_stake) < 2:
-        print('Stakes are to small to bet')
-        return False
-
     event_id = get_event(venue, race_time)
     markets_ids, selection_id = get_horses(horse, event_id, race_time)
     lay_win = lay_bets(markets_ids['Win'], selection_id, win_odds, win_stake)
@@ -188,3 +207,5 @@ def lay_each_way(bookie_balance,
 # event_id = get_event(venue, race_time)
 # markets_ids, selection_id = get_horses(horse, event_id, race_time)
 # print(markets_ids, selection_id)
+# balance = get_betfair_balance()
+# print(balance)
