@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import datetime
 import time
 
@@ -7,34 +8,23 @@ RETURNS_CSV = 'returns/returns.csv'
 
 
 def plot_bal_time_series_graph(df):
-    y = df['balance']
-
     fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
-    plt.plot(y)
+
+    balance = df['balance']
+    plt.plot(balance)
+
+    expected_return = df['expected_return']
+    starting_balance = [df['balance'][0]]
+    expected_return[0] += starting_balance
+    expected_return.cumsum().plot()
 
     plt.gcf().autofmt_xdate()
     plt.savefig('graphs/balance.png')
 
 
-def plot_expected_profit(df):
-    print(df)
-    balance = df['balance'].iloc[0]
-    print(balance)
-    bal_list = []
-
-    for i in range(len(df)):
-        balance += df['rating'].iloc[i] / 100 * df['ew_stake'].iloc[i]
-        bal_list.append([balance, df['current_time'].iloc[i]])
-    print(bal_list)
-    df = pd.DataFrame(bal_list, columns=['balance', 'current_time'])
-
-    plt.plot(bal_list)
-    plt.gcf().autofmt_xdate()
-    plt.savefig('graphs/expected-returns.png')
-
-
 custom_date_parser = lambda x: datetime.datetime(*(time.strptime(
     x, '%d/%m/%Y %H:%M:%S')[0:6]))
+
 df = pd.read_csv(RETURNS_CSV,
                  header=0,
                  parse_dates=[7],
