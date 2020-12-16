@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, output_race
-from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew
+from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew, login_betfair
 
 
 def show_info(driver, count, START_TIME):
@@ -203,6 +203,7 @@ def start_betfair(driver, race, bet):
 
 def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     race = setup_sporting_index(driver)
+    # uncomment these for betfair api
     # open_betfair_oddsmonkey(driver)
     count = 0
     driver.switch_to.window(driver.window_handles[0])

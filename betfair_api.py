@@ -1,4 +1,5 @@
 from urllib import request, error
+import requests
 import json
 import datetime
 import sys
@@ -11,11 +12,32 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path='.env')
 APP_KEY = os.environ.get('APP_KEY')
 SESS_TOK = os.environ.get('SESS_TOK')
-headers = {
-    'X-Application': APP_KEY,
-    'X-Authentication': SESS_TOK,
-    'content-type': 'application/json'
-}
+USERNAME = os.environ.get('BETFAIR_USR')
+PASSWORD = os.environ.get('BETFAIR_PASS')
+headers = login_betfair()
+
+
+def login_betfair():
+    url = 'https://identitysso-cert.betfair.com/api/certlogin'
+    payload = f'username={USERNAME}&password={PASSWORD}'
+    headers = {
+        'X-Application': APP_KEY,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    response = requests.post(
+        'https://identitysso-cert.betfair.com/api/certlogin',
+        data=payload,
+        cert=('client-2048.crt', 'client-2048.key'),
+        headers=headers)
+    if response.status_code == 200:
+        SESS_TOK = response.json()['sessionToken']
+        return {
+            'X-Application': APP_KEY,
+            'X-Authentication': SESS_TOK,
+            'content-type': 'application/json'
+        }
+    else:
+        raise Exception("Can't login")
 
 
 def output_lay_ew(race, betfair_balance):
@@ -29,7 +51,7 @@ def output_lay_ew(race, betfair_balance):
     )
 
 
-def call_api(jsonrpc_req, url=url):
+def call_api(jsonrpc_req, headers, url=url):
     try:
         req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
         response = request.urlopen(req)
