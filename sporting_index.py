@@ -87,7 +87,6 @@ def sporting_index_bet(driver, race, RETURNS_CSV):
         if race['ew_stake'] < 0.1:
             print(f"Stake too small to bet - {race['ew_stake']}")
             return race, False
-        print(cur_odd_price, race['horse_odds'])
         if float(cur_odd_price) == float(race['horse_odds']):
             bet_made = make_sporting_index_bet(driver, race, RETURNS_CSV)
         else:
