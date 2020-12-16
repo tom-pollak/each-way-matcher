@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 
 from calculate_odds import kelly_criterion
-from odds_monkey import output_race
 
 
 def change_to_decimal(driver):
@@ -15,6 +14,18 @@ def change_to_decimal(driver):
     WebDriverWait(driver,
                   30).until(EC.element_to_be_clickable(
                       (By.ID, 'decimalBtn'))).click
+
+
+def output_race(race, bet_made=True):
+    print(f"Bet found: {race['horse_name']} - {race['horse_odds']}")
+    print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
+    print(
+        f"\tExpected value: {race['expected_value']}, Expected return: {race['expected_return']}"
+    )
+    print(f"\t{race['date_of_race']} - {race['race_venue']}")
+    print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
+    if bet_made:
+        print('Bet made')
 
 
 def get_balance_sporting_index(driver):

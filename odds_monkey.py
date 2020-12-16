@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index
+from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, output_race
 from betfair_api import lay_each_way
 
 
@@ -23,18 +23,6 @@ def show_info(driver, count, START_TIME):
     if datetime.now().hour >= 18:
         print('Finished matching today')
         sys.exit()
-
-
-def output_race(race, bet_made=True):
-    print(f"Bet found: {race['horse_name']} - {race['horse_odds']}")
-    print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
-    print(
-        f"\tExpected value: {race['expected_value']}, Expected return: {race['expected_return']}"
-    )
-    print(f"\t{race['date_of_race']} - {race['race_venue']}")
-    print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
-    if bet_made:
-        print('Bet made')
 
 
 def update_csv(race, RETURNS_CSV):
