@@ -101,8 +101,6 @@ def sporting_index_bet(driver, race, RETURNS_CSV):
     else:
         print('cur_odd_price is an empty string')
         bet_made = False
-    driver.get(
-        'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     return race, bet_made
 
 
