@@ -102,9 +102,9 @@ def find_races(driver):
     lay_stake = driver.find_element_by_xpath(
         '//*[@id="lblStep3"]/b').text.replace('£', '')
     win_liability = driver.find_element_by_xpath(
-        '//*[@id="lblStep2"]/text()[3]').text.split('£')[1]
+        '//*[@id="lblStep2"]/text()[3]').split('£')[1]
     place_liability = driver.find_element_by_xpath(
-        '//*[@id="lblStep3"]/text()[3]').text.split('£')[1]
+        '//*[@id="lblStep3"]/text()[3]').split('£')[1]
 
     driver.switch_to.default_content()
     driver.find_element_by_class_name('rwCloseButton').click()
