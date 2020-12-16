@@ -37,6 +37,7 @@ def refresh_sporting_index(driver, count):
     driver.switch_to.window(driver.window_handles[1])
     sleep(0.1)
     driver.refresh()
+    change_to_decimal(driver)
 
 
 def make_sporting_index_bet(driver, race, RETURNS_CSV):
