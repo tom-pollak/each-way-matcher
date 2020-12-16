@@ -73,10 +73,13 @@ def sporting_index_bet(driver, race, RETURNS_CSV):
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
     driver.find_element_by_xpath(horse_name_xpath).click()
 
-    change_to_decimal(driver)
+    # change_to_decimal(driver)
     cur_odd_price = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.TAG_NAME, 'wgt-live-price-raw')))
     if cur_odd_price != '':
+        cur_odd_price_frac = cur_odd_price.split('/')
+        cur_odd_price = int(cur_odd_price_frac[0]) / int(
+            cur_odd_price_frac[1]) + 1
         race['balance'] = get_balance_sporting_index(driver)
         race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
         if race['ew_stake'] < 0.1:
