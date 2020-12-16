@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import datetime
+import time
+
+RETURNS_CSV = 'returns/returns.csv'
 
 
 def plot_bal_time_series_graph(df):
@@ -29,18 +33,13 @@ def plot_expected_profit(df):
     plt.savefig('graphs/expected-returns.png')
 
 
-import datetime
-import time
-
 custom_date_parser = lambda x: datetime.datetime(*(time.strptime(
     x, '%d/%m/%Y %H:%M:%S')[0:6]))
-df = pd.read_csv('returns.csv',
+df = pd.read_csv(RETURNS_CSV,
                  header=0,
                  parse_dates=[7],
                  index_col=7,
                  date_parser=custom_date_parser,
                  squeeze=True)
-print(df)
-# print(df)
+
 plot_bal_time_series_graph(df)
-# plot_expected_profit(df)
