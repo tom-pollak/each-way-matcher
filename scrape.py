@@ -147,9 +147,10 @@ def update_csv(race, RETURNS_CSV):
 
 def find_races(driver):
     date_of_race = driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td'
-    ).text.lower()
-    race_time = date_of_race[-5:]
+        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td').text
+    race_time = date_of_race[-5:].lower()
+    date_of_race += ' %s' % datetime.today().year
+    # date_of_race = datetime.strptime(date_of_race, '%d %b %H:%M %Y')
     race_venue = driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[8]'
     ).text.lower().strip()
