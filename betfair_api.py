@@ -110,14 +110,16 @@ def lay_bets(market_id, selection_id, price, stake):
         return False
 
 
+def get_betfair_balance():
+    pass
+
+
 def calculate_proportinate_stake(bookie_balance,
                                  betfair_balance,
                                  bookie_stake,
                                  win_stake,
-                                 win_liability,
-                                 place_stake,
-                                 place_liability):
-    pass
+                                 place_stake):
+    return bookie_stake, win_stake, place_stake
 
 
 def lay_each_way(bookie_balance,
@@ -129,13 +131,18 @@ def lay_each_way(bookie_balance,
                  bookie_stake,
                  bookie_odds,
                  place_stake,
-                 place_odds,
-                 win_liability,
-                 place_liability):
+                 place_odds):
     if not isinstance(datetime.datetime.now(), race_time):
         raise Exception('race_time is not a datetime instance')
+    betfair_balance = get_betfair_balance()
+    bookie_stake, win_stake, place_stake= calculate_proportinate_stake(bookie_balance,
+                                 betfair_balance,
+                                 bookie_stake,
+                                 win_stake,
+                                 place_stake)
     if float(win_stake) < 2 or float(place_stake) < 2:
-        raise Exception('Stakes must be more than 2')
+        print('Stakes are to small to bet')
+        return False
 
     event_id = get_event(venue, race_time)
     markets_ids, selection_id = get_horses(horse, event_id, race_time)

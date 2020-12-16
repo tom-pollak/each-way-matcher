@@ -101,10 +101,6 @@ def find_races(driver):
         '//*[@id="lblStep2"]/strong[1]').text.replace('£', '')
     lay_stake = driver.find_element_by_xpath(
         '//*[@id="lblStep3"]/b').text.replace('£', '')
-    win_liability = driver.find_element_by_xpath(
-        '//*[@id="lblStep2"]/text()[3]').split('£')[1]
-    place_liability = driver.find_element_by_xpath(
-        '//*[@id="lblStep3"]/text()[3]').split('£')[1]
 
     driver.switch_to.default_content()
     driver.find_element_by_class_name('rwCloseButton').click()
@@ -123,7 +119,10 @@ def find_races(driver):
         'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
         'lay_odds': float(lay_odds),
         'lay_odds_place': float(lay_odds_place),
-        'place': float(place)
+        'place': float(place),
+        'bookie_stake': float(bookie_stake),
+        'win_stake': float(win_stake),
+        'lay_stake': float(lay_stake),
     }
 
 
@@ -193,9 +192,7 @@ def start_betfair(driver, race, bet):
                                 race['bookie_stake'],
                                 race['horse_odds'],
                                 race['place_stake'],
-                                race['place_odds'],
-                                race['win_liability'],
-                                race['place_liability'])
+                                race['place_odds'])
         if bet_made:
             output_race(race)
     return bet
@@ -217,14 +214,3 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
             sleep(REFRESH_TIME)
         count += 1
         sys.stdout.flush()
-    # 'date_of_race': date_of_race,
-    # 'race_time': race_time,
-    # 'horse_name': horse_name,
-    # 'horse_odds': float(horse_odds),
-    # 'race_venue': race_venue,
-    # 'win_exchange': win_exchange,
-    # 'rating': float(rating),
-    # 'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
-    # 'lay_odds': float(lay_odds),
-    # 'lay_odds_place': float(lay_odds_place),
-    # 'place': float(place)
