@@ -147,3 +147,4 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
                 output_race(race)
                 update_csv(race, RETURNS_CSV)
         count += 1
+    sys.stdout.flush()

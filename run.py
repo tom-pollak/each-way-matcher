@@ -57,6 +57,7 @@ def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.find_element_by_id('submitLogin').click()
     sleep(0.5)
     print('Logged in')
+    sys.stdout.flush()
 
 
 while True:
