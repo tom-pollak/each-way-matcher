@@ -47,12 +47,8 @@ def make_sporting_index_bet(driver, race, RETURNS_CSV):
 
     el = WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable(
-            (By.XPATH, "//button[contains(text(), 'Continue')]")))
-    el.click()
+            (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
     print('Bet made\n')
-    # driver.refresh()
-    driver.find_element_by_xpath(
-        "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
     return success
 
 
