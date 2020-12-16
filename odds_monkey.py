@@ -25,7 +25,7 @@ def show_info(driver, count, START_TIME):
         sys.exit()
 
 
-def output_race(race):
+def output_race(race, bet_made=True):
     print(f"Bet found: {race['horse_name']} - {race['horse_odds']}")
     print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
     print(
@@ -33,6 +33,8 @@ def output_race(race):
     )
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
+    if bet_made:
+        print('Bet made')
 
 
 def update_csv(race, RETURNS_CSV):
@@ -170,7 +172,7 @@ def start_sporting_index(driver, race, RETURNS_CSV):
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races(driver))
         bet = True
-        race, bet_made = sporting_index_bet(driver, race, RETURNS_CSV)
+        race, bet_made = sporting_index_bet(driver, race)
         if bet_made:
             output_race(race)
             update_csv(race, RETURNS_CSV)

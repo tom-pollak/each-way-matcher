@@ -2,9 +2,10 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 
 from calculate_odds import kelly_criterion
+from odds_monkey import output_race
 
 
 def change_to_decimal(driver):
@@ -32,8 +33,8 @@ def refresh_sporting_index(driver, count):
     driver.refresh()
 
 
-def make_sporting_index_bet(driver, race, RETURNS_CSV):
-    success = True
+def make_sporting_index_bet(driver, race):
+    # success = True
     driver.find_element_by_class_name('ng-pristine').send_keys(
         str(race['ew_stake']))
     driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
@@ -43,13 +44,14 @@ def make_sporting_index_bet(driver, race, RETURNS_CSV):
         print('Odds have changed')
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
-        success = False
+        return False
+        # success = False
 
     el = WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
-    print('Bet made\n')
-    return success
+    return True
+    # return success
 
 
 def get_sporting_index_page(driver, race):
@@ -63,12 +65,16 @@ def get_sporting_index_page(driver, race):
         ))).click()
 
 
-def sporting_index_bet(driver, race, RETURNS_CSV, recursive=False):
+def sporting_index_bet(driver, race, recursive=False):
     get_sporting_index_page(driver, race)
-    WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'horseName')))
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
-    driver.find_element_by_xpath(horse_name_xpath).click()
+    try:
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located(
+                (By.XPATH, horse_name_xpath))).click()
+    except NoSuchElementException:
+        print('Horse not found')
+        return sporting_index_bet(driver, race, recursive=True)
 
     # change_to_decimal(driver)
     try:
@@ -79,8 +85,9 @@ def sporting_index_bet(driver, race, RETURNS_CSV, recursive=False):
             ))).text
     except (TimeoutException, StaleElementReferenceException):
         if not recursive:
-            print('live price not found')
-            return sporting_index_bet(driver, race, RETURNS_CSV, True)
+            output_race(race, bet_made=False)
+            print('Live price not found')
+            return sporting_index_bet(driver, race, True)
         else:
             return race, False
 
@@ -91,11 +98,11 @@ def sporting_index_bet(driver, race, RETURNS_CSV, recursive=False):
         race['balance'] = get_balance_sporting_index(driver)
         race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
         if race['ew_stake'] < 0.1:
-            print(f"Stake too small to bet - {race['ew_stake']}")
             return race, False
         if float(cur_odd_price) == float(race['horse_odds']):
-            bet_made = make_sporting_index_bet(driver, race, RETURNS_CSV)
+            bet_made = make_sporting_index_bet(driver, race)
         else:
+            output_race(race, bet_made=False)
             print(
                 f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
             )
@@ -104,6 +111,7 @@ def sporting_index_bet(driver, race, RETURNS_CSV, recursive=False):
             ).click()
             bet_made = False
     else:
+        output_race(race, bet_made=False)
         print('cur_odd_price is an empty string')
         bet_made = False
     return race, bet_made
