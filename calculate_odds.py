@@ -16,7 +16,14 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
     C = p * m + q * n - (1 - p - q) # Expected profit on 0.5 unit EW bet
     # print(A, B, C)
 
-    stake_proportion = (B + math.sqrt(B**2 + 4 * A * C)) / (4 * A)
+    try:
+        stake_proportion = (B + math.sqrt(B**2 + 4 * A * C)) / (4 * A)
+    except ZeroDivisionError:
+        print('ERROR Divided by 0')
+        print(m, n)
+        print(p, q)
+        print(A, B, C)
+        return 0, 0, '0%'
     # print(stake_proportion)
     ew_stake = stake_proportion * balance
     # print(ew_stake)
