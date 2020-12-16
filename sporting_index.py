@@ -2,7 +2,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 
 from calculate_odds import kelly_criterion
 
@@ -71,16 +71,16 @@ def sporting_index_bet(driver, race, RETURNS_CSV, recursive=False):
     driver.find_element_by_xpath(horse_name_xpath).click()
 
     # change_to_decimal(driver)
-    # try:
-    cur_odd_price = WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located(
-            (By.TAG_NAME, 'wgt-live-price-raw'))).text
-    # except NoSuchElementException:
-    #     if not recursive:
-    #         print('live price not found')
-    #         return sporting_index_bet(driver, race, RETURNS_CSV, True)
-    #     else:
-    #         return race, False
+    try:
+        cur_odd_price = WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(
+                (By.TAG_NAME, 'wgt-live-price-raw'))).text
+    except TimeoutException:
+        if not recursive:
+            print('live price not found')
+            return sporting_index_bet(driver, race, RETURNS_CSV, True)
+        else:
+            return race, False
 
     if cur_odd_price != '':
         cur_odd_price_frac = cur_odd_price.split('/')
