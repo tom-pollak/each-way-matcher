@@ -9,10 +9,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index
+from betfair_api import lay_each_way
 
 
 def show_info(driver, count, START_TIME):
+    print(f'Time is: {datetime.now().strftime("%H:%M:%S")}')
     if datetime.now().hour >= 18:
+        print('Finished matching today')
         sys.exit()
     diff = time() - START_TIME
     hours = int(diff // 60**2)
@@ -123,10 +126,67 @@ def refresh_odds_monkey(driver):
             'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
 
 
+def open_betfair_oddsmonkey(driver):
+    driver.execute_script(
+        '''window.open("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx","_blank");'''
+    )
+    WebDriverWait(driver, 30).until(
+        EC.element_to_be_clickable(
+            (By.XPATH,
+             '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[6]/a'
+             ))).click()
+    WebDriverWait(driver, 30).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, '//*[@id="headingFour"]/h4/a'))).click()
+    sleep(0.5)
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_rlbExchanges"]/div/div/label/input').click(
+        )
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_rlbExchanges_i0"]/label/input').click()
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_btnApplyFilter"]').click()
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_ModuleContent"]/div[10]/div[1]/a').click()
+    sleep(0.5)
+
+
+def start_sporting_index(driver, race, RETURNS_CSV):
+    bet = False
+    driver.switch_to.window(driver.window_handles[0])
+    refresh_odds_monkey(driver)
+    if not driver.find_elements_by_class_name('rgNoRecords'):
+        race.update(find_races(driver))
+        bet = True
+        race, bet_made = sporting_index_bet(driver, race, RETURNS_CSV)
+        if bet_made:
+            output_race(race)
+            update_csv(race, RETURNS_CSV)
+    return bet
+
+
+def start_betfair(driver, race, bet):
+    driver.switch_to.window(driver.window_handles[2])
+    refresh_odds_monkey(driver)
+    if not driver.find_elements_by_class_name('rgNoRecords'):
+        race.update(find_races(driver))
+        bet = True
+        bet_made = lay_each_way(race['race_time'],
+                                race['race_venue'],
+                                race['horse_name'],
+                                race['win_stake'],
+                                race['win_odds'],
+                                race['place_stake'],
+                                race['place_odds'])
+        if bet_made:
+            output_race(race)
+    return bet
+
+
 def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     race = setup_sporting_index(driver)
+    # open_betfair_oddsmonkey(driver)
     count = 0
-    bet = True
     driver.switch_to.window(driver.window_handles[0])
     while True:
         # So sporting index dosent logout
@@ -134,17 +194,19 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
             refresh_sporting_index(driver, count)
             show_info(driver, count, START_TIME)
 
-        driver.switch_to.window(driver.window_handles[0])
+        bet = start_sporting_index(driver, race, RETURNS_CSV)
         if not bet:
             sleep(REFRESH_TIME)
-        bet = False
-        refresh_odds_monkey(driver)
-        if not driver.find_elements_by_class_name('rgNoRecords'):
-            race.update(find_races(driver))
-            bet = True
-            race, bet_made = sporting_index_bet(driver, race, RETURNS_CSV)
-            if bet_made:
-                output_race(race)
-                update_csv(race, RETURNS_CSV)
         count += 1
-    sys.stdout.flush()
+        sys.stdout.flush()
+    # 'date_of_race': date_of_race,
+    # 'race_time': race_time,
+    # 'horse_name': horse_name,
+    # 'horse_odds': float(horse_odds),
+    # 'race_venue': race_venue,
+    # 'win_exchange': win_exchange,
+    # 'rating': float(rating),
+    # 'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
+    # 'lay_odds': float(lay_odds),
+    # 'lay_odds_place': float(lay_odds_place),
+    # 'place': float(place)

@@ -1,6 +1,7 @@
 import os
 import sys
 from time import time
+from datetime import datetime
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -60,6 +61,7 @@ def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     sys.stdout.flush()
 
 
+print(f'Started at: {datetime.now().strftime("%H:%M:%S")}')
 while True:
     try:
         chrome_options = webdriver.ChromeOptions()
