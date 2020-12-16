@@ -76,55 +76,61 @@ def get_sporting_index_page(driver, race):
         ))).click()
 
 
-def sporting_index_bet(driver, race, recursive=False):
+def sporting_index_bet(driver, race, retry=False):
     get_sporting_index_page(driver, race)
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
     try:
-        WebDriverWait(driver, 30).until(
+        horse_button = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located(
                 (By.XPATH, horse_name_xpath))).click()
-    except NoSuchElementException:
+    except (NoSuchElementException, TimeoutException):
         print('Horse not found')
-        return sporting_index_bet(driver, race, recursive=True)
+        if not retry:
+            return sporting_index_bet(driver, race, retry=True)
+        else:
+            output_race(race, bet_made=False)
+            return race, False
+    cur_odd_price = horse_button.text
 
     # change_to_decimal(driver)
-    try:
-        cur_odd_price = WebDriverWait(driver, 60).until(
-            EC.visibility_of_element_located((
-                By.XPATH, # wgt-live-price-raw
-                '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
-            ))).text
-    except (TimeoutException, StaleElementReferenceException):
-        if not recursive:
-            output_race(race, bet_made=False)
-            print('Live price not found')
-            return sporting_index_bet(driver, race, True)
-        else:
-            return race, False
+    # try:
+    #     cur_odd_price = WebDriverWait(driver, 60).until(
+    #         EC.visibility_of_element_located((
+    #             By.XPATH, # wgt-live-price-raw
+    #             '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
+    #         ))).text
+    # except (TimeoutException, StaleElementReferenceException):
+    #     if not retry:
+    #         output_race(race, bet_made=False)
+    #         print('Live price not found')
+    #         return sporting_index_bet(driver, race, True)
+    #     else:
+    #         return race, False
 
-    if cur_odd_price != '':
-        cur_odd_price_frac = cur_odd_price.split('/')
-        cur_odd_price = int(cur_odd_price_frac[0]) / int(
-            cur_odd_price_frac[1]) + 1
-        race['balance'] = get_balance_sporting_index(driver)
-        race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
-        if race['ew_stake'] < 0.1:
-            return race, False
-        if float(cur_odd_price) == float(race['horse_odds']):
-            bet_made = make_sporting_index_bet(driver, race)
+    if cur_odd_price == '':
+        if not retry:
+            return sporting_index_bet(driver, race, retry=True)
         else:
             output_race(race, bet_made=False)
-            print(
-                f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
-            )
-            driver.find_element_by_xpath(
-                "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-            ).click()
-            bet_made = False
+            print('cur_odd_price is an empty string')
+
+    cur_odd_price_frac = cur_odd_price.split('/')
+    cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
+    race['balance'] = get_balance_sporting_index(driver)
+    race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
+    if race['ew_stake'] < 0.1:
+        return race, False
+
+    if float(cur_odd_price) == float(race['horse_odds']):
+        bet_made = make_sporting_index_bet(driver, race)
     else:
         output_race(race, bet_made=False)
-        print('cur_odd_price is an empty string')
-        bet_made = False
+        print(
+            f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
+        )
+        driver.find_element_by_xpath(
+            "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+        return race, False
     return race, bet_made
 
 
