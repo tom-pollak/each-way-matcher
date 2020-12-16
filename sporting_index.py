@@ -2,7 +2,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 
 from calculate_odds import kelly_criterion
 
@@ -73,9 +73,11 @@ def sporting_index_bet(driver, race, RETURNS_CSV, recursive=False):
     # change_to_decimal(driver)
     try:
         cur_odd_price = WebDriverWait(driver, 60).until(
-            EC.visibility_of_element_located(
-                (By.TAG_NAME, 'wgt-live-price-raw'))).text
-    except TimeoutException:
+            EC.visibility_of_element_located((
+                By.XPATH, # wgt-live-price-raw
+                '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
+            ))).text
+    except (TimeoutException, StaleElementReferenceException):
         if not recursive:
             print('live price not found')
             return sporting_index_bet(driver, race, RETURNS_CSV, True)
