@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from scrape import main
+from odds_monkey import scrape
 from time import sleep
 
 RETURNS_CSV = 'returns/returns.csv'
@@ -78,15 +78,15 @@ while True:
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(options=chrome_options)
         login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS)
-        main(driver, RETURNS_CSV, REFRESH_TIME, START_TIME)
+        scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME)
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()
     # except (NoSuchElementException, TimeoutException) as e:
     #     print('Element not found:', e)
     #     driver.quit()
-    #except Exception as e:
-    #   print('Unknown error ocurred:')
-    #  print(e)
+    # except Exception as e:
+    #     print('Unknown error ocurred:')
+    #     print(e)
     finally:
         driver.quit()

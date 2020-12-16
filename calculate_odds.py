@@ -20,7 +20,7 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
     # print(stake_proportion)
     ew_stake = stake_proportion * balance
     # print(ew_stake)
-    return round(ew_stake, 2), C * ew_stake * 2, '%s%' % C * 100
+    return round(ew_stake, 2), C * ew_stake * 2, '%s%%' % C * 100
 
 
 # kelly_criterion(12, 12, 3.2, 5, 10000)
