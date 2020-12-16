@@ -75,7 +75,8 @@ def sporting_index_bet(driver, race, RETURNS_CSV):
 
     # change_to_decimal(driver)
     cur_odd_price = WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.TAG_NAME, 'wgt-live-price-raw')))
+        EC.presence_of_element_located(
+            (By.TAG_NAME, 'wgt-live-price-raw'))).text
     if cur_odd_price != '':
         cur_odd_price_frac = cur_odd_price.split('/')
         cur_odd_price = int(cur_odd_price_frac[0]) / int(
@@ -85,12 +86,12 @@ def sporting_index_bet(driver, race, RETURNS_CSV):
         if race['ew_stake'] < 0.1:
             print(f"Stake too small to bet - {race['ew_stake']}")
             return race, False
-        print(cur_odd_price.text, race['horse_odds'])
-        if float(cur_odd_price.text) == float(race['horse_odds']):
+        print(cur_odd_price, race['horse_odds'])
+        if float(cur_odd_price) == float(race['horse_odds']):
             bet_made = make_sporting_index_bet(driver, race, RETURNS_CSV)
         else:
             print(
-                f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
+                f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
             )
             driver.find_element_by_xpath(
                 "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
