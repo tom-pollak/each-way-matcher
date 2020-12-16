@@ -8,18 +8,14 @@ from calculate_odds import kelly_criterion
 
 
 def change_to_decimal(driver):
-    driver.get(
-        'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable(
             (By.XPATH, '//a[@class="btn-my-account"]'))).click()
     # driver.find_element_by_xpath('//a[@class="btn-my-account"]').click()
-    sleep(0.5)
-    driver.find_element_by_id('decimalBtn').click()
-    sleep(0.5)
-    driver.refresh()
-    sleep(2)
-    driver.switch_to.window(driver.window_handles[0])
+    WebDriverWait(driver,
+                  30).until(EC.element_to_be_clickable(
+                      (By.ID, 'decimalBtn'))).click
+    # driver.find_element_by_id('decimalBtn').click()
     sleep(0.5)
 
 
@@ -59,6 +55,7 @@ def make_sporting_index_bet(driver, race, RETURNS_CSV):
     el.click()
     print('Bet made\n')
     driver.refresh()
+    change_to_decimal(driver)
     driver.find_element_by_xpath(
         "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
     return success
@@ -67,6 +64,7 @@ def make_sporting_index_bet(driver, race, RETURNS_CSV):
 def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
+    change_to_decimal()
     WebDriverWait(driver, 60).until(
         EC.presence_of_element_located((
             By.XPATH,
@@ -109,6 +107,8 @@ def sporting_index_bet(driver, race, RETURNS_CSV):
 
 
 def setup_sporting_index(driver):
+    driver.get(
+        'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     change_to_decimal(driver)
     balance = get_balance_sporting_index(driver)
     return {'balance': balance}
