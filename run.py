@@ -3,10 +3,14 @@ import sys
 from time import time
 from dotenv import load_dotenv
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from scrape import main
+from time import sleep
 
-RETURNS_CSV = 'returns.csv'
+RETURNS_CSV = 'returns/returns.csv'
 REFRESH_TIME = 35
 START_TIME = time()
 load_dotenv(dotenv_path='.env')
@@ -14,6 +18,47 @@ ODD_M_USER = os.environ.get('ODD_M_USER')
 ODD_M_PASS = os.environ.get('ODD_M_PASS')
 S_INDEX_USER = os.environ.get('S_INDEX_USER')
 S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
+
+
+def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
+    driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
+    print('Got page')
+    # print(driver.page_source)
+    WebDriverWait(driver, 30).until(
+        EC.visibility_of_element_located(
+            (By.ID,
+             'dnn_ctr433_Login_Login_DNN_txtUsername'))).send_keys(ODD_M_USER)
+    # driver.find_element_by_id(
+    #     'dnn_ctr433_Login_Login_DNN_txtUsername').send_keys(ODD_M_USER)
+    driver.find_element_by_id(
+        'dnn_ctr433_Login_Login_DNN_txtPassword').send_keys(ODD_M_PASS)
+    driver.find_element_by_id('dnn_ctr433_Login_Login_DNN_cmdLogin').click()
+    sleep(2)
+
+    driver.get('https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx')
+    sleep(2)
+
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a').click(
+        )
+    sleep(2)
+
+    driver.execute_script(
+        '''window.open("https://www.sportingindex.com/fixed-odds","_blank");'''
+    )
+    sleep(2)
+
+    driver.switch_to.window(driver.window_handles[1])
+    WebDriverWait(driver, 30).until(
+        EC.visibility_of_element_located(
+            (By.ID, 'usernameCompact'))).send_keys(S_INDEX_USER)
+    # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
+    driver.find_element_by_id('passwordCompact').send_keys(S_INDEX_PASS)
+    driver.find_element_by_id('submitLogin').click()
+    sleep(0.5)
+    print('Logged in')
+
+
 while True:
     try:
         chrome_options = webdriver.ChromeOptions()
@@ -32,14 +77,8 @@ while True:
         prefs = {"profile.default_content_setting_values.notifications": 2}
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(options=chrome_options)
-        main(driver,
-             RETURNS_CSV,
-             REFRESH_TIME,
-             START_TIME,
-             ODD_M_USER,
-             ODD_M_PASS,
-             S_INDEX_USER,
-             S_INDEX_PASS)
+        login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS)
+        main(driver, RETURNS_CSV, REFRESH_TIME, START_TIME)
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()

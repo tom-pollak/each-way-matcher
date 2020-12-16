@@ -5,7 +5,6 @@ import sched
 from time import sleep, time
 
 from calculate_odds import kelly_criterion
-from dotenv import load_dotenv
 from csv import DictWriter
 from datetime import datetime
 # from selenium import webdriver
@@ -36,25 +35,22 @@ from selenium.common.exceptions import NoSuchElementException
 #     raise NameError('Update .env with a vars')
 
 
-def show_info(driver, count, expected_returns, START_TIME):
+def show_info(driver, count, START_TIME):
     if datetime.now().hour >= 18:
         sys.exit()
     diff = time() - START_TIME
     hours = int(diff // 60**2)
     mins = int(diff // 60 - hours * 60)
     secs = round(diff - mins * 60)
-    print(
-        f"Time alive: {hours}:{mins}:{secs} - Expected returns: £{round(expected_returns, 2)}"
-    )
+    print(f"Time alive: {hours}:{mins}:{secs}")
     print(f'Refreshes: {count}')
 
 
 def output_race(race):
-    ew_stake = race['ew_stake']
-    if not ew_stake:
-        ew_stake = 'N/A'
+    print(f"Bet found: {race['horse_name']} - {race['horse_odds']}")
+    print("\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
     print(
-        f"Bet found: {race['horse_name']} - {race['horse_odds']} ({race['rating']}%) - probability: {race['returns_probability']}"
+        f"\tExpected value: {race['expected_value']}, Expected return: {race['expected_return']}"
     )
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
@@ -135,7 +131,8 @@ def update_csv(race, RETURNS_CSV):
         'balance',
         'rating',
         'current_time',
-        'returns_probability'
+        'expected_value',
+        'expected_return'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -211,7 +208,7 @@ def find_races(driver):
     }
 
 
-def make_sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
+def make_sporting_index_bet(driver, race, RETURNS_CSV):
     driver.find_element_by_class_name('ng-pristine').send_keys(
         str(race['ew_stake']))
     driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
@@ -227,13 +224,11 @@ def make_sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
             (By.XPATH, "//button[contains(text(), 'Continue')]")))
     el.click()
     print('Bet made\n')
-    expected_returns += race['ew_stake'] * (race['rating'] / 100 - 1)
     driver.refresh()
     update_csv(race, RETURNS_CSV)
     print('Stake must be too small to make reliable profit')
     driver.find_element_by_xpath(
         "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
-    return expected_returns
 
 
 def get_sporting_index_page(driver, race):
@@ -246,7 +241,7 @@ def get_sporting_index_page(driver, race):
         ))).click()
 
 
-def sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
+def sporting_index_bet(driver, race, RETURNS_CSV):
     get_sporting_index_page(driver, race)
     WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'horseName')))
@@ -257,16 +252,14 @@ def sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
         EC.presence_of_element_located((By.TAG_NAME, 'wgt-live-price-raw')))
     if cur_odd_price != '':
         race['balance'] = get_balance_sporting_index(driver)
-        race['ew_stake'], race['expected_returns'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
+        race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
+        output_race(race)
         if race['ew_stake'] < 0.1:
             print(f"Odds are too small to bet - {race['ew_stake']}")
             return race, 0
-        output_race(race)
+        print(cur_odd_price.text, race['horse_odds'])
         if float(cur_odd_price.text) == float(race['horse_odds']):
-            expected_returns = make_sporting_index_bet(driver,
-                                                       race,
-                                                       expected_returns,
-                                                       RETURNS_CSV)
+            make_sporting_index_bet(driver, race, RETURNS_CSV)
         else:
             print(
                 f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price.text)}\n"
@@ -278,7 +271,7 @@ def sporting_index_bet(driver, race, expected_returns, RETURNS_CSV):
         print('cur_odd_price is an empty string')
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
-    return race, expected_returns
+    return race
 
 
 def refresh_sporting_index(driver, count):
@@ -297,28 +290,18 @@ def refresh_odds_monkey(driver):
             'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
 
 
-def main(driver,
-         RETURNS_CSV,
-         REFRESH_TIME,
-         START_TIME,
-         ODD_M_USER,
-         ODD_M_PASS,
-         S_INDEX_USER,
-         S_INDEX_PASS):
-    load_dotenv()
-    login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS)
+def main(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     change_to_decimal(driver)
     count = 0
-    expected_returns = 0
     bet = True
-    race = {'rating': 100, 'returns_probability': 95, 'ew_stake': 0.1}
-    race['balance'] = get_balance_sporting_index(driver)
+    balance = get_balance_sporting_index(driver)
+    race = {'balance': balance}
     driver.switch_to.window(driver.window_handles[0])
     while True:
         # So sporting index dosent logout
         if count % 4 == 0:
             refresh_sporting_index(driver, count)
-            show_info(driver, count, expected_returns, START_TIME)
+            show_info(driver, count, START_TIME)
 
         driver.switch_to.window(driver.window_handles[0])
         if not bet:
@@ -329,5 +312,5 @@ def main(driver,
             race.update(find_races(driver))
             if float(race['horse_odds']) != 100:
                 bet = True
-                race, expected_returns = sporting_index_bet(driver, race, expected_returns, RETURNS_CSV)
+                race = sporting_index_bet(driver, race, RETURNS_CSV)
         count += 1
