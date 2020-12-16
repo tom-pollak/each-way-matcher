@@ -64,7 +64,7 @@ def make_sporting_index_bet(driver, race, RETURNS_CSV):
 def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
-    change_to_decimal()
+    change_to_decimal(driver)
     WebDriverWait(driver, 60).until(
         EC.presence_of_element_located((
             By.XPATH,
