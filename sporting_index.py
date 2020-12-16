@@ -26,7 +26,7 @@ def get_balance_sporting_index(driver):
     return float(balance)
 
 
-def refresh_sporting_index(driver, count):
+def refresh_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
     sleep(0.1)
     driver.refresh()
@@ -50,15 +50,14 @@ def make_sporting_index_bet(driver, race, RETURNS_CSV):
             (By.XPATH, "//button[contains(text(), 'Continue')]")))
     el.click()
     print('Bet made\n')
-    driver.refresh()
+    # driver.refresh()
     driver.find_element_by_xpath(
         "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
     return success
 
 
 def get_sporting_index_page(driver, race):
-    driver.switch_to.window(driver.window_handles[1])
-    driver.refresh()
+    refresh_sporting_index(driver)
     WebDriverWait(driver, 60).until(
         EC.presence_of_element_located((
             By.XPATH,
