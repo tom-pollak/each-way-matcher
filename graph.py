@@ -4,9 +4,6 @@ import pandas as pd
 
 def plot_bal_time_series_graph(df):
     y = df['balance']
-    # print(y)
-    # x = matplotlib.dates.date2num()
-    # formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
 
     fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
     plt.plot(y)

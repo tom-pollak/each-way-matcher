@@ -1,6 +1,7 @@
 import os
 import sys
 from time import time
+from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from scrape import main
@@ -8,6 +9,7 @@ from scrape import main
 RETURNS_CSV = 'returns.csv'
 REFRESH_TIME = 35
 START_TIME = time()
+load_dotenv(dotenv_path='.env')
 ODD_M_USER = os.environ.get('ODD_M_USER')
 ODD_M_PASS = os.environ.get('ODD_M_PASS')
 S_INDEX_USER = os.environ.get('S_INDEX_USER')
