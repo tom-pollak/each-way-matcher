@@ -27,7 +27,7 @@ def show_info(driver, count, START_TIME):
 
 def output_race(race):
     print(f"Bet found: {race['horse_name']} - {race['horse_odds']}")
-    print("\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
+    print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
     print(
         f"\tExpected value: {race['expected_value']}, Expected return: {race['expected_return']}"
     )
