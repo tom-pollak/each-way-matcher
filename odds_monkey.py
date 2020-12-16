@@ -13,16 +13,16 @@ from betfair_api import lay_each_way
 
 
 def show_info(driver, count, START_TIME):
-    print(f'Time is: {datetime.now().strftime("%H:%M:%S")}')
-    if datetime.now().hour >= 18:
-        print('Finished matching today')
-        sys.exit()
+    print(f'Time is: {datetime.now().strftime("%H:%M:%S")}', end='')
     diff = time() - START_TIME
     hours = int(diff // 60**2)
     mins = int(diff // 60 - hours * 60)
     secs = round(diff - mins * 60)
-    print(f"Time alive: {hours}:{mins}:{secs}")
+    print(f"\tTime alive: {hours}:{mins}:{secs}")
     print(f'Refreshes: {count}')
+    if datetime.now().hour >= 18:
+        print('Finished matching today')
+        sys.exit()
 
 
 def output_race(race):

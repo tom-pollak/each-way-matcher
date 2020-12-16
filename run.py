@@ -23,14 +23,10 @@ S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
 
 def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
-    print('Got page')
-    # print(driver.page_source)
     WebDriverWait(driver, 30).until(
         EC.visibility_of_element_located(
             (By.ID,
              'dnn_ctr433_Login_Login_DNN_txtUsername'))).send_keys(ODD_M_USER)
-    # driver.find_element_by_id(
-    #     'dnn_ctr433_Login_Login_DNN_txtUsername').send_keys(ODD_M_USER)
     driver.find_element_by_id(
         'dnn_ctr433_Login_Login_DNN_txtPassword').send_keys(ODD_M_PASS)
     driver.find_element_by_id('dnn_ctr433_Login_Login_DNN_cmdLogin').click()
@@ -80,6 +76,7 @@ while True:
         prefs = {"profile.default_content_setting_values.notifications": 2}
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(options=chrome_options)
+        sys.stdout.flush()
         login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS)
         scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME)
     except KeyboardInterrupt:
