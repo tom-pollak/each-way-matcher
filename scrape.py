@@ -4,7 +4,6 @@ import sys
 import sched
 from time import sleep, time
 
-from sim import find_stake
 from calculate_odds import kelly_criterion
 from dotenv import load_dotenv
 from csv import DictWriter
