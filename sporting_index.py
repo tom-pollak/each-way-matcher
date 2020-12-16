@@ -81,8 +81,9 @@ def sporting_index_bet(driver, race, retry=False):
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
     try:
         horse_button = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located(
-                (By.XPATH, horse_name_xpath))).click()
+            EC.presence_of_element_located((By.XPATH, horse_name_xpath)))
+        cur_odd_price = horse_button.text
+        horse_button.click()
     except (NoSuchElementException, TimeoutException):
         print('Horse not found')
         if not retry:
@@ -90,7 +91,6 @@ def sporting_index_bet(driver, race, retry=False):
         else:
             output_race(race, bet_made=False)
             return race, False
-    cur_odd_price = horse_button.text
 
     # change_to_decimal(driver)
     # try:

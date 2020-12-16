@@ -123,6 +123,25 @@ def calculate_proportinate_stake(bookie_balance,
                                  win_odds,
                                  place_stake,
                                  place_odds):
+    max_win_liability = (win_odds - 1) * win_stake
+    max_place_liability = (place_odds - 1) * place_stake
+    total_liability = max_win_liability + max_place_liability
+
+    bookie_ratio = 1
+    win_ratio = win_stake / bookie_stake
+    place_ratio = place_stake / bookie_stake
+
+    if total_liability > betfair_balance:
+        liabiltity_ratio = total_liability / betfair_balance
+    else:
+        liabiltity_ratio = 1
+
+    bookie_stake *= liabiltity_ratio
+    win_stake *= liabiltity_ratio
+    place_stake *= liabiltity_ratio
+
+    if win_stake >= 2 and place_stake >= 2 and bookie_stake >= 0.1:
+        pass
     return bookie_stake, win_stake, place_stake
 
 
