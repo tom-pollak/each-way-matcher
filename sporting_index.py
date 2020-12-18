@@ -76,7 +76,7 @@ def get_sporting_index_page(driver, race):
         ))).click()
 
 
-def sporting_index_bet(driver, race, retry=False):
+def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     get_sporting_index_page(driver, race)
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
     try:
@@ -87,7 +87,10 @@ def sporting_index_bet(driver, race, retry=False):
     except (NoSuchElementException, TimeoutException):
         print('Horse not found')
         if not retry:
-            return sporting_index_bet(driver, race, retry=True)
+            return sporting_index_bet(driver,
+                                      race,
+                                      retry=True,
+                                      make_betfair_ew=make_betfair_ew)
         else:
             output_race(race, bet_made=False)
             return race, False
@@ -109,7 +112,10 @@ def sporting_index_bet(driver, race, retry=False):
 
     if cur_odd_price == '':
         if not retry:
-            return sporting_index_bet(driver, race, retry=True)
+            return sporting_index_bet(driver,
+                                      race,
+                                      retry=True,
+                                      make_betfair_ew=make_betfair_ew)
         else:
             output_race(race, bet_made=False)
             print('cur_odd_price is an empty string')
@@ -118,7 +124,7 @@ def sporting_index_bet(driver, race, retry=False):
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
     race['balance'] = get_balance_sporting_index(driver)
     race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
-    if 'bookie_stake' in race.keys():
+    if make_betfair_ew:
         race['ew_stake'] = race['bookie_stake']
     if race['ew_stake'] < 0.1:
         return race, False
