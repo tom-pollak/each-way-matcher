@@ -52,7 +52,6 @@ def make_sporting_index_bet(driver, race):
     try:
         driver.find_element_by_class_name('placeBetBtn').click()
     except NoSuchElementException:
-        print('Odds have changed')
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
@@ -84,7 +83,9 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             EC.presence_of_element_located((By.XPATH, horse_name_xpath)))
         cur_odd_price = horse_button.text
         horse_button.click()
-    except (NoSuchElementException, TimeoutException):
+    except (NoSuchElementException,
+            TimeoutException,
+            StaleElementReferenceException):
         print('Horse not found')
         if not retry:
             return sporting_index_bet(driver,
@@ -127,10 +128,15 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     if make_betfair_ew:
         race['ew_stake'] = race['bookie_stake']
     if race['ew_stake'] < 0.1:
+        output_race(race, bet_made=False)
+        print('Stake is too small')
         return race, False
 
     if float(cur_odd_price) == float(race['horse_odds']):
         bet_made = make_sporting_index_bet(driver, race)
+        output_race(race, bet_made)
+        if not bet_made:
+            print('Odds have changed')
     else:
         output_race(race, bet_made=False)
         print(

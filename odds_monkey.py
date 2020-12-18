@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, output_race
+from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index
 from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew, login_betfair
 
 
@@ -162,7 +162,6 @@ def start_sporting_index(driver, race, RETURNS_CSV):
         bet = True
         race, bet_made = sporting_index_bet(driver, race)
         if bet_made:
-            output_race(race)
             update_csv(race, RETURNS_CSV)
     return bet
 
