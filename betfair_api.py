@@ -11,9 +11,10 @@ PERCENTAGE_BALANCE = 0.4
 from dotenv import load_dotenv
 load_dotenv(dotenv_path='.env')
 APP_KEY = os.environ.get('APP_KEY')
-SESS_TOK = os.environ.get('SESS_TOK')
 USERNAME = os.environ.get('BETFAIR_USR')
 PASSWORD = os.environ.get('BETFAIR_PASS')
+if None in (USERNAME, PASSWORD, APP_KEY):
+    raise Exception('Need to set betfair env vars')
 
 
 def login_betfair():

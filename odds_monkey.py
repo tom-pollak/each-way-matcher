@@ -185,7 +185,7 @@ def start_betfair(driver, race, bet):
         if not stakes_ok:
             return bet
         race['bookie_stake'] = bookie_stake
-        race, bet_made = sporting_index_bet(driver, race)
+        race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
             bet_made = lay_ew(race['race_time'],
                               race['race_venue'],
@@ -197,7 +197,6 @@ def start_betfair(driver, race, bet):
         if bet_made:
             betfair_balance = get_betfair_balance()
             output_lay_ew(race, betfair_balance)
-        del race['bookie_stake']
     return bet
 
 
