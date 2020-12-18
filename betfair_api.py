@@ -14,7 +14,6 @@ APP_KEY = os.environ.get('APP_KEY')
 SESS_TOK = os.environ.get('SESS_TOK')
 USERNAME = os.environ.get('BETFAIR_USR')
 PASSWORD = os.environ.get('BETFAIR_PASS')
-headers = login_betfair()
 
 
 def login_betfair():
@@ -38,6 +37,9 @@ def login_betfair():
         }
     else:
         raise Exception("Can't login")
+
+
+headers = login_betfair()
 
 
 def output_lay_ew(race, betfair_balance):
