@@ -45,7 +45,7 @@ def update_csv(race, RETURNS_CSV):
         csv_writer.writerow(race)
 
 
-def find_races(driver):
+def find_races(driver, hide=True):
     date_of_race = driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td').text
     race_time = date_of_race[-5:].lower()
@@ -94,9 +94,10 @@ def find_races(driver):
 
     driver.switch_to.default_content()
     driver.find_element_by_class_name('rwCloseButton').click()
-    driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
-    ).click()
+    if hide:
+        driver.find_element_by_xpath(
+            '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
+        ).click()
 
     return {
         'date_of_race': date_of_race,
@@ -160,8 +161,7 @@ def open_betfair_oddsmonkey(driver):
     sleep(0.5)
 
 
-def start_sporting_index(driver, race, RETURNS_CSV):
-    bet = False
+def start_sporting_index(driver, race, RETURNS_CSV, bet):
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
@@ -173,11 +173,12 @@ def start_sporting_index(driver, race, RETURNS_CSV):
     return bet
 
 
-def start_betfair(driver, race, bet):
+def start_betfair(driver, race):
+    bet = False
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
-        race.update(find_races(driver))
+        race.update(find_races(driver, hide=False))
         bet = True
         betfair_balance = get_betfair_balance()
         stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(race['balance'],
@@ -189,7 +190,7 @@ def start_betfair(driver, race, bet):
                                                                            race['place_stake'],
                                                                            race['lay_odds_place'])
         if not stakes_ok:
-            return bet
+            return True
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
@@ -209,7 +210,7 @@ def start_betfair(driver, race, bet):
 def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     race = setup_sporting_index(driver)
     # uncomment these for betfair api
-    # open_betfair_oddsmonkey(driver) # betfair
+    # open_betfair_oddsmonkey(driver)
     # login_betfair()
     count = 0
     driver.switch_to.window(driver.window_handles[0])
@@ -219,12 +220,10 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
             refresh_sporting_index(driver, count)
             show_info(driver, count, START_TIME)
 
-        # bet = False # removwe
-        bet = start_sporting_index(driver, race, RETURNS_CSV)
+        # bet = start_betfair(driver, race) # betfair
+        bet = False # remove when putting betfair in
+        bet = start_sporting_index(driver, race, RETURNS_CSV, bet)
+        sys.stdout.flush()
         if not bet:
             sleep(REFRESH_TIME)
-        # bet = start_betfair(driver, race, bet) # betfair
-        # if not bet: # betfair
-        #     sleep(REFRESH_TIME) # betfair
         count += 1
-        sys.stdout.flush()
