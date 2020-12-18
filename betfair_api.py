@@ -13,6 +13,7 @@ load_dotenv(dotenv_path='.env')
 APP_KEY = os.environ.get('APP_KEY')
 USERNAME = os.environ.get('BETFAIR_USR')
 PASSWORD = os.environ.get('BETFAIR_PASS')
+headers = {}
 if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
 
@@ -20,7 +21,7 @@ if None in (USERNAME, PASSWORD, APP_KEY):
 def login_betfair():
     url = 'https://identitysso-cert.betfair.com/api/certlogin'
     payload = f'username={USERNAME}&password={PASSWORD}'
-    headers = {
+    login_headers = {
         'X-Application': APP_KEY,
         'Content-Type': 'application/x-www-form-urlencoded'
     }
@@ -28,19 +29,17 @@ def login_betfair():
         'https://identitysso-cert.betfair.com/api/certlogin',
         data=payload,
         cert=('client-2048.crt', 'client-2048.key'),
-        headers=headers)
+        headers=login_headers)
     if response.status_code == 200:
         SESS_TOK = response.json()['sessionToken']
-        return {
+        global headers
+        headers = {
             'X-Application': APP_KEY,
             'X-Authentication': SESS_TOK,
             'content-type': 'application/json'
         }
     else:
         raise Exception("Can't login")
-
-
-headers = login_betfair()
 
 
 def output_lay_ew(race, betfair_balance):
@@ -54,7 +53,7 @@ def output_lay_ew(race, betfair_balance):
     )
 
 
-def call_api(jsonrpc_req, headers, url=url):
+def call_api(jsonrpc_req, url=url):
     try:
         req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
         response = request.urlopen(req)
@@ -139,6 +138,7 @@ def lay_bets(market_id, selection_id, price, stake):
     try:
         if bet_res['result']['status'] == 'SUCCESS':
             print('Bet made')
+
             return True
         else:
             return False

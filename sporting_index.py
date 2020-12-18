@@ -46,8 +46,11 @@ def refresh_sporting_index(driver, count):
 
 def make_sporting_index_bet(driver, race):
     # success = True
-    driver.find_element_by_class_name('ng-pristine').send_keys(
-        str(race['ew_stake']))
+    WebDriverWait(driver, 30).until(
+        EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'ng-pristine'))).send_keys(str(race['ew_stake']))
+    # driver.find_element_by_class_name('ng-pristine').send_keys(
+    #     str(race['ew_stake']))
     driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
     try:
         driver.find_element_by_class_name('placeBetBtn').click()
@@ -96,21 +99,6 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             output_race(race, bet_made=False)
             return race, False
 
-    # change_to_decimal(driver)
-    # try:
-    #     cur_odd_price = WebDriverWait(driver, 60).until(
-    #         EC.visibility_of_element_located((
-    #             By.XPATH, # wgt-live-price-raw
-    #             '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
-    #         ))).text
-    # except (TimeoutException, StaleElementReferenceException):
-    #     if not retry:
-    #         output_race(race, bet_made=False)
-    #         print('Live price not found')
-    #         return sporting_index_bet(driver, race, retry=True)
-    #     else:
-    #         return race, False
-
     if cur_odd_price == '':
         if not retry:
             return sporting_index_bet(driver,
@@ -142,8 +130,13 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
         print(
             f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
         )
-        driver.find_element_by_xpath(
-            "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+        WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable,
+            ((By.XPATH,
+              "//li[@class='close']//wgt-spin-icon[@class='close-bet']")
+             )).click()
+        # driver.find_element_by_xpath(
+        #     "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return race, False
     return race, bet_made
 

@@ -89,7 +89,7 @@ def find_races(driver):
         '//*[@id="lblStep1"]/strong[1]').text.replace('£', '')
     win_stake = driver.find_element_by_xpath(
         '//*[@id="lblStep2"]/strong[1]').text.replace('£', '')
-    lay_stake = driver.find_element_by_xpath(
+    place_stake = driver.find_element_by_xpath(
         '//*[@id="lblStep3"]/b').text.replace('£', '')
 
     driver.switch_to.default_content()
@@ -112,7 +112,7 @@ def find_races(driver):
         'place': float(place),
         'bookie_stake': float(bookie_stake),
         'win_stake': float(win_stake),
-        'lay_stake': float(lay_stake),
+        'place_stake': float(place_stake),
     }
 
 
@@ -132,11 +132,18 @@ def open_betfair_oddsmonkey(driver):
     driver.execute_script(
         '''window.open("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx","_blank");'''
     )
+    driver.switch_to.window(driver.window_handles[2])
+
+    # WebDriverWait(driver, 30).until(
+    #     EC.element_to_be_clickable(
+    #         (By.ID,
+    #          'dnn_ctr1157_View_RadToolBar1_i11_lblRefreshText'))).click()
+
     WebDriverWait(driver, 30).until(
-        EC.element_to_be_clickable(
-            (By.XPATH,
-             '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[6]/a'
-             ))).click()
+        EC.visibility_of_element_located((
+            By.XPATH,
+            '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[6]/a/span/span/span/span'
+        ))).click()
     WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable(
             (By.XPATH, '//*[@id="headingFour"]/h4/a'))).click()
@@ -178,9 +185,9 @@ def start_betfair(driver, race, bet):
                                                                            race['bookie_stake'],
                                                                            race['horse_odds'],
                                                                            race['win_stake'],
-                                                                           race['win_odds'],
+                                                                           race['lay_odds'],
                                                                            race['place_stake'],
-                                                                           race['place_odds'])
+                                                                           race['lay_odds_place'])
         if not stakes_ok:
             return bet
         race['bookie_stake'] = bookie_stake
@@ -189,9 +196,9 @@ def start_betfair(driver, race, bet):
             bet_made = lay_ew(race['race_time'],
                               race['race_venue'],
                               race['horse_name'],
-                              race['win_odds'],
+                              race['lay_odds'],
                               win_stake,
-                              race['place_odds'],
+                              race['lay_odds_place'],
                               place_stake)
         if bet_made:
             betfair_balance = get_betfair_balance()
@@ -202,7 +209,8 @@ def start_betfair(driver, race, bet):
 def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     race = setup_sporting_index(driver)
     # uncomment these for betfair api
-    # open_betfair_oddsmonkey(driver)
+    # open_betfair_oddsmonkey(driver) # betfair
+    # login_betfair()
     count = 0
     driver.switch_to.window(driver.window_handles[0])
     while True:
@@ -211,11 +219,12 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
             refresh_sporting_index(driver, count)
             show_info(driver, count, START_TIME)
 
+        # bet = False # removwe
         bet = start_sporting_index(driver, race, RETURNS_CSV)
         if not bet:
             sleep(REFRESH_TIME)
-        # bet = start_betfair(driver, race, bet)
-        # if not bet:
-        #     sleep(REFRESH_TIME)
+        # bet = start_betfair(driver, race, bet) # betfair
+        # if not bet: # betfair
+        #     sleep(REFRESH_TIME) # betfair
         count += 1
         sys.stdout.flush()
