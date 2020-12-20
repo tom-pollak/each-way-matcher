@@ -28,10 +28,18 @@ def output_race(race, bet_made=True):
         print('Bet made')
 
 
-def get_balance_sporting_index(driver):
+def get_balance_sporting_index(driver, retry=False):
     driver.switch_to.window(driver.window_handles[1])
-    balance = WebDriverWait(driver, 40).until(
-        EC.visibility_of_element_located((By.CLASS_NAME, 'btn-balance'))).text
+    try:
+        balance = WebDriverWait(driver, 40).until(
+            EC.visibility_of_element_located(
+                (By.CLASS_NAME, 'btn-balance'))).text
+    except:
+        if not retry:
+            driver.refresh()
+            get_balance_sporting_index(driver, retry=True)
+        raise Exception("Couldn't find balance")
+
     balance = balance.replace(' ', '')
     balance = balance.replace('£', '')
     balance = balance.replace('▸', '')
