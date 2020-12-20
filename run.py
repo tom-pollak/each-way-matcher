@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from odds_monkey import scrape
 from time import sleep
 
@@ -82,11 +82,13 @@ while True:
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()
-    # except (NoSuchElementException, TimeoutException) as e:
-    #     print('Element not found:', e)
-    #     driver.quit()
-    # except Exception as e:
-    #     print('Unknown error ocurred:')
-    #     print(e)
+    except (NoSuchElementException,
+            TimeoutException,
+            StaleElementReferenceException) as e:
+        print('Element not found:', e)
+        driver.quit()
+    except Exception as e:
+        print('Unknown error ocurred:')
+        print(e)
     finally:
         driver.quit()
