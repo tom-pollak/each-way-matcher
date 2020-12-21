@@ -119,9 +119,10 @@ def find_races(driver, hide=True):
 
 def refresh_odds_monkey(driver):
     WebDriverWait(driver, 30).until(
-        EC.element_to_be_clickable(
-            (By.ID,
-             'dnn_ctr1157_View_RadToolBar1_i11_lblRefreshText'))).click()
+        EC.element_to_be_clickable((
+            By.XPATH,
+            '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
+        ))).click()
     # wait till spinner disappeared
     WebDriverWait(driver, 30).until(
         EC.invisibility_of_element_located((
