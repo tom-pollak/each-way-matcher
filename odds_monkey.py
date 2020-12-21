@@ -20,7 +20,7 @@ def show_info(driver, count, START_TIME):
     secs = round(diff - hours * 60 - mins * 60)
     print(f"\tTime alive: {hours}:{mins}:{secs}")
     print(f'Refreshes: {count}')
-    if datetime.now().hour >= 18:
+    if datetime.now().hour >= 19:
         print('Finished matching today')
         sys.exit()
 
