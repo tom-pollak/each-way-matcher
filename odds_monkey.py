@@ -118,6 +118,7 @@ def find_races(driver, hide=True):
 
 
 def refresh_odds_monkey(driver):
+    driver.switch_to.default_content()
     WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable((
             By.XPATH,
