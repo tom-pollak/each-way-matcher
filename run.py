@@ -55,7 +55,7 @@ def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     sys.stdout.flush()
 
 
-print(f'Started at: {datetime.now().strftime("%H:%M:%S")}')
+print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
 while True:
     try:
         chrome_options = webdriver.ChromeOptions()
