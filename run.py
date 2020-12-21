@@ -82,13 +82,13 @@ while True:
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()
-    except (NoSuchElementException,
-            TimeoutException,
-            StaleElementReferenceException) as e:
-        print('Element not found:', e)
-        driver.quit()
-    except Exception as e:
-        print('Unknown error ocurred:')
-        print(e)
+    # except (NoSuchElementException,
+    #         TimeoutException,
+    #         StaleElementReferenceException) as e:
+    #     print('Element not found:', e)
+    #     driver.quit()
+    # except Exception as e:
+    #     print('Unknown error ocurred:')
+    #     print(e)
     finally:
         driver.quit()
