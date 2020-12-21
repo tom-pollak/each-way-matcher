@@ -33,12 +33,10 @@ def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     sleep(2)
 
     driver.get('https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx')
-    sleep(2)
-
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a').click(
-        )
-    sleep(2)
+    # WebDriverWait(driver, 60).until(
+    #     EC.element_to_be_clickable(
+    #         (By.CLASS_NAME, 'dnn_ctr433_Login_Login_DNN_cmdLogin'))).click()
+    # sleep(2)
 
     driver.execute_script(
         '''window.open("https://www.sportingindex.com/fixed-odds","_blank");'''
