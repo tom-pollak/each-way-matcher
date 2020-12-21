@@ -42,8 +42,8 @@ def login_betfair():
         raise Exception("Can't login")
 
 
-def output_lay_ew(race, betfair_balance):
-    print(f"Bet made: {race['horse_name']}")
+def output_lay_ew(race, betfair_balance, profit):
+    print(f"Bet made: {race['horse_name']} - profit: £{profit}")
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(
         f"\tBack bookie: {race['bookie_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {race['lay_stake']} Lay place: {race['lay_odds_place']} - {race['place_stake']}"
@@ -162,8 +162,10 @@ def calculate_stakes(bookie_balance,
                      win_stake,
                      win_odds,
                      place_stake,
-                     place_odds):
+                     place_odds,
+                     avaliable_profit):
     betfair_balance = get_betfair_balance()
+    max_profit_ratio = avaliable_profit / win_stake
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
     total_liability = max_win_liability + max_place_liability
@@ -194,7 +196,8 @@ def calculate_stakes(bookie_balance,
             bookie_stake *= min_stake_proportion
             win_stake *= min_stake_proportion
             place_stake *= min_stake_proportion
-        return True, bookie_stake, win_stake, place_stake
+            profit = max_profit_ratio * win_stake
+        return True, bookie_stake, win_stake, place_stake, profit
 
     else:
         print('Stakes are too small to bet')

@@ -71,6 +71,9 @@ def find_races(driver, hide=True):
     rating = driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[17]').text
 
+    max_profit = driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.strip('£')
+
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
 
@@ -114,6 +117,7 @@ def find_races(driver, hide=True):
         'bookie_stake': float(bookie_stake),
         'win_stake': float(win_stake),
         'place_stake': float(place_stake),
+        'max_profit': float(max_profit)
     }
 
 
@@ -183,14 +187,15 @@ def start_betfair(driver, race):
         race.update(find_races(driver, hide=False))
         bet = True
         betfair_balance = get_betfair_balance()
-        stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(race['balance'],
+        stakes_ok, bookie_stake, win_stake, place_stake, profit = calculate_stakes(race['balance'],
                                                                            betfair_balance,
                                                                            race['bookie_stake'],
                                                                            race['horse_odds'],
                                                                            race['win_stake'],
                                                                            race['lay_odds'],
                                                                            race['place_stake'],
-                                                                           race['lay_odds_place'])
+                                                                           race['lay_odds_place'],
+                                                                           race['max_profit'])
         if not stakes_ok:
             return True
         race['bookie_stake'] = bookie_stake
@@ -205,7 +210,7 @@ def start_betfair(driver, race):
                               place_stake)
         if bet_made:
             betfair_balance = get_betfair_balance()
-            output_lay_ew(race, betfair_balance)
+            output_lay_ew(race, betfair_balance, profit)
     return bet
 
 
