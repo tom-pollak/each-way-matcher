@@ -53,12 +53,18 @@ def refresh_sporting_index(driver, count):
 
 
 def make_sporting_index_bet(driver, race):
-    # success = True
-    WebDriverWait(driver, 30).until(
-        EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'ng-pristine'))).send_keys(str(race['ew_stake']))
-    # driver.find_element_by_class_name('ng-pristine').send_keys(
-    #     str(race['ew_stake']))
+    for i in range(3):
+        try:
+            WebDriverWait(driver, 30).until(
+                EC.visibility_of_element_located(
+                    (By.CLASS_NAME,
+                     'ng-pristine'))).send_keys(str(race['ew_stake']))
+            break
+        except StaleElementReferenceException:
+            pass
+    else:
+        return False
+
     driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
     try:
         driver.find_element_by_class_name('placeBetBtn').click()
@@ -66,13 +72,11 @@ def make_sporting_index_bet(driver, race):
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
-        # success = False
 
     el = WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
     return True
-    # return success
 
 
 def get_sporting_index_page(driver, race):
@@ -90,13 +94,20 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     get_sporting_index_page(driver, race)
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
     try:
-        horse_button = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, horse_name_xpath)))
-        cur_odd_price = horse_button.text
-        horse_button.click()
-    except (NoSuchElementException,
-            TimeoutException,
-            StaleElementReferenceException):
+        for i in range(3):
+            try:
+                horse_button = WebDriverWait(driver, 30).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, horse_name_xpath)))
+                cur_odd_price = horse_button.text
+                horse_button.click()
+                break
+            except StaleElementReferenceException:
+                pass
+        else:
+            raise NoSuchElementException
+
+    except (NoSuchElementException, TimeoutException):
         print('Horse not found')
         if not retry:
             return sporting_index_bet(driver,
