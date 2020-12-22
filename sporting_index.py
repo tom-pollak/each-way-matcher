@@ -61,7 +61,7 @@ def make_sporting_index_bet(driver, race):
                      'ng-pristine'))).send_keys(str(race['ew_stake']))
             break
         except StaleElementReferenceException:
-            pass
+            driver.refresh()
     else:
         return False
 
@@ -103,7 +103,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                 horse_button.click()
                 break
             except StaleElementReferenceException:
-                pass
+                driver.refresh()
         else:
             raise NoSuchElementException
 
