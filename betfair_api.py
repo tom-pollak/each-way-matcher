@@ -19,8 +19,15 @@ if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
 
 
-def update_csv_betfair(race, RETURNS_CSV):
+def update_csv_betfair(race, bookie_stake, win_stake, lay_stake, betfair_balance, win_matched, lay_matched, arbritrage_profit RETURNS_CSV):
     race['is_lay'] = True
+    race['ew_stake'] = bookie_stake
+    race['win_stake'] = win_stake
+    race['lay_stake'] = lay_stake
+    race['betfair_balance'] = betfair_balance
+    race['win_matched'] = win_matched
+    race['lay_matched'] = lay_matched
+    race['arbritrage_profit'] = arbritrage_profit
     csv_columns = [
         'date_of_race',
         'horse_name',
@@ -38,7 +45,10 @@ def update_csv_betfair(race, RETURNS_CSV):
         'place_stake',
         'betfair_balance',
         'max_profit',
-        'is_lay'
+        'is_lay',
+        'win_matched',
+        'lay_matched',
+        'arbritrage_profit'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -71,14 +81,31 @@ def login_betfair():
         raise Exception("Can't login")
 
 
-def output_lay_ew(race, betfair_balance, profit):
+def output_lay_ew(race,
+                  betfair_balance,
+                  profit,
+                  win_bet_made,
+                  win_is_matched,
+                  win_matched,
+                  place_bet_made,
+                  place_is_matched,
+                  place_matched):
     print(f"Bet made: {race['horse_name']} - profit: £{profit}")
-    print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(
         f"\tBack bookie: {race['bookie_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {race['lay_stake']} Lay place: {race['lay_odds_place']} - {race['place_stake']}"
     )
     print(
-        f"\tCurrent balance: {race['balance']}, stake: {race['betfair_balance']}"
+        f"\t Lay win: {win_bet_made} - is matched: {win_is_matched} Lay place: {place_bet_made} is matched {place_is_matched}"
+    )
+
+    if not win_is_matched:
+        print(f"\tLay win matched size: {win_matched}")
+    if not place_is_matched:
+        print(f"\tLay place matched size: {place_matched}")
+
+    print(f"\t{race['date_of_race']} - {race['race_venue']}")
+    print(
+        f"\tCurrent balance: {race['balance']}, betfair balance: {race['betfair_balance']}"
     )
 
 
@@ -157,6 +184,9 @@ def get_horses(target_horse, event_id, race_time):
 
 
 def lay_bets(market_id, selection_id, price, stake):
+    matched = False
+    bet_made = False
+    stake_matched = 0
     bet_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
@@ -167,13 +197,15 @@ def lay_bets(market_id, selection_id, price, stake):
     try:
         if bet_res['result']['status'] == 'SUCCESS':
             print('Bet made')
+            bet_made = True
+            stake_matched = bet_res['result']['instructionReports'][0][
+                'sizeMatched']
+            if stake_matched == stake:
+                matched = True
 
-            return True
-        else:
-            return False
     except KeyError:
         print('Error:' + bet_res['error'])
-        return False
+    return bet_made, matched, stake_matched
 
 
 def get_betfair_balance():
@@ -250,13 +282,14 @@ def lay_ew(race_time,
         raise Exception('race_time is not a datetime instance')
     event_id = get_event(venue, race_time)
     markets_ids, selection_id = get_horses(horse, event_id, race_time)
-    lay_win = lay_bets(markets_ids['Win'], selection_id, win_odds, win_stake)
-    lay_place = lay_bets(markets_ids['Place'],
+    lay_win, win_matched, win_stake_matched = lay_bets(markets_ids['Win'], selection_id, win_odds, win_stake)
+    lay_place, place_matched, place_stake_matched = lay_bets(markets_ids['Place'],
                          selection_id,
                          place_odds,
                          place_stake)
-    print('Lay win: %s\tLay place: %s' % (lay_win, lay_place))
-    return lay_win and lay_place
+    # print('Lay win: %s\tLay place: %s' % (lay_win, lay_place))
+    return ((lay_win, win_matched, win_stake_matched),
+            (lay_place, place_matched, place_stake_matched))
 
 
 # Testing variables
