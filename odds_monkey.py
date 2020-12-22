@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index
-from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew, login_betfair
+from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew, login_betfair, update_csv_betfair
 
 
 def show_info(driver, count, START_TIME):
@@ -36,7 +36,14 @@ def update_csv(race, RETURNS_CSV):
         'rating',
         'current_time',
         'expected_value',
-        'expected_return'
+        'expected_return',
+        'win_stake',
+        'lay_odds',
+        'lay_odds_place',
+        'place_stake',
+        'betfair_balance',
+        'max_profit',
+        'is_lay'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -211,14 +218,15 @@ def start_betfair(driver, race):
         if bet_made:
             betfair_balance = get_betfair_balance()
             output_lay_ew(race, betfair_balance, profit)
+            update_csv_betfair()
     return bet
 
 
 def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     race = setup_sporting_index(driver)
     # uncomment these for betfair api
-    # open_betfair_oddsmonkey(driver)
-    # login_betfair()
+    open_betfair_oddsmonkey(driver)
+    login_betfair()
     count = 0
     driver.switch_to.window(driver.window_handles[0])
     while True:
@@ -227,8 +235,8 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
             refresh_sporting_index(driver, count)
             show_info(driver, count, START_TIME)
 
-        # bet = start_betfair(driver, race) # betfair
-        bet = False # remove when putting betfair in
+        bet = start_betfair(driver, race) # betfair
+        # bet = False # remove when putting betfair in
         bet = start_sporting_index(driver, race, RETURNS_CSV, bet)
         sys.stdout.flush()
         if not bet:
