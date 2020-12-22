@@ -13,7 +13,7 @@ def change_to_decimal(driver):
             (By.XPATH, '//a[@class="btn-my-account"]'))).click()
     WebDriverWait(driver,
                   30).until(EC.element_to_be_clickable(
-                      (By.ID, 'decimalBtn'))).click
+                      (By.ID, 'decimalBtn'))).click()
 
 
 def output_race(race, bet_made=True):
@@ -139,10 +139,10 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
         )
         WebDriverWait(driver, 30).until(
-            EC.element_to_be_clickable,
-            ((By.XPATH,
-              "//li[@class='close']//wgt-spin-icon[@class='close-bet']")
-             )).click()
+            EC.element_to_be_clickable(
+                (By.XPATH,
+                 "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+                 ))).click()
         # driver.find_element_by_xpath(
         #     "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return race, False
