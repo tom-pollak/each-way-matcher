@@ -44,7 +44,8 @@ def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     sleep(2)
 
     driver.switch_to.window(driver.window_handles[1])
-    WebDriverWait(driver, 60).until(
+    driver.refresh()
+    WebDriverWait(driver, 120).until(
         EC.visibility_of_element_located(
             (By.ID, 'usernameCompact'))).send_keys(S_INDEX_USER)
     # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
