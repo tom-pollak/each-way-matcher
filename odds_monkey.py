@@ -241,4 +241,5 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
         sys.stdout.flush()
         if not bet:
             sleep(REFRESH_TIME)
+            sleep(REFRESH_TIME) # betfair
         count += 1
