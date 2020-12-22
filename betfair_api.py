@@ -19,7 +19,15 @@ if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
 
 
-def update_csv_betfair(race, bookie_stake, win_stake, lay_stake, betfair_balance, win_matched, lay_matched, arbritrage_profit RETURNS_CSV):
+def update_csv_betfair(race,
+                       bookie_stake,
+                       win_stake,
+                       lay_stake,
+                       betfair_balance,
+                       win_matched,
+                       lay_matched,
+                       arbritrage_profit,
+                       RETURNS_CSV):
     race['is_lay'] = True
     race['ew_stake'] = bookie_stake
     race['win_stake'] = win_stake
