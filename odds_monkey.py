@@ -123,13 +123,13 @@ def find_races(driver, hide=True):
 
 def refresh_odds_monkey(driver):
     driver.switch_to.default_content()
-    WebDriverWait(driver, 30).until(
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((
             By.XPATH,
             '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
         ))).click()
     # wait till spinner disappeared
-    WebDriverWait(driver, 30).until(
+    WebDriverWait(driver, 60).until(
         EC.invisibility_of_element_located((
             By.ID,
             'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
@@ -146,12 +146,12 @@ def open_betfair_oddsmonkey(driver):
     #         (By.ID,
     #          'dnn_ctr1157_View_RadToolBar1_i11_lblRefreshText'))).click()
 
-    WebDriverWait(driver, 30).until(
+    WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((
             By.XPATH,
             '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[6]/a/span/span/span/span'
         ))).click()
-    WebDriverWait(driver, 30).until(
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (By.XPATH, '//*[@id="headingFour"]/h4/a'))).click()
     sleep(0.5)

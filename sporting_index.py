@@ -8,11 +8,11 @@ from calculate_odds import kelly_criterion
 
 
 def change_to_decimal(driver):
-    WebDriverWait(driver, 30).until(
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (By.XPATH, '//a[@class="btn-my-account"]'))).click()
     WebDriverWait(driver,
-                  30).until(EC.element_to_be_clickable(
+                  60).until(EC.element_to_be_clickable(
                       (By.ID, 'decimalBtn'))).click()
 
 
@@ -31,7 +31,7 @@ def output_race(race, bet_made=True):
 def get_balance_sporting_index(driver, retry=False):
     driver.switch_to.window(driver.window_handles[1])
     try:
-        balance = WebDriverWait(driver, 40).until(
+        balance = WebDriverWait(driver, 60).until(
             EC.visibility_of_element_located(
                 (By.CLASS_NAME, 'btn-balance'))).text
     except:
@@ -55,7 +55,7 @@ def refresh_sporting_index(driver, count):
 def make_sporting_index_bet(driver, race):
     for i in range(3):
         try:
-            WebDriverWait(driver, 30).until(
+            WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located(
                     (By.CLASS_NAME,
                      'ng-pristine'))).send_keys(str(race['ew_stake']))
@@ -73,7 +73,7 @@ def make_sporting_index_bet(driver, race):
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
 
-    el = WebDriverWait(driver, 30).until(
+    el = WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
     return True
@@ -96,7 +96,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     try:
         for i in range(3):
             try:
-                horse_button = WebDriverWait(driver, 30).until(
+                horse_button = WebDriverWait(driver, 60).until(
                     EC.presence_of_element_located(
                         (By.XPATH, horse_name_xpath)))
                 cur_odd_price = horse_button.text
@@ -149,7 +149,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
         print(
             f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
         )
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable(
                 (By.XPATH,
                  "//li[@class='close']//wgt-spin-icon[@class='close-bet']"

@@ -23,7 +23,7 @@ S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
 
 def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
-    WebDriverWait(driver, 30).until(
+    WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located(
             (By.ID,
              'dnn_ctr433_Login_Login_DNN_txtUsername'))).send_keys(ODD_M_USER)
@@ -44,7 +44,7 @@ def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     sleep(2)
 
     driver.switch_to.window(driver.window_handles[1])
-    WebDriverWait(driver, 30).until(
+    WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located(
             (By.ID, 'usernameCompact'))).send_keys(S_INDEX_USER)
     # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
