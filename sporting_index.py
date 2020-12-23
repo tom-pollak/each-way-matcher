@@ -164,4 +164,4 @@ def setup_sporting_index(driver):
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     balance = get_balance_sporting_index(driver)
-    return {'balance': balance}
+    return {'balance': balance, 'betfair_balance': '', 'is_lay': False}

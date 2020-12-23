@@ -1,4 +1,6 @@
 from urllib import request, error
+from dotenv import load_dotenv
+from csv import DictWriter
 import requests
 import json
 import datetime
@@ -6,9 +8,8 @@ import sys
 import os
 
 url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
-PERCENTAGE_BALANCE = 0.4
+MIN_PERCENTAGE_BALANCE = 0
 
-from dotenv import load_dotenv
 load_dotenv(dotenv_path='.env')
 APP_KEY = os.environ.get('APP_KEY')
 USERNAME = os.environ.get('BETFAIR_USR')
@@ -16,6 +17,34 @@ PASSWORD = os.environ.get('BETFAIR_PASS')
 headers = {}
 if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
+
+
+def update_csv_betfair(race, RETURNS_CSV):
+    race['is_lay'] = True
+    csv_columns = [
+        'date_of_race',
+        'horse_name',
+        'horse_odds',
+        'race_venue',
+        'ew_stake',
+        'balance',
+        'rating',
+        'current_time',
+        'expected_value',
+        'expected_return',
+        'win_stake',
+        'lay_odds',
+        'lay_odds_place',
+        'place_stake',
+        'betfair_balance',
+        'max_profit',
+        'is_lay'
+    ]
+    with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
+        csv_writer = DictWriter(returns_csv,
+                                fieldnames=csv_columns,
+                                extrasaction='ignore')
+        csv_writer.writerow(race)
 
 
 def login_betfair():
@@ -164,7 +193,6 @@ def calculate_stakes(bookie_balance,
                      place_stake,
                      place_odds,
                      avaliable_profit):
-    betfair_balance = get_betfair_balance()
     max_profit_ratio = avaliable_profit / win_stake
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
@@ -175,7 +203,7 @@ def calculate_stakes(bookie_balance,
     place_ratio = place_stake / bookie_stake
 
     if total_liability > betfair_balance or bookie_stake > bookie_balance:
-        liabiltity_ratio = total_liability / betfair_balance
+        liabiltity_ratio = betfair_balance / total_liability
         balance_ratio = bookie_stake / bookie_balance
         if balance_ratio < liabiltity_ratio:
             liabiltity_ratio = balance_ratio
@@ -190,13 +218,17 @@ def calculate_stakes(bookie_balance,
     if win_stake >= 2 and place_stake >= 2 and bookie_stake >= 0.1:
         min_stake_proportion = max(2 / min(win_stake, place_stake),
                                    0.1 / bookie_stake)
-        if min_stake_proportion < PERCENTAGE_BALANCE:
-            min_stake_proportion = PERCENTAGE_BALANCE
+        min_stake = min_stake_proportion * (bookie_stake + win_stake +
+                                            place_stake)
+        min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance +
+                                                       bookie_balance)
+        if min_stake < min_balance_staked:
+            min_stake_proportion = MIN_PERCENTAGE_BALANCE
 
-            bookie_stake *= min_stake_proportion
-            win_stake *= min_stake_proportion
-            place_stake *= min_stake_proportion
-            profit = max_profit_ratio * win_stake
+        bookie_stake *= min_stake_proportion
+        win_stake *= min_stake_proportion
+        place_stake *= min_stake_proportion
+        profit = max_profit_ratio * win_stake
         return True, bookie_stake, win_stake, place_stake, profit
 
     else:
@@ -204,7 +236,7 @@ def calculate_stakes(bookie_balance,
         print(
             f'Bookie stake: {bookie_stake} Win stake: {win_stake} Place stake: {place_stake}'
         )
-        return False, 0, 0, 0
+        return False, 0, 0, 0, 0
 
 
 def lay_ew(race_time,
@@ -237,3 +269,4 @@ def lay_ew(race_time,
 # print(markets_ids, selection_id)
 # balance = get_betfair_balance()
 # print(balance)
+# print(calculate_stakes(5, 5, 14.5, 6.5, 14.5, 6.5, 15.22, 2, 0.73))
