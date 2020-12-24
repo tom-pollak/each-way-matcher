@@ -215,6 +215,7 @@ def start_betfair(driver, race, RETURNS_CSV):
             return True
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
+        lay_win = lay_place = (0, 0, 0)
         if bet_made:
             lay_win, lay_place = lay_ew(race['race_time'],
                               race['race_venue'],
