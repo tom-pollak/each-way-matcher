@@ -173,20 +173,19 @@ def get_horses(target_horse, event_id, race_time):
 
     try:
         market_type = markets_response['result']
-        if len(market_type) != 3:
-            print(market_type)
-            raise Exception('Only %s market types returned' % len(market_type))
     except IndexError:
         print('Exception from API-NG' +
               str(markets_response['result']['error']))
 
+    total_matched = 0
     for market in market_type:
         if market['marketName'] == 'Each Way':
             markets_ids['Each Way'] = market['marketId']
         elif market['marketName'] == 'To Be Placed':
             markets_ids['Place'] = market['marketId']
-        else:
+        elif market['totalMatched'] > total_matched:
             markets_ids['Win'] = market['marketId']
+            total_matched = market['totalMatched']
 
     selection_id = get_horse_id(market_type[0], target_horse)
     return markets_ids, selection_id
