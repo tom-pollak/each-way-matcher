@@ -138,9 +138,10 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     cur_odd_price_frac = cur_odd_price.split('/')
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
     race['balance'] = get_balance_sporting_index(driver)
-    race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
     if make_betfair_ew:
         race['ew_stake'] = race['bookie_stake']
+    else:
+        race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
     if race['ew_stake'] < 0.1:
         output_race(race, bet_made=False)
         print('Stake is too small')

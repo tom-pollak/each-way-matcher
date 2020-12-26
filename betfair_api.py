@@ -36,6 +36,7 @@ def update_csv_betfair(race,
     race['win_matched'] = win_matched
     race['lay_matched'] = lay_matched
     race['arbritrage_profit'] = arbritrage_profit
+    race['expected_value'] = race['expected_return'] = 0
     csv_columns = [
         'date_of_race',
         'horse_name',
@@ -199,7 +200,7 @@ def lay_bets(market_id, selection_id, price, stake):
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
         "price": "%s", "persistenceType": "LAPSE"}}]}}' % (
-        market_id, selection_id, stake, price)
+        market_id, selection_id, round(stake, 2), price)
     bet_res = json.loads(call_api(bet_req))
     print(bet_res)
     try:
