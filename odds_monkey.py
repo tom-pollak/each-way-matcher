@@ -65,7 +65,6 @@ def find_races(driver, hide=True):
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td').text
     race_time = date_of_race[-5:].lower()
     date_of_race += ' %s' % datetime.today().year
-    # date_of_race = datetime.strptime(date_of_race, '%d %b %H:%M %Y')
     race_venue = driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[8]'
     ).text.lower().strip()
@@ -216,7 +215,7 @@ def start_betfair(driver, race, RETURNS_CSV):
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
-            lay_win, lay_place = lay_ew(race['race_time'],
+            lay_win, lay_place = lay_ew(race['date_of_race'],
                               race['race_venue'],
                               race['horse_name'],
                               race['lay_odds'],

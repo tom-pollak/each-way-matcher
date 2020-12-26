@@ -152,7 +152,6 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
         if not bet_made:
             print('Odds have changed')
     else:
-        output_race(race, bet_made=False)
         print(
             f"Odds have changed - before: {float(race['horse_odds'])} after: {float(cur_odd_price)}\n"
         )
