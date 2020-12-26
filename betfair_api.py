@@ -100,7 +100,7 @@ def output_lay_ew(race,
                   place_matched):
     print(f"{race['horse_name']} - profit: £{profit}")
     print(
-        f"\tBack bookie: {race['bookie_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {race['lay_stake']} Lay place: {race['lay_odds_place']} - {race['place_stake']}"
+        f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {race['lay_stake']} Lay place: {race['lay_odds_place']} - {race['place_stake']}"
     )
     print(
         f"\t Lay win: {win_bet_made} - is matched: {win_is_matched} Lay place: {place_bet_made} is matched {place_is_matched}"
