@@ -34,6 +34,13 @@ def get_balance_sporting_index(driver, retry=False):
         balance = WebDriverWait(driver, 60).until(
             EC.visibility_of_element_located(
                 (By.CLASS_NAME, 'btn-balance'))).text
+        count = 0
+        while balance == 'BALANCE' and count < 10:
+            sleep(0.5)
+            balance = driver.find_element_by_class_name('btn-balance').text
+            count += 1
+        if balance == 'BALANCE' and not retry:
+            raise Exception
     except:
         if not retry:
             driver.refresh()
