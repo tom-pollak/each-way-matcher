@@ -275,7 +275,7 @@ def calculate_stakes(bookie_balance,
     else:
         print('Stakes are too small to bet')
         print(
-            f'Bookie stake: {bookie_stake} Win stake: {win_stake} Place stake: {place_stake}\n'
+            f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
         )
         return False, 0, 0, 0, 0
 
