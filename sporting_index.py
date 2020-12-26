@@ -25,7 +25,7 @@ def output_race(race, bet_made=True):
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
     if bet_made:
-        print('Bet made')
+        print('Bet made\n')
 
 
 def get_balance_sporting_index(driver, retry=False):

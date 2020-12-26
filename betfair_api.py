@@ -98,7 +98,7 @@ def output_lay_ew(race,
                   place_bet_made,
                   place_is_matched,
                   place_matched):
-    print(f"Bet made: {race['horse_name']} - profit: £{profit}")
+    print(f"{race['horse_name']} - profit: £{profit}")
     print(
         f"\tBack bookie: {race['bookie_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {race['lay_stake']} Lay place: {race['lay_odds_place']} - {race['place_stake']}"
     )
@@ -115,6 +115,7 @@ def output_lay_ew(race,
     print(
         f"\tCurrent balance: {race['balance']}, betfair balance: {race['betfair_balance']}"
     )
+    print('Bet made\n')
 
 
 def call_api(jsonrpc_req, url=url):
@@ -274,7 +275,7 @@ def calculate_stakes(bookie_balance,
     else:
         print('Stakes are too small to bet')
         print(
-            f'Bookie stake: {bookie_stake} Win stake: {win_stake} Place stake: {place_stake}'
+            f'Bookie stake: {bookie_stake} Win stake: {win_stake} Place stake: {place_stake}\n'
         )
         return False, 0, 0, 0, 0
 
