@@ -287,7 +287,7 @@ def lay_ew(race_time,
            win_stake,
            place_odds,
            place_stake):
-    race_time = datetime.strptime(race_time, '%d %b %H:%M %Y')
+    race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
     # if not isinstance(race_time, type(datetime.datetime.now())):
     #     raise Exception('race_time is not a datetime instance')
     event_id = get_event(venue, race_time)
