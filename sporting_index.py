@@ -64,7 +64,7 @@ def refresh_sporting_index(driver):
 
 
 def make_sporting_index_bet(driver, race):
-    for i in range(3):
+    for _ in range(3):
         try:
             WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located(
@@ -105,7 +105,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     get_sporting_index_page(driver, race)
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
     try:
-        for i in range(3):
+        for _ in range(3):
             try:
                 horse_button = WebDriverWait(driver, 60).until(
                     EC.presence_of_element_located(
