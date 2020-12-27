@@ -32,11 +32,26 @@ def update_csv(race, RETURNS_CSV):
     race['arbritrage_profit'] = 0
     race['betfair_balance'] = 0
     csv_columns = [
-        'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
-        'balance', 'rating', 'current_time', 'expected_value',
-        'expected_return', 'win_stake', 'lay_odds', 'lay_odds_place',
-        'place_stake', 'betfair_balance', 'max_profit', 'is_lay',
-        'win_matched', 'lay_matched', 'arbritrage_profit'
+        'date_of_race',
+        'horse_name',
+        'horse_odds',
+        'race_venue',
+        'ew_stake',
+        'balance',
+        'rating',
+        'current_time',
+        'expected_value',
+        'expected_return',
+        'win_stake',
+        'lay_odds',
+        'lay_odds_place',
+        'place_stake',
+        'betfair_balance',
+        'max_profit',
+        'is_lay',
+        'win_matched',
+        'lay_matched',
+        'arbritrage_profit'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -207,9 +222,15 @@ def start_betfair(driver, race, RETURNS_CSV):
             print('Got balance')
             output_lay_ew(race, betfair_balance, profit, *lay_win, *lay_place)
             print('Outputted race')
-            update_csv_betfair(race, bookie_stake, win_stake, place_stake,
-                               betfair_balance, lay_win[2], lay_place[2],
-                               profit)
+            update_csv_betfair(race,
+                               bookie_stake,
+                               win_stake,
+                               place_stake,
+                               betfair_balance,
+                               lay_win[2],
+                               lay_place[2],
+                               profit,
+                               RETURNS_CSV)
             print('Updated csv')
     return bet
 
@@ -227,11 +248,11 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
             refresh_sporting_index(driver, count)
             show_info(driver, count, START_TIME)
 
-        bet = start_betfair(driver, race, RETURNS_CSV)  # betfair
+        bet = start_betfair(driver, race, RETURNS_CSV) # betfair
         # bet = False # remove when putting betfair in
         bet = start_sporting_index(driver, race, RETURNS_CSV, bet)
         sys.stdout.flush()
         if not bet:
             sleep(REFRESH_TIME)
-            sleep(REFRESH_TIME)  # betfair
+            sleep(REFRESH_TIME) # betfair
         count += 1
