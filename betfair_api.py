@@ -66,12 +66,12 @@ def login_betfair():
 
 
 def output_lay_ew(race, betfair_balance, profit, win_bet_made, win_is_matched,
-                  win_matched, place_bet_made, place_is_matched,
-                  place_matched):
+                  win_stake, win_matched, place_bet_made, place_is_matched,
+                  place_stake, place_matched):
     print(f"{race['horse_name']} - profit: £{profit}")
     print(f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} \
-        Lay win: {race['lay_odds']} - {race['lay_stake']} \
-        Lay place: {race['lay_odds_place']} - {race['place_stake']}")
+        Lay win: {race['lay_odds']} - {win_stake} \
+        Lay place: {race['lay_odds_place']} - {place_stake}")
 
     print(f"\t Lay win: {win_bet_made} - is matched: {win_is_matched} \
         Lay place: {place_bet_made} is matched {place_is_matched}")
@@ -258,8 +258,8 @@ def lay_ew(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
         markets_ids['Place'], selection_id, place_odds, place_stake, headers)
     print('Layed place bet')
     # print('Lay win: %s\tLay place: %s' % (lay_win, lay_place))
-    return ((lay_win, win_matched, win_stake_matched),
-            (lay_place, place_matched, place_stake_matched))
+    return ((lay_win, win_matched, win_stake, win_stake_matched),
+            (lay_place, place_matched, place_stake, place_stake_matched))
 
 
 # Testing variables
