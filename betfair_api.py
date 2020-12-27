@@ -178,7 +178,6 @@ def lay_bets(market_id, selection_id, price, stake, headers):
     print(bet_res)
     try:
         if bet_res['result']['status'] == 'SUCCESS':
-            print('Bet made')
             bet_made = True
             stake_matched = bet_res['result']['instructionReports'][0][
                 'sizeMatched']
