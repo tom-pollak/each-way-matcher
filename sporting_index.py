@@ -53,7 +53,7 @@ def get_balance_sporting_index(driver, retry=False):
     return float(balance)
 
 
-def refresh_sporting_index(driver, count):
+def refresh_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
     sleep(0.1)
     driver.refresh()

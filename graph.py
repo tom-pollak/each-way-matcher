@@ -6,7 +6,7 @@ import time
 RETURNS_CSV = 'returns/returns.csv'
 
 
-def plot_bal_time_series_graph(df):
+def plot_bal_time_series_graph():
     # fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
 
     balance = df['balance']

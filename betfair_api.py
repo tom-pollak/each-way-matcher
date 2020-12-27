@@ -229,7 +229,6 @@ def get_betfair_balance():
 def calculate_stakes(bookie_balance,
                      betfair_balance,
                      bookie_stake,
-                     bookie_odds,
                      win_stake,
                      win_odds,
                      place_stake,

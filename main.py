@@ -22,7 +22,7 @@ S_INDEX_USER = os.environ.get('S_INDEX_USER')
 S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
 
 
-def login(driver):
+def login():
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
     WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located(
@@ -76,7 +76,7 @@ while True:
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(options=chrome_options)
         sys.stdout.flush()
-        login(driver)
+        login()
         scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME)
     except KeyboardInterrupt:
         print('Exiting')

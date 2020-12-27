@@ -12,7 +12,7 @@ from sporting_index import setup_sporting_index, sporting_index_bet, refresh_spo
 from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew, login_betfair, update_csv_betfair
 
 
-def show_info(driver, count, START_TIME):
+def show_info(count, START_TIME):
     print(f'Time is: {datetime.now().strftime("%H:%M:%S")}', end='')
     diff = time() - START_TIME
     hours = int(diff // 60**2)
@@ -204,8 +204,7 @@ def start_betfair(driver, race, RETURNS_CSV):
         bet = True
         betfair_balance = get_betfair_balance()
         stakes_ok, bookie_stake, win_stake, place_stake, profit = calculate_stakes(
-            race['balance'], betfair_balance, race['bookie_stake'],
-            race['horse_odds'], race['win_stake'], race['lay_odds'],
+            race['balance'], betfair_balance, race['bookie_stake'], race['win_stake'], race['lay_odds'],
             race['place_stake'], race['lay_odds_place'], race['max_profit'])
         if not stakes_ok:
             return True
@@ -245,8 +244,8 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     while True:
         # So sporting index dosent logout
         if count % 4 == 0:
-            refresh_sporting_index(driver, count)
-            show_info(driver, count, START_TIME)
+            refresh_sporting_index(driver)
+            show_info(count, START_TIME)
 
         bet = start_betfair(driver, race, RETURNS_CSV) # betfair
         # bet = False # remove when putting betfair in
