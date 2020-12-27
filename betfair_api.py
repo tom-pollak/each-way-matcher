@@ -91,10 +91,12 @@ def output_lay_ew(race, betfair_balance, profit, win_bet_made, win_is_matched,
 
 def call_api(jsonrpc_req, headers, url=betting_url):
     try:
-        req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
-        response = request.urlopen(req)
-        json_res = response.read()
-        return json_res.decode('utf-8')
+        if url.lower().startswith('http'):
+            req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
+            response = request.urlopen(req)
+            json_res = response.read()
+            return json_res.decode('utf-8')
+        raise ValueError('url does not start with http')
     except error.HTTPError:
         print('Not a valid operation' + str(url))
         sys.exit()
