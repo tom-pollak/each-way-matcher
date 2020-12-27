@@ -1,11 +1,12 @@
-from urllib import request, error
-from dotenv import load_dotenv
-from csv import DictWriter
-import requests
-import json
 import datetime
+import json
 import os
 import sys
+from csv import DictWriter
+from urllib import error, request
+
+import requests
+from dotenv import load_dotenv
 
 url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 MIN_PERCENTAGE_BALANCE = 0
