@@ -63,8 +63,7 @@ def login_betfair():
             'X-Authentication': SESS_TOK,
             'content-type': 'application/json'
         }
-    else:
-        raise Exception("Can't login")
+    raise Exception("Can't login")
 
 
 def output_lay_ew(race, betfair_balance, profit, win_bet_made, win_is_matched,
