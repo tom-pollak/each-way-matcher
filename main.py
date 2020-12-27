@@ -22,7 +22,7 @@ S_INDEX_USER = os.environ.get('S_INDEX_USER')
 S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
 
 
-def login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
+def login(driver):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
     WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located(
@@ -65,7 +65,7 @@ while True:
         )
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-setuid-sandbox")
-        chrome_options.add_argument("--remote-debugging-port=9222")  # this
+        chrome_options.add_argument("--remote-debugging-port=9222") # this
         chrome_options.add_argument("--disable-dev-shm-using")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-gpu")
@@ -76,12 +76,13 @@ while True:
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(options=chrome_options)
         sys.stdout.flush()
-        login(driver, ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS)
+        login(driver)
         scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME)
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()
-    except (NoSuchElementException, TimeoutException,
+    except (NoSuchElementException,
+            TimeoutException,
             StaleElementReferenceException) as e:
         print('Element not found:', e)
     except Exception as e:
