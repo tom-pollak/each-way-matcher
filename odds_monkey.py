@@ -214,6 +214,7 @@ def start_betfair(driver, race, RETURNS_CSV):
             return True
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
+        print('Done sporting_index_bet')
         if bet_made:
             lay_win, lay_place = lay_ew(race['date_of_race'],
                               race['race_venue'],
@@ -222,8 +223,11 @@ def start_betfair(driver, race, RETURNS_CSV):
                               win_stake,
                               race['lay_odds_place'],
                               place_stake)
+            print('Layed bets')
             betfair_balance = get_betfair_balance()
+            print('Got balance')
             output_lay_ew(race, betfair_balance, profit, *lay_win, *lay_place)
+            print('Outputted race')
             update_csv_betfair(race,
                                bookie_stake,
                                win_stake,
@@ -232,6 +236,7 @@ def start_betfair(driver, race, RETURNS_CSV):
                                lay_win[2],
                                lay_place[2],
                                profit)
+            print('Updated csv')
     return bet
 
 

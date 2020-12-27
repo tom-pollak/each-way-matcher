@@ -1,5 +1,6 @@
 .env
 debug.log
+backup.log
 Pipfile*
 *.pyc
 client-2048.*
