@@ -19,9 +19,12 @@ def change_to_decimal(driver):
 def output_race(race, bet_made=True):
     print(f"Bet found: {race['horse_name']} - {race['horse_odds']}")
     print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
-    print(
-        f"\tExpected value: {race['expected_value']}, Expected return: {race['expected_return']}"
-    )
+    try:
+        print(
+            f"\tExpected value: {race['expected_value']}, Expected return: {race['expected_return']}"
+        )
+    except KeyError:
+        pass
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
     if bet_made:
@@ -39,13 +42,14 @@ def get_balance_sporting_index(driver, retry=False):
             sleep(0.5)
             balance = driver.find_element_by_class_name('btn-balance').text
             count += 1
-        if balance == 'BALANCE' and not retry:
-            raise Exception
-    except:
+        if balance == 'BALANCE':
+            raise TypeError('balance == BALANCE')
+    except TypeError:
         if not retry:
             driver.refresh()
-            get_balance_sporting_index(driver, retry=True)
-        raise Exception("Couldn't find balance")
+            balance = get_balance_sporting_index(driver, retry=True)
+        else:
+            raise Exception("Couldn't find balance")
 
     balance = balance.replace(' ', '')
     balance = balance.replace('£', '')
@@ -124,7 +128,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
         output_race(race, bet_made=False)
         return race, False
 
-    if cur_odd_price == '':
+    if cur_odd_price in ['', 'SUSP']:
         if not retry:
             return sporting_index_bet(driver,
                                       race,
