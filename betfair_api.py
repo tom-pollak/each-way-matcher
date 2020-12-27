@@ -93,17 +93,16 @@ def call_api(jsonrpc_req, headers, url=betting_url):
     try:
         if url.lower().startswith('http'):
             req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
-            response = request.urlopen(req)
+        else:
+            raise ValueError('url does not start with http')
+        with request.urlopen(req) as response:
             json_res = response.read()
             return json_res.decode('utf-8')
-        raise ValueError('url does not start with http')
     except error.HTTPError:
         print('Not a valid operation' + str(url))
-        sys.exit()
     except error.URLError as e:
         print(e.reason)
         print('No service available at ' + str(url))
-        sys.exit()
 
 
 def get_event(venue, race_time, headers):
