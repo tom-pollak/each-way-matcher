@@ -304,13 +304,12 @@ def lay_ew(race_time,
 
 
 # Testing variables
-# race_time = datetime.datetime(2020, 12, 16, 16)
-# venue = 'Kempton'
-# horse = 'Touchwood'
-#
-# event_id = get_event(venue, race_time)
-# markets_ids, selection_id = get_horses(horse, event_id, race_time)
-# print(markets_ids, selection_id)
-# balance = get_betfair_balance()
-# print(balance)
-# print(calculate_stakes(5, 5, 14.5, 6.5, 14.5, 6.5, 15.22, 2, 0.73))
+# login_betfair()
+# race_time = '30 Dec 14:40 2020'
+# print(race_time)
+# venue = 'Taunton'
+# horse = 'Perfect Myth'
+# win_odds = 2.44
+# place_odds = 1.55
+# win_stake = place_stake = 2
+# lay_ew(race_time, venue, horse, win_odds, win_stake, place_odds, place_stake)
