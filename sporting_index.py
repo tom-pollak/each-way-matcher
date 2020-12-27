@@ -80,7 +80,7 @@ def make_sporting_index_bet(driver, race):
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
 
-    el = WebDriverWait(driver, 60).until(
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
     return True

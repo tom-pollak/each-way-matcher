@@ -240,9 +240,9 @@ def calculate_stakes(bookie_balance,
     max_place_liability = (place_odds - 1) * place_stake
     total_liability = max_win_liability + max_place_liability
 
-    bookie_ratio = 1
-    win_ratio = win_stake / bookie_stake
-    place_ratio = place_stake / bookie_stake
+    # bookie_ratio = 1
+    # win_ratio = win_stake / bookie_stake
+    # place_ratio = place_stake / bookie_stake
 
     if total_liability > betfair_balance or bookie_stake > bookie_balance:
         liabiltity_ratio = betfair_balance / total_liability
