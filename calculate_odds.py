@@ -16,6 +16,9 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
     C = p * m + q * n - (1 - p - q)  # Expected profit on 0.5 unit EW bet
     # print(A, B, C)
 
+    if C <= 0:
+        print('negative profit')
+        return 0, 0, '0%'
     try:
         stake_proportion = (B + math.sqrt(B**2 + 4 * A * C)) / (4 * A)
     except ZeroDivisionError:  # if the profit from place is 0 then 0 division
