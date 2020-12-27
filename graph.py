@@ -21,8 +21,12 @@ def plot_bal_time_series_graph():
     plt.savefig('graphs/balance.png')
 
 
-custom_date_parser = lambda x: datetime.datetime(*(time.strptime(
-    x, '%d/%m/%Y %H:%M:%S')[0:6]))
+def custom_date_parser(x):
+    return datetime.datetime(*(time.strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
+
+
+# custom_date_parser = lambda x: datetime.datetime(*(time.strptime(
+#     x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 df = pd.read_csv(RETURNS_CSV,
                  header=0,
