@@ -85,7 +85,6 @@ while True:
             TimeoutException,
             StaleElementReferenceException) as e:
         print('Element not found:', e)
-        driver.quit()
     except Exception as e:
         print('Unknown error ocurred: %s' % e)
         print(traceback.format_exc())
