@@ -4,7 +4,7 @@ import math
 def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
     n = 0.5 * (horse_odds - 1) / place
     m = horse_odds * 0.5 - 0.5 + n
-    n -= 0.5  # - the stake lost from losing win place
+    n -= 0.5 # - the stake lost from losing win place
     # print(m, n)
 
     p = 1 / lay_odds
@@ -13,7 +13,7 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
 
     A = m * n
     B = (p + q) * m * n + p * n + q * m - m - n
-    C = p * m + q * n - (1 - p - q)  # Expected profit on 0.5 unit EW bet
+    C = p * m + q * n - (1 - p - q) # Expected profit on 0.5 unit EW bet
     # print(A, B, C)
 
     try:
@@ -28,7 +28,7 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
     ew_stake = stake_proportion * balance
     # print(ew_stake)
     return round(ew_stake, 2), round(C * ew_stake * 2,
-                                     2), str(round(C * 100, 2)) + '%'
+                                     2), str(round(C * 200, 2)) + '%'
 
 
 # kelly_criterion(12, 12, 3.2, 5, 10000)
