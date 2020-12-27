@@ -71,7 +71,8 @@ def find_races(driver, hide=True):
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[17]').text
 
     max_profit = driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.split('£')[1]
+        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.split(
+            '£')[1]
 
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
@@ -195,6 +196,13 @@ def start_betfair(driver, race, headers, RETURNS_CSV):
             race['lay_odds_place'], race['max_profit'])
         if not stakes_ok:
             return True
+        minutes_until_race = (
+            datetime.strptime(race['race_time'], '%d %b %H:%M %Y') -
+            datetime.now()).total_seconds() / 60
+        if minutes_until_race <= 2:
+            print('Race too close')
+            return True
+
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:

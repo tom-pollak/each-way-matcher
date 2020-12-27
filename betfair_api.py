@@ -118,7 +118,8 @@ def get_event(venue, race_time, headers):
 
     try:
         event_id = event_response['result'][0]['event']['id']
-    except KeyError:
+    except (KeyError, IndexError):
+        print(event_response)
         print('Exception from API-NG' + str(event_response['result']['error']))
     return event_id
 
