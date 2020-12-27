@@ -1,5 +1,6 @@
 import os
 import sys
+import traceback
 from time import time
 from datetime import datetime
 from dotenv import load_dotenv
@@ -85,8 +86,8 @@ while True:
             StaleElementReferenceException) as e:
         print('Element not found:', e)
         driver.quit()
-    # except Exception as e:
-    #     print('Unknown error ocurred:')
-    #     print(e)
+    except Exception as e:
+        print('Unknown error ocurred: %s' % e)
+        print(traceback.format_exc())
     finally:
         driver.quit()
