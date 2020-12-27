@@ -2,13 +2,13 @@ import math
 
 
 def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
-    n = 0.5 * (horse_odds - 1) / place
-    m = horse_odds * 0.5 - 0.5 + n
+    n = 0.5 * (horse_odds - 1) / place  # profit from place
+    m = horse_odds * 0.5 - 0.5 + n  # profit from win
     n -= 0.5  # - the stake lost from losing win place
     # print(m, n)
 
-    p = 1 / lay_odds
-    q = 1 / (lay_odds_place) - p
+    p = 1 / lay_odds  # true odds of winning
+    q = 1 / (lay_odds_place) - p  # true odds of placeing
     # print(p, q)
 
     A = m * n
@@ -18,11 +18,8 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
 
     try:
         stake_proportion = (B + math.sqrt(B**2 + 4 * A * C)) / (4 * A)
-    except ZeroDivisionError:
+    except ZeroDivisionError:  # if the profit from place is 0 then 0 division
         print('ERROR Divided by 0')
-        print(m, n)
-        print(p, q)
-        print(A, B, C)
         return 0, 0, '0%'
     # print(stake_proportion)
     ew_stake = stake_proportion * balance
