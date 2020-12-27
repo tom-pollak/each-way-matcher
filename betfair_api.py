@@ -8,7 +8,7 @@ from urllib import error, request
 import requests
 from dotenv import load_dotenv
 
-url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
+betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 MIN_PERCENTAGE_BALANCE = 0
 
 load_dotenv(dotenv_path='.env')
@@ -89,7 +89,7 @@ def output_lay_ew(race, betfair_balance, profit, win_bet_made, win_is_matched,
     print('Bet made\n')
 
 
-def call_api(jsonrpc_req, headers, url=url):
+def call_api(jsonrpc_req, headers, url=betting_url):
     try:
         req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
         response = request.urlopen(req)
@@ -190,9 +190,9 @@ def lay_bets(market_id, selection_id, price, stake, headers):
 
 
 def get_betfair_balance(headers):
-    url = 'https://api.betfair.com/exchange/account/json-rpc/v1'
+    account_url = 'https://api.betfair.com/exchange/account/json-rpc/v1'
     balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    balance_res = json.loads(call_api(balance_req, headers, url=url))
+    balance_res = json.loads(call_api(balance_req, headers, url=account_url))
     balance = balance_res['result']['availableToBetBalance']
     return balance
 
