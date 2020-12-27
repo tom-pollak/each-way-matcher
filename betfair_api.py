@@ -196,10 +196,11 @@ def lay_bets(market_id, selection_id, price, stake):
     matched = False
     bet_made = False
     stake_matched = 0
+    print(market_id, selection_id, round(stake, 2), price)
     bet_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
-        "side": "LAY", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
-        "price": "%s", "persistenceType": "LAPSE"}}]}}' % (
+        "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
+        "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}' % (
         market_id, selection_id, round(stake, 2), price)
     bet_res = json.loads(call_api(bet_req))
     print(bet_res)
