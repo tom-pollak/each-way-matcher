@@ -197,7 +197,7 @@ def start_betfair(driver, race, headers, RETURNS_CSV):
         if not stakes_ok:
             return True
         minutes_until_race = (
-            datetime.strptime(race['race_time'], '%d %b %H:%M %Y') -
+            datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
             datetime.now()).total_seconds() / 60
         if minutes_until_race <= 2:
             print('Race too close')
