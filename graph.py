@@ -31,4 +31,4 @@ df = pd.read_csv(RETURNS_CSV,
                  date_parser=custom_date_parser,
                  squeeze=True)
 
-plot_bal_time_series_graph(df)
+plot_bal_time_series_graph()
