@@ -46,7 +46,6 @@ def update_csv_betfair(race, bookie_stake, win_stake, lay_stake,
 
 
 def login_betfair():
-    url = 'https://identitysso-cert.betfair.com/api/certlogin'
     payload = f'username={USERNAME}&password={PASSWORD}'
     login_headers = {
         'X-Application': APP_KEY,
