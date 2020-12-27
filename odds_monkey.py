@@ -71,7 +71,7 @@ def find_races(driver, hide=True):
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[17]').text
 
     max_profit = driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.strip('£')
+        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.split('£')[1]
 
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
@@ -185,6 +185,8 @@ def start_betfair(driver, race, headers, RETURNS_CSV):
     if not driver.find_elements_by_class_name('rgNoRecords'):
         print('Betfair race found')
         race.update(find_races(driver, hide=False))
+        if race['max_profit'] <= 0:
+            return True
         bet = True
         betfair_balance = get_betfair_balance(headers)
         stakes_ok, bookie_stake, win_stake, place_stake, profit = calculate_stakes(
