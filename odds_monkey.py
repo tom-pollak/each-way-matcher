@@ -198,7 +198,9 @@ def start_betfair(driver, race, RETURNS_CSV):
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
+        print('Betfair race found')
         race.update(find_races(driver, hide=False))
+        print(race)
         bet = True
         betfair_balance = get_betfair_balance()
         stakes_ok, bookie_stake, win_stake, place_stake, profit = calculate_stakes(race['balance'],
