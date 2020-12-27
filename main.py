@@ -84,6 +84,7 @@ while True:
     except (NoSuchElementException, TimeoutException,
             StaleElementReferenceException) as e:
         print('Element not found:', e)
+        print(traceback.format_exc())
     except Exception as e:
         print('Unknown error ocurred: %s' % e)
         print(traceback.format_exc())
