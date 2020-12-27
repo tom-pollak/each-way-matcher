@@ -114,7 +114,7 @@ def output_lay_ew(race,
 
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(
-        f"\tCurrent balance: {race['balance']}, betfair balance: {race['betfair_balance']}"
+        f"\tCurrent balance: {race['balance']}, betfair balance: {betfair_balance}"
     )
     print('Bet made\n')
 
