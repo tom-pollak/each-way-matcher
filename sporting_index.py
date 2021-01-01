@@ -121,9 +121,8 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
-        else:
-            output_race(race, bet_made=False)
-            return race, False
+        output_race(race, bet_made=False)
+        return race, False
 
     if cur_odd_price == '':
         if not retry:
@@ -131,9 +130,8 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
-        else:
-            output_race(race, bet_made=False)
-            print('cur_odd_price is an empty string')
+        output_race(race, bet_made=False)
+        print('cur_odd_price is an empty string')
 
     cur_odd_price_frac = cur_odd_price.split('/')
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1

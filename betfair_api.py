@@ -238,13 +238,11 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake,
         place_stake *= min_stake_proportion
         profit = max_profit_ratio * win_stake
         return True, bookie_stake, win_stake, place_stake, profit
-
-    else:
-        print('Stakes are too small to bet')
-        print(
-            f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
-        )
-        return False, 0, 0, 0, 0
+    print('Stakes are too small to bet')
+    print(
+        f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
+    )
+    return False, 0, 0, 0, 0
 
 
 def lay_ew(race_time, venue, horse, win_odds, win_stake, place_odds,
