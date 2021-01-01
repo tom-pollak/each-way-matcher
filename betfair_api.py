@@ -4,8 +4,8 @@ from csv import DictWriter
 import requests
 import json
 import datetime
-import sys
 import os
+import sys
 
 url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 MIN_PERCENTAGE_BALANCE = 0
@@ -114,7 +114,7 @@ def output_lay_ew(race,
 
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(
-        f"\tCurrent balance: {race['balance']}, betfair balance: {race['betfair_balance']}"
+        f"\tCurrent balance: {race['balance']}, betfair balance: {betfair_balance}"
     )
     print('Bet made\n')
 
@@ -125,13 +125,13 @@ def call_api(jsonrpc_req, url=url):
         response = request.urlopen(req)
         json_res = response.read()
         return json_res.decode('utf-8')
+    except error.HTTPError:
+        print('Not a valid operation' + str(url))
+        sys.exit()
     except error.URLError as e:
         print(e.reason)
         print('No service available at ' + str(url))
-        exit()
-    except error.HTTPError:
-        print('Not a valid operation' + str(url))
-        exit()
+        sys.exit()
 
 
 def get_event(venue, race_time):
@@ -229,7 +229,6 @@ def get_betfair_balance():
 def calculate_stakes(bookie_balance,
                      betfair_balance,
                      bookie_stake,
-                     bookie_odds,
                      win_stake,
                      win_odds,
                      place_stake,
@@ -240,9 +239,9 @@ def calculate_stakes(bookie_balance,
     max_place_liability = (place_odds - 1) * place_stake
     total_liability = max_win_liability + max_place_liability
 
-    bookie_ratio = 1
-    win_ratio = win_stake / bookie_stake
-    place_ratio = place_stake / bookie_stake
+    # bookie_ratio = 1
+    # win_ratio = win_stake / bookie_stake
+    # place_ratio = place_stake / bookie_stake
 
     if total_liability > betfair_balance or bookie_stake > bookie_balance:
         liabiltity_ratio = betfair_balance / total_liability
@@ -272,13 +271,11 @@ def calculate_stakes(bookie_balance,
         place_stake *= min_stake_proportion
         profit = max_profit_ratio * win_stake
         return True, bookie_stake, win_stake, place_stake, profit
-
-    else:
-        print('Stakes are too small to bet')
-        print(
-            f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
-        )
-        return False, 0, 0, 0, 0
+    print('Stakes are too small to bet')
+    print(
+        f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
+    )
+    return False, 0, 0, 0, 0
 
 
 def lay_ew(race_time,
@@ -296,12 +293,12 @@ def lay_ew(race_time,
     print('Got event')
     markets_ids, selection_id = get_horses(horse, event_id, race_time)
     print('Got ids')
-    lay_win, win_matched, win_stake_matched = lay_bets(markets_ids['Win'], selection_id, win_odds, win_stake)
+    lay_win, win_matched, win_stake_matched = lay_bets(markets_ids['Win'],
+                                                       selection_id, win_odds,
+                                                       win_stake)
     print('Layed win bet')
-    lay_place, place_matched, place_stake_matched = lay_bets(markets_ids['Place'],
-                         selection_id,
-                         place_odds,
-                         place_stake)
+    lay_place, place_matched, place_stake_matched = lay_bets(
+        markets_ids['Place'], selection_id, place_odds, place_stake)
     print('Layed place bet')
     # print('Lay win: %s\tLay place: %s' % (lay_win, lay_place))
     return ((lay_win, win_matched, win_stake_matched),

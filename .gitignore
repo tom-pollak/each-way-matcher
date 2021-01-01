@@ -4,3 +4,4 @@ backup.log
 Pipfile*
 *.pyc
 client-2048.*
+*.json

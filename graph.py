@@ -1,14 +1,13 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 import datetime
 import time
 
 RETURNS_CSV = 'returns/returns.csv'
 
 
-def plot_bal_time_series_graph(df):
-    fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
+def plot_bal_time_series_graph():
+    # fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
 
     balance = df['balance']
     plt.plot(balance)
@@ -32,4 +31,4 @@ df = pd.read_csv(RETURNS_CSV,
                  date_parser=custom_date_parser,
                  squeeze=True)
 
-plot_bal_time_series_graph(df)
+plot_bal_time_series_graph()

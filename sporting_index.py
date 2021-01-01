@@ -53,7 +53,7 @@ def get_balance_sporting_index(driver, retry=False):
     return float(balance)
 
 
-def refresh_sporting_index(driver, count):
+def refresh_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
     sleep(0.1)
     driver.refresh()
@@ -80,7 +80,7 @@ def make_sporting_index_bet(driver, race):
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
 
-    el = WebDriverWait(driver, 60).until(
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
     return True
@@ -121,9 +121,8 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
-        else:
-            output_race(race, bet_made=False)
-            return race, False
+        output_race(race, bet_made=False)
+        return race, False
 
     if cur_odd_price == '':
         if not retry:
@@ -131,9 +130,8 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
-        else:
-            output_race(race, bet_made=False)
-            print('cur_odd_price is an empty string')
+        output_race(race, bet_made=False)
+        print('cur_odd_price is an empty string')
 
     cur_odd_price_frac = cur_odd_price.split('/')
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
@@ -141,7 +139,11 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     if make_betfair_ew:
         race['ew_stake'] = race['bookie_stake']
     else:
-        race['ew_stake'], race['expected_return'], race['expected_value'] = kelly_criterion(race['horse_odds'], race['lay_odds'], race['lay_odds_place'], race['place'], race['balance'])
+        race['ew_stake'], race['expected_return'], race[
+            'expected_value'] = kelly_criterion(race['horse_odds'],
+                                                race['lay_odds'],
+                                                race['lay_odds_place'],
+                                                race['place'], race['balance'])
     if race['ew_stake'] < 0.1:
         output_race(race, bet_made=False)
         print('Stake is too small')
