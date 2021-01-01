@@ -19,15 +19,9 @@ if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
 
 
-def update_csv_betfair(race,
-                       bookie_stake,
-                       win_stake,
-                       lay_stake,
-                       betfair_balance,
-                       win_matched,
-                       lay_matched,
-                       arbritrage_profit,
-                       RETURNS_CSV):
+def update_csv_betfair(race, bookie_stake, win_stake, lay_stake,
+                       betfair_balance, win_matched, lay_matched,
+                       arbritrage_profit, RETURNS_CSV):
     race['is_lay'] = True
     race['ew_stake'] = bookie_stake
     race['win_stake'] = win_stake
@@ -38,26 +32,11 @@ def update_csv_betfair(race,
     race['arbritrage_profit'] = arbritrage_profit
     race['expected_value'] = race['expected_return'] = 0
     csv_columns = [
-        'date_of_race',
-        'horse_name',
-        'horse_odds',
-        'race_venue',
-        'ew_stake',
-        'balance',
-        'rating',
-        'current_time',
-        'expected_value',
-        'expected_return',
-        'win_stake',
-        'lay_odds',
-        'lay_odds_place',
-        'place_stake',
-        'betfair_balance',
-        'max_profit',
-        'is_lay',
-        'win_matched',
-        'lay_matched',
-        'arbritrage_profit'
+        'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
+        'balance', 'rating', 'current_time', 'expected_value',
+        'expected_return', 'win_stake', 'lay_odds', 'lay_odds_place',
+        'place_stake', 'betfair_balance', 'max_profit', 'is_lay',
+        'win_matched', 'lay_matched', 'arbritrage_profit'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -90,14 +69,8 @@ def login_betfair():
         raise Exception("Can't login")
 
 
-def output_lay_ew(race,
-                  betfair_balance,
-                  profit,
-                  win_bet_made,
-                  win_is_matched,
-                  win_matched,
-                  place_bet_made,
-                  place_is_matched,
+def output_lay_ew(race, betfair_balance, profit, win_bet_made, win_is_matched,
+                  win_matched, place_bet_made, place_is_matched,
                   place_matched):
     print(f"{race['horse_name']} - profit: £{profit}")
     print(
@@ -142,8 +115,8 @@ def get_event(venue, race_time):
     event_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listEvents", \
         "params": {"filter": {"eventTypeIds": ["7"], "marketTypeCodes": ["EACH_WAY"], \
         "marketStartTime": {"from": "%s", "to": "%s"}, "venues":["%s"]}, \
-        "sort":"FIRST_TO_START","maxResults":"1"}}' % (
-        race_time, race_time_after, venue)
+        "sort":"FIRST_TO_START","maxResults":"1"}}' % (race_time,
+                                                       race_time_after, venue)
     event_response = json.loads(call_api(event_req))
 
     try:
@@ -168,8 +141,8 @@ def get_horses(target_horse, event_id, race_time):
     markets_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
         "params": {"filter":{"eventIds": ["%s"], "marketStartTime": {"from": "%s", "to": "%s"}}, \
         "maxResults": "10", "sort":"FIRST_TO_START", \
-        "marketProjection": ["RUNNER_DESCRIPTION"]}}' % (
-        event_id, race_time, race_time_after)
+        "marketProjection": ["RUNNER_DESCRIPTION"]}}' % (event_id, race_time,
+                                                         race_time_after)
     markets_response = json.loads(call_api(markets_req))
 
     try:
@@ -226,14 +199,8 @@ def get_betfair_balance():
     return balance
 
 
-def calculate_stakes(bookie_balance,
-                     betfair_balance,
-                     bookie_stake,
-                     win_stake,
-                     win_odds,
-                     place_stake,
-                     place_odds,
-                     avaliable_profit):
+def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
+                     win_odds, place_stake, place_odds, avaliable_profit):
     max_profit_ratio = avaliable_profit / win_stake
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
@@ -278,12 +245,7 @@ def calculate_stakes(bookie_balance,
     return False, 0, 0, 0, 0
 
 
-def lay_ew(race_time,
-           venue,
-           horse,
-           win_odds,
-           win_stake,
-           place_odds,
+def lay_ew(race_time, venue, horse, win_odds, win_stake, place_odds,
            place_stake):
     print('Started lay_ew')
     race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
