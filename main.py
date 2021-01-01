@@ -65,7 +65,7 @@ while True:
         )
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-setuid-sandbox")
-        chrome_options.add_argument("--remote-debugging-port=9222") # this
+        chrome_options.add_argument("--remote-debugging-port=9222")  # this
         chrome_options.add_argument("--disable-dev-shm-using")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-gpu")
@@ -81,8 +81,7 @@ while True:
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()
-    except (NoSuchElementException,
-            TimeoutException,
+    except (NoSuchElementException, TimeoutException,
             StaleElementReferenceException) as e:
         print('Element not found:', e)
     except Exception as e:
