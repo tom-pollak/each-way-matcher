@@ -128,10 +128,10 @@ def call_api(jsonrpc_req, url=url):
     except error.URLError as e:
         print(e.reason)
         print('No service available at ' + str(url))
-        exit()
+        sys.exit()
     except error.HTTPError:
         print('Not a valid operation' + str(url))
-        exit()
+        sys.exit()
 
 
 def get_event(venue, race_time):
