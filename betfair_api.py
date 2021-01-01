@@ -4,7 +4,6 @@ from csv import DictWriter
 import requests
 import json
 import datetime
-import sys
 import os
 
 url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
