@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-import sys
 from csv import DictWriter
 from urllib import error, request
 
