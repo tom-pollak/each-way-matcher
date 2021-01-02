@@ -5,3 +5,4 @@ Pipfile*
 *.pyc
 client-2048.*
 *.json
+pull_results.sh

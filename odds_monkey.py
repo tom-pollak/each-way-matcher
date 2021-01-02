@@ -25,12 +25,12 @@ def show_info(count, START_TIME):
         sys.exit()
 
 
-def update_csv(race, RETURNS_CSV):
+def update_csv(race, headers, RETURNS_CSV):
     race['is_lay'] = False
     race['win_matched'] = 0
     race['lay_matched'] = 0
     race['arbritrage_profit'] = 0
-    race['betfair_balance'] = 0
+    race['betfair_balance'] = get_betfair_balance(headers)
     csv_columns = [
         'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
         'balance', 'rating', 'current_time', 'expected_value',
@@ -167,7 +167,7 @@ def open_betfair_oddsmonkey(driver):
     sleep(0.5)
 
 
-def start_sporting_index(driver, race, RETURNS_CSV, bet):
+def start_sporting_index(driver, race, RETURNS_CSV, bet, headers):
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
@@ -175,7 +175,7 @@ def start_sporting_index(driver, race, RETURNS_CSV, bet):
         bet = True
         race, bet_made = sporting_index_bet(driver, race)
         if bet_made:
-            update_csv(race, RETURNS_CSV)
+            update_csv(race, headers, RETURNS_CSV)
     return bet
 
 
@@ -238,7 +238,7 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
 
         bet = start_betfair(driver, race, headers, RETURNS_CSV)  # betfair
         # bet = False # remove when putting betfair in
-        bet = start_sporting_index(driver, race, RETURNS_CSV, bet)
+        bet = start_sporting_index(driver, race, RETURNS_CSV, bet, headers)
         sys.stdout.flush()
         if not bet:
             sleep(REFRESH_TIME)

@@ -9,11 +9,11 @@ RETURNS_CSV = 'returns/returns.csv'
 def plot_bal_time_series_graph():
     # fig, ax = plt.subplots(figsize=(16, 9), dpi=100)
 
-    balance = df['balance']
+    balance = df['balance'] + df['betfair_balance']
     plt.plot(balance)
 
-    expected_return = df['expected_return']
-    starting_balance = [df['balance'][0]]
+    expected_return = df['expected_return'] + df['arbritrage_profit']
+    starting_balance = df['balance'].values[0]
     expected_return[0] += starting_balance
     expected_return.cumsum().plot()
 
