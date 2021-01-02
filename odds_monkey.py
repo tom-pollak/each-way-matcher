@@ -71,7 +71,8 @@ def find_races(driver, hide=True):
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[17]').text
 
     max_profit = driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.split('£')[1]
+        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.split(
+            '£')[1]
 
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
