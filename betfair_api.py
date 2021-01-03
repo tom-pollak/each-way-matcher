@@ -8,7 +8,6 @@ import requests
 from dotenv import load_dotenv
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
-MIN_PERCENTAGE_BALANCE = 0
 
 load_dotenv(dotenv_path='.env')
 APP_KEY = os.environ.get('APP_KEY')
@@ -198,56 +197,6 @@ def get_betfair_balance(headers):
     return balance
 
 
-def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
-                     win_odds, place_stake, place_odds, avaliable_profit):
-    max_profit_ratio = avaliable_profit / win_stake
-    max_win_liability = (win_odds - 1) * win_stake
-    max_place_liability = (place_odds - 1) * place_stake
-    total_liability = max_win_liability + max_place_liability
-
-    # bookie_ratio = 1
-    # win_ratio = win_stake / bookie_stake
-    # place_ratio = place_stake / bookie_stake
-
-    if total_liability > betfair_balance or bookie_stake > bookie_balance:
-        liabiltity_ratio = betfair_balance / total_liability
-        balance_ratio = bookie_stake / bookie_balance
-        if balance_ratio < liabiltity_ratio:
-            liabiltity_ratio = balance_ratio
-    else:
-        liabiltity_ratio = 1
-
-    # maximum possible stakes
-    bookie_stake *= liabiltity_ratio
-    win_stake *= liabiltity_ratio
-    place_stake *= liabiltity_ratio
-
-    if win_stake >= 2 and place_stake >= 2 and bookie_stake >= 0.1:
-        min_stake_proportion = max(2 / min(win_stake, place_stake),
-                                   0.1 / bookie_stake)
-        min_stake = min_stake_proportion * (bookie_stake + win_stake +
-                                            place_stake)
-        min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance +
-                                                       bookie_balance)
-        if min_stake < min_balance_staked:
-            min_stake_proportion = MIN_PERCENTAGE_BALANCE
-
-        bookie_stake *= min_stake_proportion
-        win_stake *= min_stake_proportion
-        place_stake *= min_stake_proportion
-        profit = max_profit_ratio * win_stake
-        if profit <= 0:
-            return False, 0, 0, 0, 0
-        return True, round(bookie_stake,
-                           2), round(win_stake, 2), round(place_stake,
-                                                          2), round(profit, 2)
-    print('Stakes are too small to bet')
-    print(
-        f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
-    )
-    return False, 0, 0, 0, 0
-
-
 def lay_ew(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
            place_stake):
     race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
@@ -260,15 +209,3 @@ def lay_ew(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
         markets_ids['Place'], selection_id, place_odds, place_stake, headers)
     return ((lay_win, win_matched, win_stake, win_stake_matched),
             (lay_place, place_matched, place_stake, place_stake_matched))
-
-
-# Testing variables
-# login_betfair()
-# race_time = '30 Dec 14:40 2020'
-# print(race_time)
-# venue = 'Taunton'
-# horse = 'Perfect Myth'
-# win_odds = 2.44
-# place_odds = 1.55
-# win_stake = place_stake = 2
-# lay_ew(race_time, venue, horse, win_odds, win_stake, place_odds, place_stake)

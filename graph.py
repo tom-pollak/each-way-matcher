@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import datetime
-import time
+from calculate_odds import custom_date_parser
 
 RETURNS_CSV = 'returns/returns.csv'
 
@@ -19,10 +18,6 @@ def plot_bal_time_series_graph():
 
     plt.gcf().autofmt_xdate()
     plt.savefig('graphs/balance.png')
-
-
-def custom_date_parser(x):
-    return datetime.datetime(*(time.strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 
 # custom_date_parser = lambda x: datetime.datetime(*(time.strptime(

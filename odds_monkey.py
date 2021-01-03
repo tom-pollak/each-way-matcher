@@ -9,7 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
-from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew, login_betfair, update_csv_betfair
+from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair, update_csv_betfair
+from calculate_odds import calculate_stakes, output_profit
 
 
 def show_info(count, START_TIME):
@@ -22,6 +23,8 @@ def show_info(count, START_TIME):
     print(f'Refreshes: {count}')
     if datetime.now().hour >= 18:
         print('Finished matching today')
+        print('\n-----------------------------------')
+        output_profit()
         sys.exit()
 
 
