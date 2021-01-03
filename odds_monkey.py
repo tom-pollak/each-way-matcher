@@ -22,8 +22,8 @@ def show_info(count, START_TIME):
     print(f"\tTime alive: {hours}:{mins}:{secs}")
     print(f'Refreshes: {count}')
     if datetime.now().hour >= 18:
-        print('Finished matching today')
-        print('\n-----------------------------------')
+        print('\nFinished matching today')
+        print('-----------------------------------------------')
         sys.exit()
 
 
