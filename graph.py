@@ -18,14 +18,17 @@ def output_profit():
 
     current_sporting_index_balance = df['balance'].values[-1]
     current_betfair_balance = df['betfair_balance'].values[-1]
-    total_profit = round(
-        current_sporting_index_balance + current_betfair_balance -
-        starting_balance, 2)
-    profit_today = round(
-        current_sporting_index_balance + current_betfair_balance -
-        today_starting_balance, 2)
-    total_percentage_profit = round(starting_balance / total_profit, 2)
-    today_percentage_profit = round(today_starting_balance / profit_today, 2)
+    current_balance = current_sporting_index_balance + current_betfair_balance
+    total_profit = round(current_balance - starting_balance, 2)
+    profit_today = round(current_balance - today_starting_balance, 2)
+    if total_profit == 0: total_percentage_profit = 0
+    else:
+        total_percentage_profit = round(starting_balance / total_profit, 2)
+
+    if profit_today == 0: today_percentage_profit = 0
+    else:
+        today_percentage_profit = round(today_starting_balance / profit_today,
+                                        2)
     print(
         f'Total profit: £{format(total_profit, ".2f")} ({total_percentage_profit}%)'
     )
