@@ -43,7 +43,7 @@ def get_balance_sporting_index(driver, retry=False):
             count += 1
         if balance == 'BALANCE':
             raise TypeError()
-    except:
+    except (NoSuchElementException, TimeoutException):
         if not retry:
             driver.refresh()
             balance = get_balance_sporting_index(driver, retry=True)
