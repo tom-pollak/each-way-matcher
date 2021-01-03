@@ -18,7 +18,7 @@ def show_info(count, START_TIME):
     diff = time() - START_TIME
     hours = int(diff // 60**2)
     mins = int(diff // 60 - hours * 60)
-    secs = round(diff - hours * 60 - mins * 60)
+    secs = round(diff - (hours * 60 * 60) - (mins * 60))
     print(f"\tTime alive: {hours}:{mins}:{secs}")
     print(f'Refreshes: {count}')
     if datetime.now().hour >= 18:
