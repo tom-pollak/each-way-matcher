@@ -11,13 +11,6 @@ def custom_date_parser(x):
 
 
 def output_profit():
-    df = pd.read_csv(RETURNS_CSV,
-                     header=0,
-                     parse_dates=[7],
-                     index_col=7,
-                     date_parser=custom_date_parser,
-                     squeeze=True)
-
     starting_balance = df['balance'].values[0] + df['betfair_balance'].values[0]
     today_starting_balance = df.loc[datetime.datetime.now().strftime(
         '%Y-%m-%d')]['balance'].values[0] + df.loc[datetime.datetime.now(
