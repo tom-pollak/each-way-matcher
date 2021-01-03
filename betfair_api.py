@@ -17,33 +17,6 @@ if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
 
 
-def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
-                       place_stake, betfair_balance, win_matched, lay_matched,
-                       arbritrage_profit, RETURNS_CSV):
-    race['is_lay'] = True
-    race['ew_stake'] = bookie_stake
-    race['win_stake'] = win_stake
-    race['place_stake'] = place_stake
-    race['betfair_balance'] = betfair_balance
-    race['balance'] = sporting_index_balance
-    race['win_matched'] = win_matched
-    race['lay_matched'] = lay_matched
-    race['arbritrage_profit'] = arbritrage_profit
-    race['expected_value'] = race['expected_return'] = 0
-    csv_columns = [
-        'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
-        'balance', 'rating', 'current_time', 'expected_value',
-        'expected_return', 'win_stake', 'place_stake', 'lay_odds',
-        'lay_odds_place', 'betfair_balance', 'max_profit', 'is_lay',
-        'win_matched', 'lay_matched', 'arbritrage_profit'
-    ]
-    with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
-        csv_writer = DictWriter(returns_csv,
-                                fieldnames=csv_columns,
-                                extrasaction='ignore')
-        csv_writer.writerow(race)
-
-
 def login_betfair():
     payload = f'username={USERNAME}&password={PASSWORD}'
     login_headers = {
@@ -69,7 +42,7 @@ def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
                   win_bet_made, win_is_matched, win_stake, win_matched,
                   place_bet_made, place_is_matched, place_stake,
                   place_matched):
-    print(f"{race['horse_name']} - profit: £{profit}")
+    print(f"\nArb bet made: {race['horse_name']} - profit: £{profit}")
     print(f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} \
         Lay win: {race['lay_odds']} - {win_stake} \
         Lay place: {race['lay_odds_place']} - {place_stake}")
@@ -86,7 +59,6 @@ def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
     print(
         f"\tCurrent balance: {sporting_index_balance}, betfair balance: {betfair_balance}"
     )
-    print('Bet made\n')
 
 
 def call_api(jsonrpc_req, headers, url=betting_url):
