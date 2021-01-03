@@ -28,12 +28,20 @@ def output_profit():
 
     current_sporting_index_balance = df['balance'].values[-1]
     current_betfair_balance = df['betfair_balance'].values[-1]
-    total_profit = current_sporting_index_balance + current_betfair_balance - starting_balance
-    profit_today = current_sporting_index_balance + current_betfair_balance - today_starting_balance
+    total_profit = round(
+        current_sporting_index_balance + current_betfair_balance -
+        starting_balance, 2)
+    profit_today = round(
+        current_sporting_index_balance + current_betfair_balance -
+        today_starting_balance, 2)
     total_percentage_profit = round(starting_balance / total_profit, 2)
     today_percentage_profit = round(today_starting_balance / profit_today, 2)
-    print(f'Total profit: £{total_profit} ({total_percentage_profit}%)')
-    print(f'Profit today: £{profit_today} ({today_percentage_profit}%)')
+    print(
+        f'Total profit: £{format(total_profit, ".2f")} ({total_percentage_profit}%)'
+    )
+    print(
+        f'Profit today: £{format(profit_today, ".2f")} ({today_percentage_profit}%)'
+    )
     print(
         f'Sporting index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance}'
     )
