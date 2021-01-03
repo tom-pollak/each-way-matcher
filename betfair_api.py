@@ -18,13 +18,13 @@ if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
 
 
-def update_csv_betfair(race, bookie_stake, win_stake, lay_stake,
+def update_csv_betfair(race, bookie_stake, win_stake, place_stake,
                        betfair_balance, win_matched, lay_matched,
                        arbritrage_profit, RETURNS_CSV):
     race['is_lay'] = True
     race['ew_stake'] = bookie_stake
     race['win_stake'] = win_stake
-    race['lay_stake'] = lay_stake
+    race['place_stake'] = place_stake
     race['betfair_balance'] = betfair_balance
     race['win_matched'] = win_matched
     race['lay_matched'] = lay_matched
@@ -33,9 +33,9 @@ def update_csv_betfair(race, bookie_stake, win_stake, lay_stake,
     csv_columns = [
         'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
         'balance', 'rating', 'current_time', 'expected_value',
-        'expected_return', 'win_stake', 'lay_odds', 'lay_odds_place',
-        'place_stake', 'betfair_balance', 'max_profit', 'is_lay',
-        'win_matched', 'lay_matched', 'arbritrage_profit'
+        'expected_return', 'win_stake', 'place_stake', 'lay_odds',
+        'lay_odds_place', 'place_stake', 'betfair_balance', 'max_profit',
+        'is_lay', 'win_matched', 'lay_matched', 'arbritrage_profit'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -237,7 +237,9 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
         profit = max_profit_ratio * win_stake
         if profit <= 0:
             return False, 0, 0, 0, 0
-        return True, bookie_stake, win_stake, place_stake, profit
+        return True, round(bookie_stake,
+                           2), round(win_stake, 2), round(place_stake,
+                                                          2), round(profit, 2)
     print('Stakes are too small to bet')
     print(
         f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
