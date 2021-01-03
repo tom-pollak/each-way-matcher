@@ -17,10 +17,7 @@ def output_profit():
                      index_col=7,
                      date_parser=custom_date_parser,
                      squeeze=True)
-    today = pd.date_range(datetime.datetime.now().strftime('%Y-%m-%d'),
-                          periods=1)
 
-    # print([df['balance'].isin(today).values[0]])
     starting_balance = df['balance'].values[0] + df['betfair_balance'].values[0]
     today_starting_balance = df.loc[datetime.datetime.now().strftime(
         '%Y-%m-%d')]['balance'].values[0] + df.loc[datetime.datetime.now(
