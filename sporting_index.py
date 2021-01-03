@@ -27,7 +27,7 @@ def output_race(driver, race):
     except KeyError:
         print('Key Error in output_race')
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
-    print(f"\tCurrent balance: {balance}, stake: {race['ew_stake']}")
+    print(f"\tCurrent balance: {balance}, stake: {race['ew_stake']}\n")
 
 
 def get_balance_sporting_index(driver, retry=False):
@@ -66,7 +66,7 @@ def make_sporting_index_bet(driver, race):
     for _ in range(3):
         try:
             WebDriverWait(driver, 60).until(
-                EC.visibility_of_element_located(
+                EC.element_to_be_clickable(
                     (By.CLASS_NAME,
                      'ng-pristine'))).send_keys(str(race['ew_stake']))
             break
@@ -77,8 +77,11 @@ def make_sporting_index_bet(driver, race):
 
     driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
     try:
-        driver.find_element_by_class_name('placeBetBtn').click()
-    except NoSuchElementException:
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable(
+                (By.CLASS_NAME, 'placeBetBtn'))).click()
+        # driver.find_element_by_class_name('placeBetBtn').click()
+    except (NoSuchElementException, StaleElementReferenceException):
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False

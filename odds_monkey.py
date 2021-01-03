@@ -181,8 +181,8 @@ def start_betfair(driver, race, headers, RETURNS_CSV):
         minutes_until_race = (
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
             datetime.now()).total_seconds() / 60
-        if minutes_until_race <= 2:
-            print('Race too close to start time')
+        if minutes_until_race <= 1:
+            # print('Race too close to start time')
             return True
 
         race['bookie_stake'] = bookie_stake
@@ -211,9 +211,10 @@ def scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME):
     driver.switch_to.window(driver.window_handles[0])
     while True:
         # So sporting index dosent logout
-        if count % 4 == 0:
+        if count % 5 == 0:
             refresh_sporting_index(driver)
-            show_info(count, START_TIME)
+            if count % 10 == 0:
+                show_info(count, START_TIME)
 
         bet = start_betfair(driver, race, headers, RETURNS_CSV)  # betfair
         # bet = False # remove when putting betfair in
