@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index
+from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
 from betfair_api import lay_ew, calculate_stakes, get_betfair_balance, output_lay_ew, login_betfair, update_csv_betfair
 
 
@@ -25,18 +25,19 @@ def show_info(count, START_TIME):
         sys.exit()
 
 
-def update_csv(race, headers, RETURNS_CSV):
+def update_csv(driver, race, headers, RETURNS_CSV):
     race['is_lay'] = False
     race['win_matched'] = 0
     race['lay_matched'] = 0
     race['arbritrage_profit'] = 0
+    race['balance'] = get_balance_sporting_index(driver)
     race['betfair_balance'] = get_betfair_balance(headers)
     csv_columns = [
         'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
         'balance', 'rating', 'current_time', 'expected_value',
-        'expected_return', 'win_stake', 'place_stake', 'lay_odds', 'lay_odds_place',
-        'betfair_balance', 'max_profit', 'is_lay', 'win_matched',
-        'lay_matched', 'arbritrage_profit'
+        'expected_return', 'win_stake', 'place_stake', 'lay_odds',
+        'lay_odds_place', 'betfair_balance', 'max_profit', 'is_lay',
+        'win_matched', 'lay_matched', 'arbritrage_profit'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -175,7 +176,7 @@ def start_sporting_index(driver, race, RETURNS_CSV, bet, headers):
         bet = True
         race, bet_made = sporting_index_bet(driver, race)
         if bet_made:
-            update_csv(race, headers, RETURNS_CSV)
+            update_csv(driver, race, headers, RETURNS_CSV)
     return bet
 
 
@@ -213,12 +214,14 @@ def start_betfair(driver, race, headers, RETURNS_CSV):
                                         race['lay_odds_place'], place_stake)
             print('Layed bets')
             betfair_balance = get_betfair_balance(headers)
+            sporting_index_balance = get_balance_sporting_index(driver)
             print('Got balance')
-            output_lay_ew(race, betfair_balance, profit, *lay_win, *lay_place)
+            output_lay_ew(race, betfair_balance, sporting_index_balance,
+                          profit, *lay_win, *lay_place)
             print('Outputted race')
-            update_csv_betfair(race, bookie_stake, win_stake, place_stake,
-                               betfair_balance, lay_win[3], lay_place[3],
-                               profit, RETURNS_CSV)
+            update_csv_betfair(race, sporting_index_balance, bookie_stake,
+                               win_stake, place_stake, betfair_balance,
+                               lay_win[3], lay_place[3], profit, RETURNS_CSV)
             print('Updated csv')
     return bet
 

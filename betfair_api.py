@@ -18,14 +18,15 @@ if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('Need to set betfair env vars')
 
 
-def update_csv_betfair(race, bookie_stake, win_stake, place_stake,
-                       betfair_balance, win_matched, lay_matched,
+def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
+                       place_stake, betfair_balance, win_matched, lay_matched,
                        arbritrage_profit, RETURNS_CSV):
     race['is_lay'] = True
     race['ew_stake'] = bookie_stake
     race['win_stake'] = win_stake
     race['place_stake'] = place_stake
     race['betfair_balance'] = betfair_balance
+    race['balance'] = sporting_index_balance
     race['win_matched'] = win_matched
     race['lay_matched'] = lay_matched
     race['arbritrage_profit'] = arbritrage_profit
@@ -65,9 +66,10 @@ def login_betfair():
     raise Exception("Can't login")
 
 
-def output_lay_ew(race, betfair_balance, profit, win_bet_made, win_is_matched,
-                  win_stake, win_matched, place_bet_made, place_is_matched,
-                  place_stake, place_matched):
+def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
+                  win_bet_made, win_is_matched, win_stake, win_matched,
+                  place_bet_made, place_is_matched, place_stake,
+                  place_matched):
     print(f"{race['horse_name']} - profit: £{profit}")
     print(f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} \
         Lay win: {race['lay_odds']} - {win_stake} \
@@ -83,7 +85,7 @@ def output_lay_ew(race, betfair_balance, profit, win_bet_made, win_is_matched,
 
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(
-        f"\tCurrent balance: {race['balance']}, betfair balance: {betfair_balance}"
+        f"\tCurrent balance: {sporting_index_balance}, betfair balance: {betfair_balance}"
     )
     print('Bet made\n')
 

@@ -16,7 +16,8 @@ def change_to_decimal(driver):
                       (By.ID, 'decimalBtn'))).click()
 
 
-def output_race(race, bet_made=True):
+def output_race(driver, race, bet_made=True):
+    balance = get_balance_sporting_index(driver)
     print(f"Bet found: {race['horse_name']} - {race['horse_odds']}")
     print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
     try:
@@ -26,7 +27,7 @@ def output_race(race, bet_made=True):
     except KeyError:
         pass
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
-    print(f"\tCurrent balance: {race['balance']}, stake: {race['ew_stake']}")
+    print(f"\tCurrent balance: {balance}, stake: {race['ew_stake']}")
     if bet_made:
         print('Bet made\n')
 
@@ -125,7 +126,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
-        output_race(race, bet_made=False)
+        output_race(driver, race, bet_made=False)
         return race, False
 
     if cur_odd_price in ['', 'SUSP']:
@@ -134,7 +135,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
-        output_race(race, bet_made=False)
+        output_race(driver, race, bet_made=False)
         print('cur_odd_price is an empty string')
 
     cur_odd_price_frac = cur_odd_price.split('/')
@@ -149,14 +150,14 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                                 race['lay_odds_place'],
                                                 race['place'], race['balance'])
     if race['ew_stake'] < 0.1:
-        output_race(race, bet_made=False)
+        output_race(driver, race, bet_made=False)
         print('Stake is too small')
         return race, False
 
     if float(cur_odd_price) == float(race['horse_odds']):
         bet_made = make_sporting_index_bet(driver, race)
         if not make_betfair_ew:
-            output_race(race, bet_made)
+            output_race(driver, race, bet_made)
             if not bet_made:
                 print('Odds have changed')
     else:
