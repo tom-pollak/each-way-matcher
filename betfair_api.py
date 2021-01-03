@@ -13,7 +13,7 @@ APP_KEY = os.environ.get('APP_KEY')
 USERNAME = os.environ.get('BETFAIR_USR')
 PASSWORD = os.environ.get('BETFAIR_PASS')
 if None in (USERNAME, PASSWORD, APP_KEY):
-    raise Exception('Need to set betfair env vars')
+    raise Exception('betfair env vars not set')
 
 
 def login_betfair():

@@ -11,14 +11,14 @@ from selenium.webdriver.common.by import By
 from odds_monkey import scrape
 from time import sleep
 
-RETURNS_CSV = 'returns/returns.csv'
-REFRESH_TIME = 35
 START_TIME = time()
 load_dotenv(dotenv_path='.env')
 ODD_M_USER = os.environ.get('ODD_M_USER')
 ODD_M_PASS = os.environ.get('ODD_M_PASS')
 S_INDEX_USER = os.environ.get('S_INDEX_USER')
 S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
+if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
+    raise Exception('sporting index or oddsmonkey env variables not set')
 
 
 def login():
@@ -76,9 +76,10 @@ while True:
         driver = webdriver.Chrome(options=chrome_options)
         sys.stdout.flush()
         login()
-        scrape(driver, RETURNS_CSV, REFRESH_TIME, START_TIME)
+        scrape(driver, START_TIME)
     except KeyboardInterrupt:
         print('Exiting')
+        driver.quit()
         sys.exit()
     except Exception as e:
         print('Error occured: %s' % e)

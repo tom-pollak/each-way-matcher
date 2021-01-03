@@ -2,8 +2,10 @@ from betfair_api import get_betfair_balance
 from sporting_index import get_balance_sporting_index
 from csv import DictWriter
 
+RETURNS_CSV = 'returns/returns.csv'
 
-def update_csv_sporting_index(driver, race, headers, RETURNS_CSV):
+
+def update_csv_sporting_index(driver, race, headers):
     race['is_lay'] = False
     race['win_matched'] = 0
     race['lay_matched'] = 0
@@ -26,7 +28,7 @@ def update_csv_sporting_index(driver, race, headers, RETURNS_CSV):
 
 def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
                        place_stake, betfair_balance, win_matched, lay_matched,
-                       arbritrage_profit, RETURNS_CSV):
+                       arbritrage_profit):
     race['is_lay'] = True
     race['ew_stake'] = bookie_stake
     race['win_stake'] = win_stake
