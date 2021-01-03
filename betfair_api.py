@@ -34,8 +34,8 @@ def update_csv_betfair(race, bookie_stake, win_stake, place_stake,
         'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
         'balance', 'rating', 'current_time', 'expected_value',
         'expected_return', 'win_stake', 'place_stake', 'lay_odds',
-        'lay_odds_place', 'place_stake', 'betfair_balance', 'max_profit',
-        'is_lay', 'win_matched', 'lay_matched', 'arbritrage_profit'
+        'lay_odds_place', 'betfair_balance', 'max_profit', 'is_lay',
+        'win_matched', 'lay_matched', 'arbritrage_profit'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -119,7 +119,6 @@ def get_event(venue, race_time, headers):
     try:
         event_id = event_response['result'][0]['event']['id']
     except (KeyError, IndexError):
-        print(event_response)
         print('Exception from API-NG' + str(event_response['result']['error']))
     return event_id
 
@@ -142,7 +141,7 @@ def get_horses(target_horse, event_id, race_time, headers):
         "marketProjection": ["RUNNER_DESCRIPTION"]}}' % (event_id, race_time,
                                                          race_time_after)
     markets_response = json.loads(call_api(markets_req, headers))
-    print(markets_response)
+    # print(markets_response)
 
     try:
         market_type = markets_response['result']
@@ -168,14 +167,14 @@ def lay_bets(market_id, selection_id, price, stake, headers):
     matched = False
     bet_made = False
     stake_matched = 0
-    print(market_id, selection_id, round(stake, 2), price)
+    # print(market_id, selection_id, round(stake, 2), price)
     bet_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
         "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}' % (
         market_id, selection_id, round(stake, 2), price)
     bet_res = json.loads(call_api(bet_req, headers))
-    print(bet_res)
+    # print(bet_res)
     try:
         if bet_res['result']['status'] == 'SUCCESS':
             bet_made = True
@@ -249,20 +248,14 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
 
 def lay_ew(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
            place_stake):
-    print('Started lay_ew')
     race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
     event_id = get_event(venue, race_time, headers)
-    print('Got event')
     markets_ids, selection_id = get_horses(horse, event_id, race_time, headers)
-    print('Got ids')
     lay_win, win_matched, win_stake_matched = lay_bets(markets_ids['Win'],
                                                        selection_id, win_odds,
                                                        win_stake, headers)
-    print('Layed win bet')
     lay_place, place_matched, place_stake_matched = lay_bets(
         markets_ids['Place'], selection_id, place_odds, place_stake, headers)
-    print('Layed place bet')
-    # print('Lay win: %s\tLay place: %s' % (lay_win, lay_place))
     return ((lay_win, win_matched, win_stake, win_stake_matched),
             (lay_place, place_matched, place_stake, place_stake_matched))
 

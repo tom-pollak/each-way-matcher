@@ -34,9 +34,9 @@ def update_csv(race, headers, RETURNS_CSV):
     csv_columns = [
         'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
         'balance', 'rating', 'current_time', 'expected_value',
-        'expected_return', 'win_stake', 'lay_odds', 'lay_odds_place',
-        'place_stake', 'betfair_balance', 'max_profit', 'is_lay',
-        'win_matched', 'lay_matched', 'arbritrage_profit'
+        'expected_return', 'win_stake', 'place_stake', 'lay_odds', 'lay_odds_place',
+        'betfair_balance', 'max_profit', 'is_lay', 'win_matched',
+        'lay_matched', 'arbritrage_profit'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
