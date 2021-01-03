@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 
 from calculate_odds import kelly_criterion
-from betfair_api import get_betfair_balance
 
 
 def change_to_decimal(driver):
