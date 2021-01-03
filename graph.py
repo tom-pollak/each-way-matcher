@@ -72,14 +72,15 @@ def plot_bal_time_series_graph():
     balance = df['balance'] + df['betfair_balance']
     plt.plot(balance)
 
-    for i, b in enumerate(balance):
-        balance[i] = b + calc_unfinished_races(i)
+    for i in range(len(balance)):
+        # print(balance[i], calc_unfinished_races(i))
+        balance[i] += calc_unfinished_races(i)
 
     plt.plot(balance)
 
     expected_return = df['expected_return'] + df['arbritrage_profit']
-    starting_balance = df['balance'].values[0] + df['betfair_balance'].values[0]
-    expected_return[0] += starting_balance
+    # starting_balance = df['balance'].values[0] + df['betfair_balance'].values[0]
+    expected_return[0] += STARTING_BALANCE
     expected_return.cumsum().plot()
 
     plt.gcf().autofmt_xdate()
