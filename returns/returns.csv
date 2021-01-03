@@ -1,5 +1,5 @@
 date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,lay_odds,lay_odds_place,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit
 03 Jan 14:02 2021,Finisk River,3.25,Catterick,2.40,63.91,95.13,03/01/2021 08:06:11,0,0,2.0,2.81,3.95,1.29,93.28,1.56,True,2.0,0.0,0.23
-03 Jan 14:02 2021,Frimeur De Lancray,2.25,Catterick,0.58,59.11,99.91,03/01/2021 08:06:56,1.67%,0.01,2.42,1.15,79.55,93.28,0.12,False,0,0,0
-03 Jan 14:02 2021,Finisk River,3.25,Catterick,2.40,57.95,95.13,03/01/2021 08:07:35,0,0,2.0,3.95,1.29,86.57,1.56,True,2.0,0.0,0.23
+03 Jan 14:02 2021,Frimeur De Lancray,2.25,Catterick,0.58,59.11,99.91,03/01/2021 08:06:56,1.67%,0.01,2.42,1.15,0,0,93.28,0.12,False,0,0,0
+03 Jan 14:02 2021,Finisk River,3.25,Catterick,2.40,57.95,95.13,03/01/2021 08:07:35,0,0,2.0,3.95,3.95,1.29,86.57,1.56,True,2.0,0.0,0.23
 03 Jan 14:02 2021,Gold Desert,3.75,Catterick,2.32,53.15,95.89,03/01/2021 09:05:30,0,0,2.0,2.68,4.4,1.39,87.57,1.36,True,2.0,2.68,0.19

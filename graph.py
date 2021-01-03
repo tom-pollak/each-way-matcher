@@ -13,7 +13,7 @@ def plot_bal_time_series_graph():
     plt.plot(balance)
 
     expected_return = df['expected_return'] + df['arbritrage_profit']
-    starting_balance = df['balance'].values[0]
+    starting_balance = df['balance'].values[0] + df['betfair_balance'].values[0]
     expected_return[0] += starting_balance
     expected_return.cumsum().plot()
 
