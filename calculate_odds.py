@@ -1,14 +1,6 @@
-import datetime
-import time
 import math
-import pandas as pd
 
 MIN_PERCENTAGE_BALANCE = 0
-RETURNS_CSV = 'returns/returns.csv'
-
-
-def custom_date_parser(x):
-    return datetime.datetime(*(time.strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 
 def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
@@ -86,30 +78,6 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
         f'Bookie stake: {round(bookie_stake, 2)} Win stake: {round(win_stake, 2)} Place stake: {round(place_stake, 2)}\n'
     )
     return False, 0, 0, 0, 0
-
-
-def output_profit():
-    df = pd.read_csv(RETURNS_CSV,
-                     header=0,
-                     parse_dates=[7],
-                     index_col=7,
-                     date_parser=custom_date_parser,
-                     squeeze=True)
-    today = pd.date_range(datetime.datetime.now().strftime('%Y-%m-%d'),
-                          periods=1)
-
-    # print([df['balance'].isin(today).values[0]])
-    starting_balance = df['balance'].values[0] + df['betfair_balance'].values[0]
-    today_starting_balance = df.loc[datetime.datetime.now().strftime(
-        '%Y-%m-%d')]['balance'].values[0] + df.loc[datetime.datetime.now(
-        ).strftime('%Y-%m-%d')]['betfair_balance'].values[0]
-
-    current_balance = df['balance'].values[-1] + df['betfair_balance'].values[
-        -1]
-    total_profit = current_balance - starting_balance
-    profit_today = current_balance - today_starting_balance
-    print(f'Total profit: {total_profit}')
-    print(f'Profit today: {profit_today}')
 
 
 # kelly_criterion(12, 12, 3.2, 5, 10000)
