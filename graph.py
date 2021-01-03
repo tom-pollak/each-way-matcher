@@ -31,7 +31,10 @@ def calc_unfinished_races(index=-1):
 
 
 def output_profit():
-    starting_balance = df['balance'].values[0] + df['betfair_balance'].values[0]
+    # starting_balance = df['balance'].values[0] + df['betfair_balance'].values[
+    #     0] + calc_unfinished_races(0)
+    # 03 Jan 00:01 2021,Starting Balance,2.25,N/A,0.58,59.11,99.91,03/01/2021 00:00:00,0%,0,2.42,1.15,0,0,93.28,0.12,False,0,0,0
+    starting_balance = 163.91
     today_starting_balance = df.loc[datetime.datetime.now().strftime(
         '%Y-%m-%d')]['balance'].values[0] + df.loc[datetime.datetime.now(
         ).strftime('%Y-%m-%d')]['betfair_balance'].values[0]
