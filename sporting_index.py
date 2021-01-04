@@ -77,10 +77,10 @@ def make_sporting_index_bet(driver, race):
 
     driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
     try:
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable(
-                (By.CLASS_NAME, 'placeBetBtn'))).click()
-        # driver.find_element_by_class_name('placeBetBtn').click()
+        # WebDriverWait(driver, 60).until(
+        #     EC.element_to_be_clickable(
+        #         (By.CLASS_NAME, 'placeBetBtn'))).click()
+        driver.find_element_by_class_name('placeBetBtn').click()
     except (NoSuchElementException, StaleElementReferenceException):
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
