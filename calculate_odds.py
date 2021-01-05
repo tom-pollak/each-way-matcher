@@ -47,16 +47,19 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     bookie_stake *= liabiltity_ratio
     win_stake *= liabiltity_ratio
     place_stake *= liabiltity_ratio
+    max_stake = bookie_stake + win_stake + place_stake
 
     if win_stake >= 2 and place_stake >= 2 and bookie_stake >= 0.1:
         min_stake_proportion = max(2 / min(win_stake, place_stake),
                                    0.1 / bookie_stake)
-        min_stake = min_stake_proportion * (bookie_stake + win_stake +
-                                            place_stake)
+        min_stake = min_stake_proportion * (max_stake)
         min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance +
                                                        bookie_balance)
-        if min_stake < min_balance_staked:
-            min_stake_proportion = MIN_PERCENTAGE_BALANCE
+        if min_balance_staked > min_stake:
+            if min_balance_staked >= max_stake:
+                min_stake_proportion = 1
+            else:
+                min_stake_proportion = max_stake / min_balance_staked
 
         bookie_stake *= min_stake_proportion
         win_stake *= min_stake_proportion
@@ -75,3 +78,4 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
 
 
 # kelly_criterion(12, 12, 3.2, 5, 10000)
+print(calculate_stakes(200, 200, 5, 5, 6, 5, 1.25, 5))
