@@ -19,14 +19,15 @@ def calc_unfinished_races(index=-1):
             df.index.values[index]) & (df.index <= df.index.values[index])
     races = df.loc[mask]
     for index, row in races.iterrows():
-        if not row['is_lay']:
-            stake = row['ew_stake'] * 2
-            liability = 0
-        else:
-            stake = row['ew_stake'] + row['win_stake'] + row['place_stake']
+        stake = row['ew_stake'] * 2
+        # print(row['win_stake'], row['lay_odds'], row['place_stake'],
+        #       row['lay_odds_place'])
+        if row['is_lay']:
             liability = row['win_stake'] * (row['lay_odds'] -
                                             1) + row['place_stake'] * (
                                                 row['lay_odds_place'] - 1)
+        else:
+            liability = 0
         in_bet_balance += (stake + liability)
     return round(in_bet_balance, 2)
 
@@ -35,9 +36,17 @@ def output_profit():
     # starting_balance = df['balance'].values[0] + df['betfair_balance'].values[
     #     0] + calc_unfinished_races(0)
     # 03 Jan 00:01 2021,Starting Balance,2.25,N/A,0.58,59.11,99.91,03/01/2021 00:00:00,0%,0,2.42,1.15,0,0,93.28,0.12,False,0,0,0
+    today_first_bet = df.loc[datetime.datetime.now().strftime(
+        '%Y-%m-%d')].index.values[0]
+    count = 0
+    for index, row in df.iterrows():
+        if today_first_bet == index:
+            break
+        count += 1
     today_starting_balance = df.loc[datetime.datetime.now().strftime(
-        '%Y-%m-%d')]['balance'].values[0] + df.loc[datetime.datetime.now(
-        ).strftime('%Y-%m-%d')]['betfair_balance'].values[0]
+        '%Y-%m-%d')]['balance'].values[0] + df.loc[
+            datetime.datetime.now().strftime('%Y-%m-%d')][
+                'betfair_balance'].values[0] + calc_unfinished_races(count)
 
     current_sporting_index_balance = df['balance'].values[-1]
     current_betfair_balance = df['betfair_balance'].values[-1]

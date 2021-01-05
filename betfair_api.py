@@ -42,12 +42,13 @@ def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
                   place_bet_made, place_is_matched, place_stake,
                   place_matched):
     print(f"\nArb bet made: {race['horse_name']} - profit: £{profit}")
-    print(f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} \
-        Lay win: {race['lay_odds']} - {win_stake} \
-        Lay place: {race['lay_odds_place']} - {place_stake}")
+    print(
+        f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {win_stake} Lay place: {race['lay_odds_place']} - {place_stake}"
+    )
 
-    print(f"\t Lay win: {win_bet_made} - is matched: {win_is_matched} \
-        Lay place: {place_bet_made} is matched {place_is_matched}")
+    print(
+        f"\t Lay win: {win_bet_made} - is matched: {win_is_matched} Lay place: {place_bet_made} is matched: {place_is_matched}"
+    )
 
     if not win_is_matched:
         print(f"\tLay win matched size: {win_matched}")
