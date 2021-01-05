@@ -112,7 +112,7 @@ def refresh_odds_monkey(driver):
             By.XPATH,
             '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
         ))).click()
-    # wait till spinner disappeared
+    # wait until spinner disappeared
     WebDriverWait(driver, 60).until(
         EC.invisibility_of_element_located((
             By.ID,
@@ -184,7 +184,7 @@ def start_betfair(driver, race, headers):
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
             datetime.now()).total_seconds() / 60
         if minutes_until_race <= 1:
-            # print('Race too close to start time')
+            print('Race too close to start time')
             return True
 
         race['bookie_stake'] = bookie_stake
@@ -206,7 +206,6 @@ def start_betfair(driver, race, headers):
 
 def scrape(driver, START_TIME):
     race = setup_sporting_index(driver)
-    # uncomment these for betfair api
     open_betfair_oddsmonkey(driver)
     headers = login_betfair()
     count = 0
@@ -218,7 +217,7 @@ def scrape(driver, START_TIME):
             if count % 10 == 0:
                 show_info(count, START_TIME)
 
-        bet = start_betfair(driver, race, headers)  # betfair
+        bet = start_betfair(driver, race, headers)
         # bet = False # remove when putting betfair in
         bet = start_sporting_index(driver, race, bet, headers)
         sys.stdout.flush()
