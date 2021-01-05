@@ -1,6 +1,6 @@
 import math
 
-MIN_PERCENTAGE_BALANCE = 0.2
+MIN_PERCENTAGE_BALANCE = 0.4
 
 
 def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
