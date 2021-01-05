@@ -47,7 +47,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     bookie_stake *= liabiltity_ratio
     win_stake *= liabiltity_ratio
     place_stake *= liabiltity_ratio
-    max_stake = bookie_stake + win_stake + place_stake
+    max_stake = bookie_stake * 2 + win_stake + place_stake
 
     if win_stake >= 2 and place_stake >= 2 and bookie_stake >= 0.1:
         min_stake_proportion = max(2 / min(win_stake, place_stake),
