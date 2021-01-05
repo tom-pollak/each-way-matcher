@@ -147,7 +147,6 @@ def lay_bets(market_id, selection_id, price, stake, headers):
         "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}' % (
         market_id, selection_id, round(stake, 2), price)
     bet_res = json.loads(call_api(bet_req, headers))
-    # print(bet_res)
     try:
         if bet_res['result']['status'] == 'SUCCESS':
             bet_made = True
@@ -157,7 +156,10 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 matched = True
 
     except KeyError:
-        print('Error:' + bet_res['error'])
+        try:
+            print('Error in bet response: %s' % bet_res['error'])
+        except KeyError:
+            print('Unknown error making bet: %s' % bet_res)
     return bet_made, matched, stake_matched
 
 
