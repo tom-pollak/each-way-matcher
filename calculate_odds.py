@@ -78,4 +78,4 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
 
 
 # kelly_criterion(12, 12, 3.2, 5, 10000)
-print(calculate_stakes(200, 200, 5, 5, 6, 5, 1.25, 5))
+# print(calculate_stakes(200, 200, 5, 5, 6, 5, 1.25, 5))
