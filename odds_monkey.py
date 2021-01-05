@@ -169,6 +169,7 @@ def start_betfair(driver, race, headers):
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
+        print('Found arbitrage bet')
         race.update(find_races(driver, hide=False))
         if race['max_profit'] <= 0:
             return True
