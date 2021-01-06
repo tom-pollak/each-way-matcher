@@ -1,4 +1,5 @@
 import datetime
+import sys
 import time
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -118,3 +119,4 @@ df = pd.read_csv(RETURNS_CSV,
 
 output_profit()
 plot_bal_time_series_graph()
+sys.stdout.flush()
