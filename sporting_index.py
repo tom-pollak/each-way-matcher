@@ -37,7 +37,6 @@ def get_balance_sporting_index(driver, retry=False):
             EC.visibility_of_element_located(
                 (By.CLASS_NAME, 'btn-balance'))).text
         count = 0
-        print(balance)
         while balance == 'BALANCE' and count < 10:
             sleep(0.5)
             balance = driver.find_element_by_class_name('btn-balance').text
