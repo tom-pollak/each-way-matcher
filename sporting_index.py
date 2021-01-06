@@ -70,7 +70,7 @@ def make_sporting_index_bet(driver, race):
                     (By.CLASS_NAME,
                      'ng-pristine'))).send_keys(str(race['ew_stake']))
             break
-        except StaleElementReferenceException:
+        except (TimeoutException, StaleElementReferenceException):
             driver.refresh()
     else:
         return False
