@@ -3,4 +3,4 @@ cd ~/each-way-matcher
 git pull -q
 xvfb-run -a python3 main.py & 
 wait
-./update_returns.sh &> /dev/null
+./update_returns.sh
