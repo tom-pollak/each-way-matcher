@@ -92,7 +92,10 @@ def get_event(venue, race_time, headers):
     try:
         event_id = event_response['result'][0]['event']['id']
     except (KeyError, IndexError):
-        print('Exception from API-NG' + str(event_response['result']['error']))
+        try:
+            print('Error in getting event: %s' % event_response['error'])
+        except KeyError:
+            print('Unknown error getting event: %s' % event_response)
     return event_id
 
 
@@ -119,8 +122,10 @@ def get_horses(target_horse, event_id, race_time, headers):
     try:
         market_type = markets_response['result']
     except IndexError:
-        print('Exception from API-NG' +
-              str(markets_response['result']['error']))
+        try:
+            print('Error in getting market: %s' % markets_response['error'])
+        except KeyError:
+            print('Unknown error getting market: %s' % markets_response)
 
     total_matched = 0
     for market in market_type:
