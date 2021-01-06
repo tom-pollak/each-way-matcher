@@ -205,5 +205,5 @@ def lay_ew(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
             (lay_place, place_matched, place_stake, place_stake_matched))
 
 
-headers = login_betfair()
-cancel_unmatched_bets(headers)
+# headers = login_betfair()
+# cancel_unmatched_bets(headers)
