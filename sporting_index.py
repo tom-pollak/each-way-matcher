@@ -94,7 +94,7 @@ def make_sporting_index_bet(driver, race):
 
 def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
-    driver.get(race['win_exchange'])
+    driver.get(race['bookie_exchange'])
     # driver.get(
     #     'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
     # WebDriverWait(driver, 60).until(
