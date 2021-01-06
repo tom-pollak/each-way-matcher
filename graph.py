@@ -48,7 +48,7 @@ def output_profit():
                 break
             count += 1
 
-        today_starting_balance = df.loc[datetime.datetime.now().strftime(
+        return df.loc[datetime.datetime.now().strftime(
             '%Y-%m-%d')]['balance'].values[0] + df.loc[
                 datetime.datetime.now().strftime('%Y-%m-%d')][
                     'betfair_balance'].values[0] + calc_unfinished_races(count)

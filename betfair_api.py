@@ -196,8 +196,7 @@ def get_betfair_balance(headers):
 
 def get_race(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
              place_stake):
-    race_time, got_race = datetime.datetime.strptime(race_time,
-                                                     '%d %b %H:%M %Y')
+    race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
     event_id = get_event(venue, race_time, headers)
     if not event_id:
         return 0, 0, False
