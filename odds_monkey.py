@@ -188,8 +188,9 @@ def start_betfair(driver, race, headers):
             return True
 
         market_id, selection_id, got_race = get_race(
-            headers, race['date_of_race'], race['venue'], race['horse_name'],
-            race['lay_odds'], win_stake, race['lay_odds_place'], place_stake)
+            headers, race['date_of_race'], race['race_venue'],
+            race['horse_name'], race['lay_odds'], win_stake,
+            race['lay_odds_place'], place_stake)
         if not got_race:
             print("Race not found API")
             return True

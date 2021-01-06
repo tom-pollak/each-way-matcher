@@ -36,17 +36,24 @@ def output_profit():
     # starting_balance = df['balance'].values[0] + df['betfair_balance'].values[
     #     0] + calc_unfinished_races(0)
     # 03 Jan 00:01 2021,Starting Balance,2.25,N/A,0.58,59.11,99.91,03/01/2021 00:00:00,0%,0,2.42,1.15,0,0,93.28,0.12,False,0,0,0
-    today_first_bet = df.loc[datetime.datetime.now().strftime(
-        '%Y-%m-%d')].index.values[0]
-    count = 0
-    for index, row in df.iterrows():
-        if today_first_bet == index:
-            break
-        count += 1
-    today_starting_balance = df.loc[datetime.datetime.now().strftime(
-        '%Y-%m-%d')]['balance'].values[0] + df.loc[
-            datetime.datetime.now().strftime('%Y-%m-%d')][
-                'betfair_balance'].values[0] + calc_unfinished_races(count)
+    def get_today_starting_balance():
+        try:
+            today_first_bet = df.loc[datetime.datetime.now().strftime(
+                '%Y-%m-%d')].index.values[0]
+        except KeyError:
+            return None
+        count = 0
+        for index, row in df.iterrows():
+            if today_first_bet == index:
+                break
+            count += 1
+
+        today_starting_balance = df.loc[datetime.datetime.now().strftime(
+            '%Y-%m-%d')]['balance'].values[0] + df.loc[
+                datetime.datetime.now().strftime('%Y-%m-%d')][
+                    'betfair_balance'].values[0] + calc_unfinished_races(count)
+
+    today_starting_balance = get_today_starting_balance()
 
     current_sporting_index_balance = df['balance'].values[-1]
     current_betfair_balance = df['betfair_balance'].values[-1]
@@ -54,7 +61,10 @@ def output_profit():
     current_balance = current_sporting_index_balance + current_betfair_balance + in_bet_balance
 
     total_profit = round(current_balance - STARTING_BALANCE, 2)
-    profit_today = round(current_balance - today_starting_balance, 2)
+    if not today_starting_balance:
+        profit_today = 0
+    else:
+        profit_today = round(current_balance - today_starting_balance, 2)
     if total_profit == 0: total_percentage_profit = 0
     else:
         total_percentage_profit = round(
