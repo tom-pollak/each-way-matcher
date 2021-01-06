@@ -50,7 +50,7 @@ def login():
     # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
     driver.find_element_by_id('passwordCompact').send_keys(S_INDEX_PASS)
     driver.find_element_by_id('submitLogin').click()
-    sleep(0.5)
+    sleep(10)
     print('Logged in')
     sys.stdout.flush()
 
