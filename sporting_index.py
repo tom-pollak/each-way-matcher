@@ -94,13 +94,14 @@ def make_sporting_index_bet(driver, race):
 
 def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
-    driver.get(
-        'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
-    WebDriverWait(driver, 60).until(
-        EC.presence_of_element_located((
-            By.XPATH,
-            f"//th[contains(text(), '{race['race_venue']}')]/../../../tbody/tr/td/span/a/strong[contains(text(), '{race['race_time']}')]/.."
-        ))).click()
+    driver.get(race['win_exchange'])
+    # driver.get(
+    #     'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
+    # WebDriverWait(driver, 60).until(
+    #     EC.presence_of_element_located((
+    #         By.XPATH,
+    #         f"//th[contains(text(), '{race['race_venue']}')]/../../../tbody/tr/td/span/a/strong[contains(text(), '{race['race_time']}')]/.."
+    #     ))).click()
 
 
 def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):

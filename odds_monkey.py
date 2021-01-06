@@ -46,8 +46,8 @@ def find_races(driver, hide=True):
     horse_odds = driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[13]').text
 
-    win_exchange = driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[14]//a'
+    bookie_exchange = driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[10]/a'
     ).get_attribute('href')
 
     rating = driver.find_element_by_xpath(
@@ -91,7 +91,7 @@ def find_races(driver, hide=True):
         'horse_name': horse_name,
         'horse_odds': float(horse_odds),
         'race_venue': race_venue,
-        'win_exchange': win_exchange,
+        'bookie_exchange': bookie_exchange,
         'rating': float(rating),
         'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
         'lay_odds': float(lay_odds),

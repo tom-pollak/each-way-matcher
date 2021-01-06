@@ -83,11 +83,12 @@ def get_event(venue, race_time, headers):
     race_time_after = race_time_after.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     event_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listEvents", \
-        "params": {"filter": {"eventTypeIds": ["7"], "marketTypeCodes": ["EACH_WAY"], \
+        "params": {"filter": {"eventTypeIds": ["7"], "marketTypeCodes": ["WIN"], \
         "marketStartTime": {"from": "%s", "to": "%s"}, "venues":["%s"]}, \
         "sort":"FIRST_TO_START","maxResults":"1"}}' % (race_time,
                                                        race_time_after, venue)
     event_response = json.loads(call_api(event_req, headers))
+    print(event_response)
 
     try:
         event_id = event_response['result'][0]['event']['id']
@@ -217,3 +218,7 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
 
 # headers = login_betfair()
 # cancel_unmatched_bets(headers)
+# headers = login_betfair()
+# event_id = get_race(headers, '07 Jan 17:30 2021', 'Wolverhampton',
+#                     'Book Of Secrets')
+# print(event_id)
