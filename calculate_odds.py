@@ -77,5 +77,9 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     return False, 0, 0, 0, 0
 
 
+def calculate_arb(bookie_odds, win_odds, place_odds, place, available):
+    pass
+
+
 # kelly_criterion(12, 12, 3.2, 5, 10000)
 # print(calculate_stakes(200, 200, 5, 5, 6, 5, 1.25, 5))

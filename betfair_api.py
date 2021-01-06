@@ -136,6 +136,12 @@ def get_horses(target_horse, event_id, race_time, headers):
     return markets_ids, selection_id
 
 
+def cancel_unmatched_bets(headers):
+    cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 1}'
+    cancel_res = json.loads(call_api(cancel_req, headers))
+    print(cancel_res)
+
+
 def lay_bets(market_id, selection_id, price, stake, headers):
     matched = False
     bet_made = False
@@ -154,13 +160,23 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'sizeMatched']
             if stake_matched == stake:
                 matched = True
+            else:
+                unmatched_stake = stake - stake_matched
+                cancel_unmatched_bets(headers)
+                _, matched, _, unmatched_price = lay_bets(
+                    market_id, selection_id, price + 0.01, unmatched_stake,
+                    headers)
+                if stake_matched + unmatched_stake != stake:
+                    print('ERROR calculating stake')
+                price = (stake_matched * price +
+                         unmatched_stake * unmatched_price) / stake
 
     except KeyError:
         try:
             print('Error in bet response: %s' % bet_res['error'])
         except KeyError:
             print('Unknown error making bet: %s' % bet_res)
-    return bet_made, matched, stake_matched
+    return bet_made, matched, stake_matched, price
 
 
 def get_betfair_balance(headers):
@@ -176,10 +192,13 @@ def lay_ew(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
     race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
     event_id = get_event(venue, race_time, headers)
     markets_ids, selection_id = get_horses(horse, event_id, race_time, headers)
-    lay_win, win_matched, win_stake_matched = lay_bets(markets_ids['Win'],
-                                                       selection_id, win_odds,
-                                                       win_stake, headers)
-    lay_place, place_matched, place_stake_matched = lay_bets(
+    lay_win, win_matched, win_stake_matched, win_odds = lay_bets(
+        markets_ids['Win'], selection_id, win_odds, win_stake, headers)
+    lay_place, place_matched, place_stake_matched, place_odds = lay_bets(
         markets_ids['Place'], selection_id, place_odds, place_stake, headers)
     return ((lay_win, win_matched, win_stake, win_stake_matched),
             (lay_place, place_matched, place_stake, place_stake_matched))
+
+
+headers = login_betfair()
+cancel_unmatched_bets(headers)
