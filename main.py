@@ -70,7 +70,7 @@ while True:
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("start-maximized")
         # chrome_options.add_argument("disable-infobars")
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         prefs = {"profile.default_content_setting_values.notifications": 2}
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(options=chrome_options)
