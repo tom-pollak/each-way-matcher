@@ -96,6 +96,7 @@ def get_event(venue, race_time, headers):
             print('Error in getting event: %s' % event_response['error'])
         except KeyError:
             print('Unknown error getting event: %s' % event_response)
+        return False
     return event_id
 
 
@@ -126,6 +127,7 @@ def get_horses(target_horse, event_id, race_time, headers):
             print('Error in getting market: %s' % markets_response['error'])
         except KeyError:
             print('Unknown error getting market: %s' % markets_response)
+        return 0, 0, False
 
     total_matched = 0
     for market in market_type:
@@ -138,7 +140,7 @@ def get_horses(target_horse, event_id, race_time, headers):
             total_matched = market['totalMatched']
 
     selection_id = get_horse_id(market_type[0], target_horse)
-    return markets_ids, selection_id
+    return markets_ids, selection_id, True
 
 
 def cancel_unmatched_bets(headers):
@@ -192,11 +194,21 @@ def get_betfair_balance(headers):
     return balance
 
 
-def lay_ew(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
-           place_stake):
-    race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
+def get_race(headers, race_time, venue, horse, win_odds, win_stake, place_odds,
+             place_stake):
+    race_time, got_race = datetime.datetime.strptime(race_time,
+                                                     '%d %b %H:%M %Y')
     event_id = get_event(venue, race_time, headers)
-    markets_ids, selection_id = get_horses(horse, event_id, race_time, headers)
+    if not event_id:
+        return 0, 0, False
+
+    markets_ids, selection_id, got_horse = get_horses(horse, event_id,
+                                                      race_time, headers)
+    return markets_ids, selection_id, got_horse
+
+
+def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
+           place_odds, headers):
     lay_win, win_matched, win_stake_matched, win_odds = lay_bets(
         markets_ids['Win'], selection_id, win_odds, win_stake, headers)
     lay_place, place_matched, place_stake_matched, place_odds = lay_bets(

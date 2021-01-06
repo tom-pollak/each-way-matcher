@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index, output_race
-from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair
+from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair, get_race
 from calculate_odds import calculate_stakes
 from write_to_csv import update_csv_sporting_index, update_csv_betfair
 
@@ -187,13 +187,18 @@ def start_betfair(driver, race, headers):
             print('Race too close to start time')
             return True
 
+        market_id, selection_id, got_race = get_race(
+            headers, race['date_of_race'], race['venue'], race['horse_name'],
+            race['lay_odds'], win_stake, race['lay_odds_place'], place_stake)
+        if not got_race:
+            print("Race not found API")
+            return True
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
-            lay_win, lay_place = lay_ew(headers, race['date_of_race'],
-                                        race['race_venue'], race['horse_name'],
-                                        race['lay_odds'], win_stake,
-                                        race['lay_odds_place'], place_stake)
+            lay_win, lay_place = lay_ew(market_id, selection_id, win_stake,
+                                        race['lay_odds'], place_stake,
+                                        race['lay_odds_place'], headers)
             betfair_balance = get_betfair_balance(headers)
             sporting_index_balance = get_balance_sporting_index(driver)
             output_lay_ew(race, betfair_balance, sporting_index_balance,
