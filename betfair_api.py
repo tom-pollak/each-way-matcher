@@ -88,7 +88,6 @@ def get_event(venue, race_time, headers):
         "sort":"FIRST_TO_START","maxResults":"1"}}' % (race_time,
                                                        race_time_after, venue)
     event_response = json.loads(call_api(event_req, headers))
-    print(event_response)
 
     try:
         event_id = event_response['result'][0]['event']['id']
