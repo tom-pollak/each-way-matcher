@@ -168,7 +168,6 @@ def start_sporting_index(driver, race, bet, headers):
 
 
 def start_betfair(driver, race, headers):
-    bet = False
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
@@ -183,7 +182,7 @@ def start_betfair(driver, race, headers):
             race['lay_odds_place'], race['max_profit'])
         bet = True
         if not stakes_ok:
-            return True
+            return False
         minutes_until_race = (
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
             datetime.now()).total_seconds() / 60
@@ -191,19 +190,18 @@ def start_betfair(driver, race, headers):
             print('Race too close to start time')
             return True
 
-        market_id, selection_id, got_race = get_race(headers,
-                                                     race['date_of_race'],
-                                                     race['race_venue'],
-                                                     race['horse_name'])
+        market_ids, selection_id, got_race = get_race(race['date_of_race'],
+                                                      race['race_venue'],
+                                                      race['horse_name'])
         if not got_race:
             print("Race not found API")
             return True
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
-            lay_win, lay_place = lay_ew(market_id, selection_id, win_stake,
+            lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
                                         race['lay_odds'], place_stake,
-                                        race['lay_odds_place'], headers)
+                                        race['lay_odds_place'])
             betfair_balance = get_betfair_balance(headers)
             sporting_index_balance = get_balance_sporting_index(driver)
             output_lay_ew(race, betfair_balance, sporting_index_balance,
@@ -211,7 +209,8 @@ def start_betfair(driver, race, headers):
             update_csv_betfair(race, sporting_index_balance, bookie_stake,
                                win_stake, place_stake, betfair_balance,
                                lay_win[3], lay_place[3], profit)
-    return bet
+            return True
+    return False
 
 
 def scrape(driver, START_TIME):

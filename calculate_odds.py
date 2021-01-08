@@ -115,7 +115,7 @@ def round_stake(odd):
 def get_next_odd_increment(odd):
     for price in price_increments:
         if odd < price:
-            return odd + price_increments[price]
+            return round(odd + price_increments[price], 2)
 
 
 def calculate_arb(bookie_odds, win_odds, place_odds, place, available):

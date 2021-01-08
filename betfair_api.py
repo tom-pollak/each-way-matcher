@@ -146,7 +146,7 @@ def get_horses(target_horse, event_id, race_time, headers):
 
 
 def cancel_unmatched_bets(headers):
-    cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 1}'
+    cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
     cancel_res = json.loads(call_api(cancel_req, headers))
     print(cancel_res)
 
@@ -162,7 +162,6 @@ def lay_bets(market_id, selection_id, price, stake, headers):
         "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}' % (
         market_id, selection_id, round(stake, 2), price)
     bet_res = json.loads(call_api(bet_req, headers))
-    print(bet_res)
     try:
         if bet_res['result']['status'] == 'SUCCESS':
             bet_made = True
@@ -173,6 +172,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
             else:
                 unmatched_stake = stake - stake_matched
                 cancel_unmatched_bets(headers)
+                print(get_next_odd_increment(price))
                 _, matched, _, unmatched_price = lay_bets(
                     market_id, selection_id, get_next_odd_increment(price),
                     unmatched_stake, headers)
@@ -200,6 +200,7 @@ def get_betfair_balance(headers):
 
 
 def get_race(headers, race_time, venue, horse):
+    headers = login_betfair()
     race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
     event_id = get_event(venue, race_time, headers)
     if not event_id:
@@ -211,7 +212,8 @@ def get_race(headers, race_time, venue, horse):
 
 
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
-           place_odds, headers):
+           place_odds):
+    headers = login_betfair()
     lay_win, win_matched, win_stake_matched, win_odds = lay_bets(
         markets_ids['Win'], selection_id, win_odds, win_stake, headers)
     lay_place, place_matched, place_stake_matched, place_odds = lay_bets(
@@ -221,5 +223,8 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
 
 
 # headers = login_betfair()
-# markets_ids, selection_id, got_horse = get_race(headers, '08 Jan 19:15 2021',
-#                                                 'Southwell', 'Gaelic Secret')
+# markets_ids, selection_id, got_horse = get_race(headers, '09 Jan 17:15 2021',
+#                                                 'Chelmsford City', 'Eyes')
+# print(headers)
+# print(lay_bets(markets_ids['Win'], selection_id, 1.01, 2, headers))
+# cancel_unmatched_bets(headers)

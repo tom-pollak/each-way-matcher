@@ -132,12 +132,12 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             raise NoSuchElementException
 
     except (NoSuchElementException, TimeoutException):
-        print('Horse not found')
         if not retry:
             return sporting_index_bet(driver,
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
+        print('Horse not found')
         return race, False
 
     cur_odd_price_frac = cur_odd_price.split('/')
