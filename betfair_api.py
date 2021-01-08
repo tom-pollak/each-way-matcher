@@ -199,7 +199,7 @@ def get_betfair_balance(headers):
     return balance
 
 
-def get_race(headers, race_time, venue, horse):
+def get_race(race_time, venue, horse):
     headers = login_betfair()
     race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
     event_id = get_event(venue, race_time, headers)
@@ -223,7 +223,7 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
 
 
 # headers = login_betfair()
-# markets_ids, selection_id, got_horse = get_race(headers, '09 Jan 17:15 2021',
+# markets_ids, selection_id, got_horse = get_race('09 Jan 17:15 2021',
 #                                                 'Chelmsford City', 'Eyes')
 # print(headers)
 # print(lay_bets(markets_ids['Win'], selection_id, 1.01, 2, headers))
