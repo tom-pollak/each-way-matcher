@@ -80,15 +80,22 @@ def make_sporting_index_bet(driver, race):
         # WebDriverWait(driver, 60).until(
         #     EC.element_to_be_clickable(
         #         (By.CLASS_NAME, 'placeBetBtn'))).click()
-        driver.find_element_by_class_name('placeBetBtn').click()
+        # driver.find_element_by_class_name('placeBetBtn').click()
+        WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable(
+                (By.CLASS_NAME, 'placeBetBtn'))).click()
     except (NoSuchElementException, StaleElementReferenceException):
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
 
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
+
+    except (TimeoutException, StaleElementReferenceException):
+        driver.refresh()
     return True
 
 
@@ -105,6 +112,7 @@ def get_sporting_index_page(driver, race):
 
 
 def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
+    bet_made = False
     get_sporting_index_page(driver, race)
     horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
     try:
