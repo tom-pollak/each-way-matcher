@@ -215,19 +215,19 @@ def start_betfair(driver, race, headers):
 
 def scrape(driver, START_TIME):
     race = setup_sporting_index(driver)
-    open_betfair_oddsmonkey(driver)
-    headers = login_betfair()
+    # open_betfair_oddsmonkey(driver)
     count = 0
     driver.switch_to.window(driver.window_handles[0])
     while True:
         # So sporting index dosent logout
         if count % 5 == 0:
             refresh_sporting_index(driver)
+            headers = login_betfair()
             if count % 10 == 0:
                 show_info(count, START_TIME)
 
-        bet = start_betfair(driver, race, headers)
-        # bet = False # remove when putting betfair in
+        # bet = start_betfair(driver, race, headers)
+        bet = False  # remove when putting betfair in
         bet = start_sporting_index(driver, race, bet, headers)
         sys.stdout.flush()
         if not bet:
