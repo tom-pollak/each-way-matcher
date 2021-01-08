@@ -176,8 +176,6 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 _, matched, _, unmatched_price = lay_bets(
                     market_id, selection_id, get_next_odd_increment(price),
                     unmatched_stake, headers)
-                if stake_matched + unmatched_stake != stake:
-                    print('ERROR calculating stake')
                 price = (stake_matched * price +
                          unmatched_stake * unmatched_price) / stake
         elif bet_res['result']['status'] == 'FAILURE':
