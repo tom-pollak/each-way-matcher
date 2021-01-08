@@ -80,10 +80,6 @@ def find_races(driver, hide=True):
 
     driver.switch_to.default_content()
     driver.find_element_by_class_name('rwCloseButton').click()
-    if hide:
-        driver.find_element_by_xpath(
-            '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
-        ).click()
 
     return {
         'date_of_race': date_of_race,
@@ -102,6 +98,13 @@ def find_races(driver, hide=True):
         'place_stake': float(place_stake),
         'max_profit': float(max_profit)
     }
+
+
+def hide_race(driver, window=0):
+    driver.switch_to.window(driver.window_handles[window])
+    driver.find_element_by_xpath(
+        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
+    ).click()
 
 
 def refresh_odds_monkey(driver):
@@ -155,11 +158,12 @@ def start_sporting_index(driver, race, bet, headers):
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races(driver))
-        bet = True
         race, bet_made = sporting_index_bet(driver, race)
+        hide_race(driver)
         if bet_made:
             output_race(driver, race)
             update_csv_sporting_index(driver, race, headers)
+            bet = True
     return bet
 
 
@@ -171,13 +175,13 @@ def start_betfair(driver, race, headers):
         print('Found arbitrage bet')
         race.update(find_races(driver, hide=False))
         if race['max_profit'] <= 0:
-            return True
-        bet = True
+            return False
         betfair_balance = get_betfair_balance(headers)
         stakes_ok, bookie_stake, win_stake, place_stake, profit = calculate_stakes(
             race['balance'], betfair_balance, race['bookie_stake'],
             race['win_stake'], race['lay_odds'], race['place_stake'],
             race['lay_odds_place'], race['max_profit'])
+        bet = True
         if not stakes_ok:
             return True
         minutes_until_race = (

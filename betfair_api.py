@@ -6,6 +6,8 @@ from urllib import error, request
 import requests
 from dotenv import load_dotenv
 
+from calculate_odds import get_next_odd_increment
+
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
 load_dotenv(dotenv_path='.env')
@@ -160,6 +162,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
         "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}' % (
         market_id, selection_id, round(stake, 2), price)
     bet_res = json.loads(call_api(bet_req, headers))
+    print(bet_res)
     try:
         if bet_res['result']['status'] == 'SUCCESS':
             bet_made = True
@@ -171,12 +174,14 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 unmatched_stake = stake - stake_matched
                 cancel_unmatched_bets(headers)
                 _, matched, _, unmatched_price = lay_bets(
-                    market_id, selection_id, price + 0.01, unmatched_stake,
-                    headers)
+                    market_id, selection_id, get_next_odd_increment(price),
+                    unmatched_stake, headers)
                 if stake_matched + unmatched_stake != stake:
                     print('ERROR calculating stake')
                 price = (stake_matched * price +
                          unmatched_stake * unmatched_price) / stake
+        elif bet_res['result']['status'] == 'FAILURE':
+            print(bet_res)
 
     except KeyError:
         try:
@@ -216,8 +221,5 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
 
 
 # headers = login_betfair()
-# cancel_unmatched_bets(headers)
-# headers = login_betfair()
-# event_id = get_race(headers, '07 Jan 17:30 2021', 'Wolverhampton',
-#                     'Book Of Secrets')
-# print(event_id)
+# markets_ids, selection_id, got_horse = get_race(headers, '08 Jan 19:15 2021',
+#                                                 'Southwell', 'Gaelic Secret')

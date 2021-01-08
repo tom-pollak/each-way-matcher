@@ -153,12 +153,16 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             print('Odds have changed')
     else:
         print('Odds have changed')
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable(
-                (By.XPATH,
-                 "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-                 ))).click()
-        return race, False
+        for _ in range(3):
+            try:
+                WebDriverWait(driver, 60).until(
+                    EC.element_to_be_clickable((
+                        By.XPATH,
+                        "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+                    ))).click()
+                break
+            except (TimeoutException, StaleElementReferenceException):
+                driver.refresh()
     return race, bet_made
 
 
