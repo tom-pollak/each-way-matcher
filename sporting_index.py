@@ -62,7 +62,7 @@ def refresh_sporting_index(driver):
     driver.refresh()
 
 
-def make_sporting_index_bet(driver, race):
+def make_sporting_index_bet(driver, race, retry=False):
     for _ in range(3):
         try:
             WebDriverWait(driver, 60).until(
@@ -87,6 +87,11 @@ def make_sporting_index_bet(driver, race):
     except (NoSuchElementException, StaleElementReferenceException):
         driver.find_element_by_xpath(
             "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+        return False
+    except TimeoutException:
+        if not retry:
+            driver.refresh()
+            return make_sporting_index_bet(driver, race, retry=True)
         return False
 
     try:
