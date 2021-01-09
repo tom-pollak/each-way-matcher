@@ -41,21 +41,17 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
 def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
                      win_odds, place_stake, place_odds, avaliable_profit):
     max_profit_ratio = avaliable_profit / win_stake
+    bookie_ratio = bookie_balance / bookie_stake
+    liabiltity_ratio = 1
+
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
     total_liability = max_win_liability + max_place_liability
 
-    # bookie_ratio = 1
-    # win_ratio = win_stake / bookie_stake
-    # place_ratio = place_stake / bookie_stake
-
-    if total_liability > betfair_balance or bookie_stake > bookie_balance:
+    if total_liability > betfair_balance:
         liabiltity_ratio = betfair_balance / total_liability
-        balance_ratio = bookie_stake / bookie_balance
-        if balance_ratio < liabiltity_ratio:
-            liabiltity_ratio = balance_ratio
-    else:
-        liabiltity_ratio = 1
+    if bookie_ratio < liabiltity_ratio:
+        liabiltity_ratio = bookie_ratio
 
     # maximum possible stakes
     bookie_stake *= liabiltity_ratio
@@ -73,7 +69,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     if win_stake >= 2 and place_stake >= 2:
         stake_min_stake_proportion = 2 / min(win_stake, place_stake)
 
-    lay_min_stake_proportion = max(liability_min_stake_proportion,
+    lay_min_stake_proportion = min(liability_min_stake_proportion,
                                    stake_min_stake_proportion)
     if lay_min_stake_proportion == 0:
         return False, 0, 0, 0, 0
@@ -118,11 +114,11 @@ def get_next_odd_increment(odd):
             return round(odd + price_increments[price], 2)
 
 
-def calculate_arb(bookie_odds, win_odds, place_odds, place, available):
+def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
+                     place_odds, place_stake, place, available):
     pass
 
 
 # kelly_criterion(12, 12, 3.2, 5, 10000)
-# print(calculate_stakes(200, 200, 5, 5, 6, 5, 1.25, 5))
-# print(5 / 0.1)
+# print(calculate_stakes(200, 200, 26.6, 24.56, 3.3, 28.65, 1.35, 2.66))
 # print(5 // 0.1)
