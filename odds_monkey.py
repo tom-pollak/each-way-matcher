@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index, output_race
 from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair, get_race
-from calculate_odds import calculate_stakes
+from calculate_odds import calculate_stakes, calculate_profit
 from write_to_csv import update_csv_sporting_index, update_csv_betfair
 
 REFRESH_TIME = 62
@@ -180,6 +180,12 @@ def start_betfair(driver, race, headers):
             race['balance'], betfair_balance, race['bookie_stake'],
             race['win_stake'], race['lay_odds'], race['place_stake'],
             race['lay_odds_place'], race['max_profit'])
+        print(profit)
+        print(
+            calculate_profit(race['bookie_stake'], race['ew_stake'],
+                             race['lay_odds'], win_stake,
+                             race['lay_odds_place'], place_stake,
+                             race['place']))
         bet = True
         if not stakes_ok:
             return False

@@ -148,7 +148,6 @@ def get_horses(target_horse, event_id, race_time, headers):
 def cancel_unmatched_bets(headers):
     cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
     cancel_res = json.loads(call_api(cancel_req, headers))
-    print(cancel_res)
 
 
 def lay_bets(market_id, selection_id, price, stake, headers):
@@ -173,7 +172,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 unmatched_stake = stake - stake_matched
                 cancel_unmatched_bets(headers)
                 print(get_next_odd_increment(price))
-                _, matched, _, unmatched_price = lay_bets(
+                bet_made, matched, _, unmatched_price = lay_bets(
                     market_id, selection_id, get_next_odd_increment(price),
                     unmatched_stake, headers)
                 price = (stake_matched * price +

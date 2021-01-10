@@ -2,6 +2,7 @@ import math
 from fractions import Fraction
 
 MIN_PERCENTAGE_BALANCE = 0
+COMMISSION = 0.05
 
 price_increments = {
     2: 0.01,
@@ -114,11 +115,24 @@ def get_next_odd_increment(odd):
             return round(odd + price_increments[price], 2)
 
 
+# N.B bookie_stake is half actual stake
 def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
-                     place_odds, place_stake, place, available):
-    pass
+                     place_odds, place_stake, place):
+    commision = (win_stake + place_stake) * COMMISSION
+    place_profit = bookie_stake * (bookie_odds - 1) / place
+    win_profit = bookie_odds * bookie_stake - bookie_stake + place_profit
+    place_profit -= bookie_stake
+
+    print(win_profit)
+    win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds -
+                                                              1) + commision
+    place_profit += win_stake - place_stake * (place_odds - 1) - commision
+
+    lose_profit = win_stake + place_stake - bookie_stake * 2 - commision
+    return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
 
 
 # kelly_criterion(12, 12, 3.2, 5, 10000)
 # print(calculate_stakes(200, 200, 26.6, 24.56, 3.3, 28.65, 1.35, 2.66))
 # print(5 // 0.1)
+print(calculate_profit(2.2, 11.5, 2.56, 10.08, 1.98, 7.39, 3))
