@@ -72,7 +72,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     lay_min_stake_proportion = min(liability_min_stake_proportion,
                                    stake_min_stake_proportion)
     if lay_min_stake_proportion == 0:
-        return False, 0, 0, 0, 0
+        return False, 0, 0, 0
 
     min_stake_proportion = max(bookie_min_stake_proportion,
                                lay_min_stake_proportion)
@@ -90,10 +90,9 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     place_stake *= min_stake_proportion
     profit = max_profit_ratio * win_stake
     if profit <= 0:
-        return False, 0, 0, 0, 0
+        return False, 0, 0, 0
     return True, round(bookie_stake, 2), round(win_stake,
-                                               2), round(place_stake,
-                                                         2), round(profit, 2)
+                                               2), round(place_stake, 2)
 
 
 def round_stake(odd):
