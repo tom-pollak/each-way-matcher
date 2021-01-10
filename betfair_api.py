@@ -236,8 +236,8 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
              place_odds))
 
 
-headers = login_betfair()
+# headers = login_betfair()
 # markets_ids, selection_id, got_horse = get_race('10 Jan 16:10 2021', 'Exeter',
 #                                                 'Top Of The Bill')
 # print(markets_ids, selection_id)
-cancel_unmatched_bets(headers)
+# cancel_unmatched_bets(headers)
