@@ -74,7 +74,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
             raise ValueError('url does not start with http')
         with request.urlopen(req) as response:
             json_res = response.read()
-            return json_res.decode('utf-8')
+            return json.loads(json_res.decode('utf-8'))
     except error.HTTPError:
         print('Not a valid operation' + str(url))
     except error.URLError as e:
@@ -92,7 +92,7 @@ def get_event(venue, race_time, headers):
         "marketStartTime": {"from": "%s", "to": "%s"}, "venues":["%s"]}, \
         "sort":"FIRST_TO_START","maxResults":"1"}}' % (race_time,
                                                        race_time_after, venue)
-    event_response = json.loads(call_api(event_req, headers))
+    event_response = call_api(event_req, headers)
 
     try:
         event_id = event_response['result'][0]['event']['id']
@@ -122,7 +122,7 @@ def get_horses(target_horse, event_id, race_time, headers):
         "maxResults": "10", "sort":"FIRST_TO_START", \
         "marketProjection": ["RUNNER_DESCRIPTION"]}}' % (event_id, race_time,
                                                          race_time_after)
-    markets_response = json.loads(call_api(markets_req, headers))
+    markets_response = call_api(markets_req, headers)
     # print(markets_response)
 
     try:
@@ -153,7 +153,16 @@ def get_horses(target_horse, event_id, race_time, headers):
 
 def cancel_unmatched_bets(headers):
     cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
-    cancel_res = json.loads(call_api(cancel_req, headers))
+    cancel_res = call_api(cancel_req, headers)
+    try:
+        if cancel_res['result']['status'] == 'SUCCESS':
+            return True
+        else:
+            raise ValueError
+    except (KeyError, ValueError):
+        print('ERROR: could not cancel unmatched bets!')
+        print(cancel_res)
+        return False
 
 
 def lay_bets(market_id, selection_id, price, stake, headers):
@@ -166,7 +175,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
         "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
         "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}' % (
         market_id, selection_id, round(stake, 2), price)
-    bet_res = json.loads(call_api(bet_req, headers))
+    bet_res = call_api(bet_req, headers)
     try:
         if bet_res['result']['status'] == 'SUCCESS':
             bet_made = True
@@ -198,7 +207,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
 def get_betfair_balance(headers):
     account_url = 'https://api.betfair.com/exchange/account/json-rpc/v1'
     balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    balance_res = json.loads(call_api(balance_req, headers, url=account_url))
+    balance_res = call_api(balance_req, headers, url=account_url)
     balance = balance_res['result']['availableToBetBalance']
     return balance
 
@@ -228,7 +237,8 @@ def lay_ew(markets_ids, selection_id, bookie_stake, win_stake, win_odds,
              place_odds))
 
 
-# headers = login_betfair()
+headers = login_betfair()
 # markets_ids, selection_id, got_horse = get_race('10 Jan 16:10 2021', 'Exeter',
 #                                                 'Top Of The Bill')
 # print(markets_ids, selection_id)
+cancel_unmatched_bets(headers)
