@@ -219,8 +219,7 @@ def lay_ew(markets_ids, selection_id, bookie_stake, win_stake, win_odds,
            place_stake, place_odds):
     headers = login_betfair()
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
-        markets_ids['Win'], selection_id, win_odds + 1, win_stake, win_odds,
-        win_stake, headers)
+        markets_ids['Win'], selection_id, win_odds + 1, win_stake, headers)
     lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
         markets_ids['Place'], selection_id, place_odds + 1, place_stake,
         headers)
@@ -233,6 +232,3 @@ def lay_ew(markets_ids, selection_id, bookie_stake, win_stake, win_odds,
 # markets_ids, selection_id, got_horse = get_race('10 Jan 16:10 2021', 'Exeter',
 #                                                 'Top Of The Bill')
 # print(markets_ids, selection_id)
-# print(headers)
-# print(lay_bets(markets_ids['Win'], selection_id, 1.01, 2, headers))
-# cancel_unmatched_bets(headers)
