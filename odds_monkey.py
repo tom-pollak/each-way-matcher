@@ -158,6 +158,7 @@ def start_sporting_index(driver, race, bet, headers):
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races(driver))
+        print('Found no lay bet: %s' % race['horse_name'])
         race, bet_made = sporting_index_bet(driver, race)
         if bet_made:
             hide_race(driver)
@@ -171,7 +172,7 @@ def start_betfair(driver, race, headers):
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
-        print('Found arbitrage bet')
+        print('Found arbitrage bet:' % race['horse_name'])
         race.update(find_races(driver, hide=False))
         if race['max_profit'] <= 0:
             return False
