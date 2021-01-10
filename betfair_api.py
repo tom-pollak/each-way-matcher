@@ -185,7 +185,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
             print('Error in bet response: %s' % bet_res['error'])
         except KeyError:
             print('Unknown error making bet: %s' % bet_res)
-    return bet_made, matched, stake_matched, price
+    return bet_made, price, matched, stake_matched, price
 
 
 def get_betfair_balance(headers):
@@ -211,9 +211,9 @@ def get_race(race_time, venue, horse):
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
            place_odds):
     headers = login_betfair()
-    lay_win, win_matched, win_stake_matched, win_odds = lay_bets(
+    lay_win, win_stake, win_matched, win_stake_matched, win_odds = lay_bets(
         markets_ids['Win'], selection_id, win_odds, win_stake, headers)
-    lay_place, place_matched, place_stake_matched, place_odds = lay_bets(
+    lay_place, place_stake, place_matched, place_stake_matched, place_odds = lay_bets(
         markets_ids['Place'], selection_id, place_odds, place_stake, headers)
     return ((lay_win, win_matched, win_stake, win_stake_matched),
             (lay_place, place_matched, place_stake, place_stake_matched))
