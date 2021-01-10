@@ -6,7 +6,7 @@ from urllib import error, request
 import requests
 from dotenv import load_dotenv
 
-from calculate_odds import get_next_odd_increment, calculate_maximum_bet
+from calculate_odds import get_next_odd_increment, calculate_profit
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -41,11 +41,11 @@ def login_betfair():
 
 def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
                   win_bet_made, win_is_matched, win_stake, win_matched,
-                  place_bet_made, place_is_matched, place_stake,
-                  place_matched):
+                  win_odds, place_bet_made, place_is_matched, place_stake,
+                  place_matched, place_odds):
     print(f"\nArb bet made: {race['horse_name']} - profit: £{profit}")
     print(
-        f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} Lay win: {race['lay_odds']} - {win_stake} Lay place: {race['lay_odds_place']} - {place_stake}"
+        f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} Lay win: {win_odds} - {win_stake} Lay place: {place_odds} - {place_stake}"
     )
 
     print(
@@ -61,6 +61,9 @@ def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
     print(
         f"\tCurrent balance: {sporting_index_balance}, betfair balance: {betfair_balance}\n"
     )
+    print(
+        calculate_profit(race['horse_odds'], race['bookie_stake'], win_odds,
+                         win_stake, place_odds, place_stake, race['place']))
 
 
 def call_api(jsonrpc_req, headers, url=betting_url):
@@ -221,8 +224,9 @@ def lay_ew(markets_ids, selection_id, bookie_stake, win_stake, win_odds,
     lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
         markets_ids['Place'], selection_id, place_odds + 1, place_stake,
         headers)
-    return ((lay_win, win_matched, win_stake, win_stake_matched),
-            (lay_place, place_matched, place_stake, place_stake_matched))
+    return ((lay_win, win_matched, win_stake, win_stake_matched, win_odds),
+            (lay_place, place_matched, place_stake, place_stake_matched,
+             place_odds))
 
 
 # headers = login_betfair()

@@ -214,7 +214,8 @@ def start_betfair(driver, race, headers):
                           profit, *lay_win, *lay_place)
             update_csv_betfair(race, sporting_index_balance, bookie_stake,
                                win_stake, place_stake, betfair_balance,
-                               lay_win[3], lay_place[3], profit)
+                               lay_win[3], lay_place[3], profit, lay_win[4],
+                               lay_place[4])
             return True
     return False
 

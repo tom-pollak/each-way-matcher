@@ -28,7 +28,7 @@ def update_csv_sporting_index(driver, race, headers):
 
 def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
                        place_stake, betfair_balance, win_matched, lay_matched,
-                       arbritrage_profit):
+                       arbritrage_profit, win_odds, place_odds):
     race['is_lay'] = True
     race['ew_stake'] = bookie_stake
     race['win_stake'] = win_stake
@@ -39,6 +39,8 @@ def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
     race['lay_matched'] = lay_matched
     race['arbritrage_profit'] = arbritrage_profit
     race['expected_value'] = race['expected_return'] = 0
+    race['lay_odds'] = win_odds
+    race['lay_odds_place'] = place_odds
     csv_columns = [
         'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
         'balance', 'rating', 'current_time', 'expected_value',
