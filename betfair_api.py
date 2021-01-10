@@ -6,7 +6,7 @@ from urllib import error, request
 import requests
 from dotenv import load_dotenv
 
-from calculate_odds import get_next_odd_increment, calculate_profit
+from calculate_odds import calculate_profit
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
