@@ -6,8 +6,6 @@ from urllib import error, request
 import requests
 from dotenv import load_dotenv
 
-from calculate_odds import calculate_profit
-
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
 load_dotenv(dotenv_path='.env')
@@ -42,7 +40,8 @@ def login_betfair():
 def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
                   win_bet_made, win_is_matched, win_stake, win_matched,
                   win_odds, place_bet_made, place_is_matched, place_stake,
-                  place_matched, place_odds):
+                  place_matched, place_odds, win_profit, place_profit,
+                  lose_profit):
     print(f"\nArb bet made: {race['horse_name']} - profit: £{profit}")
     print(
         f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} Lay win: {win_odds} - {win_stake} Lay place: {place_odds} - {place_stake}"
@@ -53,17 +52,19 @@ def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
     )
 
     if not win_is_matched:
-        print(f"\tLay win matched size: {win_matched}")
+        print(f"\tLay win matched size: {win_matched} ", end='')
     if not place_is_matched:
         print(f"\tLay place matched size: {place_matched}")
+    else:
+        print()
 
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
     print(
-        f"\tCurrent balance: {sporting_index_balance}, betfair balance: {betfair_balance}\n"
+        f"\tWin profit: {win_profit} Place profit: {place_profit} Lose profit: {lose_profit}"
     )
     print(
-        calculate_profit(race['horse_odds'], race['bookie_stake'], win_odds,
-                         win_stake, place_odds, place_stake, race['place']))
+        f"Current balance: {sporting_index_balance}, betfair balance: {betfair_balance}\n"
+    )
 
 
 def call_api(jsonrpc_req, headers, url=betting_url):
