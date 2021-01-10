@@ -1,5 +1,6 @@
 import math
 from fractions import Fraction
+import scipy.optimize as optimize
 
 MIN_PERCENTAGE_BALANCE = 0
 COMMISSION = 0.05
@@ -132,10 +133,17 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
     return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
 
 
-def calculate_maximum_bet(bookie_stake, lay_stake, lay_odds):
-    lay_odds += bookie_stake / lay_stake + 1
-    return round_stake(lay_odds)
-
-
-print(calculate_profit(5.5, 2.05, 5.38, 2, 1.77, 2.11, 4))
-print(calculate_maximum_bet(2.05, 2, 5.7))
+# def calculate_maximum_bet(bookie_stake, lay_stake, lay_odds):
+#     # lay_odds += bookie_stake / lay_stake + 1  # - lay_stake * COMMISSION
+#     # print(lay_odds)
+#     # return round_stake(lay_odds)
+#     return lay_odds + 1
+#
+#
+# print(calculate_profit(5.5, 2.05, 5.38, 2, 1.77, 2.11, 4))
+# print(
+#     calculate_profit(5.5, 2.05, calculate_maximum_bet(2.05, 2, 5.38), 2,
+#                      calculate_maximum_bet(2.05, 2.11, 1.77), 2.11, 4))
+# print(calculate_maximum_bet(1, 1, 5))
+# print(calculate_maximum_bet(2.05, 2, 5.7))
+# print(calculate_maximum_bet(2.05, 2.6, 1.2))

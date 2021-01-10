@@ -6,7 +6,7 @@ from urllib import error, request
 import requests
 from dotenv import load_dotenv
 
-from calculate_odds import get_next_odd_increment
+from calculate_odds import get_next_odd_increment, calculate_maximum_bet
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -104,7 +104,7 @@ def get_event(venue, race_time, headers):
 
 def get_horse_id(horses, target_horse):
     for horse in horses['runners']:
-        if horse['runnerName'] == target_horse:
+        if horse['runnerName'].lower() == target_horse.lower():
             return horse['selectionId']
 
 
@@ -142,6 +142,9 @@ def get_horses(target_horse, event_id, race_time, headers):
             total_matched = market['totalMatched']
 
     selection_id = get_horse_id(market_type[0], target_horse)
+    if selection_id is None:
+        print("ERROR couldn't find horse selection_id")
+        return 0, 0, False
     return markets_ids, selection_id, True
 
 
@@ -168,16 +171,17 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'sizeMatched']
             if stake_matched == stake:
                 matched = True
-            else:
-                unmatched_stake = stake - stake_matched
-                cancel_unmatched_bets(headers)
-                print(get_next_odd_increment(price))
-                bet_made, matched, _, unmatched_price = lay_bets(
-                    market_id, selection_id, get_next_odd_increment(price),
-                    unmatched_stake, headers)
-                price = (stake_matched * price +
-                         unmatched_stake * unmatched_price) / stake
+            # else:
+            #     unmatched_stake = stake - stake_matched
+            #     cancel_unmatched_bets(headers)
+            #     print(get_next_odd_increment(price))
+            #     bet_made, matched, _, unmatched_price = lay_bets(
+            #         market_id, selection_id, get_next_odd_increment(price),
+            #         unmatched_stake, headers)
+            #     price = (stake_matched * price +
+            #              unmatched_stake * unmatched_price) / stake
         elif bet_res['result']['status'] == 'FAILURE':
+            print(bet_req)
             print(bet_res)
 
     except KeyError:
@@ -185,7 +189,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
             print('Error in bet response: %s' % bet_res['error'])
         except KeyError:
             print('Unknown error making bet: %s' % bet_res)
-    return bet_made, price, matched, stake_matched, price
+    return bet_made, price, matched, stake_matched
 
 
 def get_betfair_balance(headers):
@@ -208,20 +212,23 @@ def get_race(race_time, venue, horse):
     return markets_ids, selection_id, got_horse
 
 
-def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
-           place_odds):
+def lay_ew(markets_ids, selection_id, bookie_stake, win_stake, win_odds,
+           place_stake, place_odds):
     headers = login_betfair()
-    lay_win, win_stake, win_matched, win_stake_matched, win_odds = lay_bets(
-        markets_ids['Win'], selection_id, win_odds, win_stake, headers)
-    lay_place, place_stake, place_matched, place_stake_matched, place_odds = lay_bets(
-        markets_ids['Place'], selection_id, place_odds, place_stake, headers)
+    lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
+        markets_ids['Win'], selection_id, win_odds + 1, win_stake, win_odds,
+        win_stake, headers)
+    lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
+        markets_ids['Place'], selection_id, place_odds + 1, place_stake,
+        headers)
     return ((lay_win, win_matched, win_stake, win_stake_matched),
             (lay_place, place_matched, place_stake, place_stake_matched))
 
 
 # headers = login_betfair()
-# markets_ids, selection_id, got_horse = get_race('09 Jan 17:15 2021',
-#                                                 'Chelmsford City', 'Eyes')
+# markets_ids, selection_id, got_horse = get_race('10 Jan 16:10 2021', 'Exeter',
+#                                                 'Top Of The Bill')
+# print(markets_ids, selection_id)
 # print(headers)
 # print(lay_bets(markets_ids['Win'], selection_id, 1.01, 2, headers))
 # cancel_unmatched_bets(headers)

@@ -2,7 +2,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException, ElementNotInteractableException
 
 from calculate_odds import kelly_criterion
 
@@ -70,13 +70,14 @@ def make_sporting_index_bet(driver, race, retry=False):
                     (By.CLASS_NAME,
                      'ng-pristine'))).send_keys(str(race['ew_stake']))
             break
-        except (TimeoutException, StaleElementReferenceException):
+        except (TimeoutException, StaleElementReferenceException,
+                ElementNotInteractableException):
             driver.refresh()
     else:
         return False
 
-    driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
     try:
+        driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
         # WebDriverWait(driver, 60).until(
         #     EC.element_to_be_clickable(
         #         (By.CLASS_NAME, 'placeBetBtn'))).click()

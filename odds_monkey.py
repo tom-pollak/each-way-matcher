@@ -205,9 +205,9 @@ def start_betfair(driver, race, headers):
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
-            lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
-                                        race['lay_odds'], place_stake,
-                                        race['lay_odds_place'])
+            lay_win, lay_place = lay_ew(market_ids, selection_id, bookie_stake,
+                                        win_stake, race['lay_odds'],
+                                        place_stake, race['lay_odds_place'])
             betfair_balance = get_betfair_balance(headers)
             sporting_index_balance = get_balance_sporting_index(driver)
             output_lay_ew(race, betfair_balance, sporting_index_balance,
