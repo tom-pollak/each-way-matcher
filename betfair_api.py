@@ -157,8 +157,7 @@ def cancel_unmatched_bets(headers):
     try:
         if cancel_res['result']['status'] == 'SUCCESS':
             return True
-        else:
-            raise ValueError
+        raise ValueError
     except (KeyError, ValueError):
         print('ERROR: could not cancel unmatched bets!')
         print(cancel_res)
