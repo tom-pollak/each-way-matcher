@@ -226,7 +226,7 @@ def scrape(driver, START_TIME):
     driver.switch_to.window(driver.window_handles[0])
     while True:
         # So sporting index dosent logout
-        if count % 5 == 0:
+        if count % 2 == 0:
             refresh_sporting_index(driver)
             headers = login_betfair()
             if count % 10 == 0:

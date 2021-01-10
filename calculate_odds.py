@@ -106,7 +106,8 @@ def round_stake(odd):
     for price in price_increments:
         if odd < price:
             return round(
-                odd / price_increments[price]) * price_increments[price]
+                round(odd / price_increments[price]) * price_increments[price],
+                2)
 
 
 def get_next_odd_increment(odd):
@@ -123,7 +124,6 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
     win_profit = bookie_odds * bookie_stake - bookie_stake + place_profit
     place_profit -= bookie_stake
 
-    print(win_profit)
     win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds -
                                                               1) + commision
     place_profit += win_stake - place_stake * (place_odds - 1) - commision
@@ -132,7 +132,10 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
     return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
 
 
-# kelly_criterion(12, 12, 3.2, 5, 10000)
-# print(calculate_stakes(200, 200, 26.6, 24.56, 3.3, 28.65, 1.35, 2.66))
-# print(5 // 0.1)
-print(calculate_profit(2.2, 11.5, 2.56, 10.08, 1.98, 7.39, 3))
+def calculate_maximum_bet(bookie_stake, lay_stake, lay_odds):
+    lay_odds += bookie_stake / lay_stake + 1
+    return round_stake(lay_odds)
+
+
+print(calculate_profit(5.5, 2.05, 5.38, 2, 1.77, 2.11, 4))
+print(calculate_maximum_bet(2.05, 2, 5.7))
