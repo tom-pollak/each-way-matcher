@@ -181,12 +181,6 @@ def start_betfair(driver, race, headers):
             race['balance'], betfair_balance, race['bookie_stake'],
             race['win_stake'], race['lay_odds'], race['place_stake'],
             race['lay_odds_place'], race['max_profit'])
-        # print(
-        #     calculate_profit(race['bookie_stake'], race['ew_stake'],
-        #                      race['lay_odds'], win_stake,
-        #                      race['lay_odds_place'], place_stake,
-        #                      race['place']))
-        bet = True
         if not stakes_ok:
             return False
         minutes_until_race = (
