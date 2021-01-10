@@ -60,7 +60,6 @@ def output_profit():
     current_betfair_balance = df['betfair_balance'].values[-1]
     in_bet_balance = calc_unfinished_races()
     current_balance = current_sporting_index_balance + current_betfair_balance + in_bet_balance
-    print(current_balance)
 
     total_profit = round(current_balance - STARTING_BALANCE, 2)
     if not today_starting_balance:
