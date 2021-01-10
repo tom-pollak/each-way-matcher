@@ -224,8 +224,8 @@ def get_race(race_time, venue, horse):
     return markets_ids, selection_id, got_horse
 
 
-def lay_ew(markets_ids, selection_id, bookie_stake, win_stake, win_odds,
-           place_stake, place_odds):
+def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
+           place_odds):
     headers = login_betfair()
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
         markets_ids['Win'], selection_id, win_odds + 1, win_stake, headers)

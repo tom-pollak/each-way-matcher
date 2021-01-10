@@ -28,7 +28,7 @@ def show_info(count, START_TIME):
         sys.exit()
 
 
-def find_races(driver, hide=True):
+def find_races(driver):
     date_of_race = driver.find_element_by_xpath(
         '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td').text
     race_time = date_of_race[-5:].lower()
@@ -173,7 +173,7 @@ def start_betfair(driver, race, headers):
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         print('Found arbitrage bet:' % race['horse_name'])
-        race.update(find_races(driver, hide=False))
+        race.update(find_races(driver))
         if race['max_profit'] <= 0:
             return False
         betfair_balance = get_betfair_balance(headers)
@@ -199,9 +199,9 @@ def start_betfair(driver, race, headers):
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
-            lay_win, lay_place = lay_ew(market_ids, selection_id, bookie_stake,
-                                        win_stake, race['lay_odds'],
-                                        place_stake, race['lay_odds_place'])
+            lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
+                                        race['lay_odds'], place_stake,
+                                        race['lay_odds_place'])
             betfair_balance = get_betfair_balance(headers)
             sporting_index_balance = get_balance_sporting_index(driver)
             output_lay_ew(race, betfair_balance, sporting_index_balance,
