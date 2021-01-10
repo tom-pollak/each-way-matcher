@@ -159,8 +159,8 @@ def start_sporting_index(driver, race, bet, headers):
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races(driver))
         race, bet_made = sporting_index_bet(driver, race)
-        hide_race(driver)
         if bet_made:
+            hide_race(driver)
             output_race(driver, race)
             update_csv_sporting_index(driver, race, headers)
             bet = True
