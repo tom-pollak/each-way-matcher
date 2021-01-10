@@ -1,5 +1,4 @@
 import math
-from fractions import Fraction
 
 MIN_PERCENTAGE_BALANCE = 0
 COMMISSION = 0.05

@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index, output_race
 from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair, get_race
-from calculate_odds import calculate_stakes, calculate_profit
+from calculate_odds import calculate_stakes
 from write_to_csv import update_csv_sporting_index, update_csv_betfair
 
 REFRESH_TIME = 62
