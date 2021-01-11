@@ -173,7 +173,7 @@ def start_betfair(driver, race, headers):
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         race.update(find_races(driver))
-        print('Found arbitrage bet:' % race['horse_name'])
+        print('Found arbitrage bet: %s' % race['horse_name'])
         if race['max_profit'] <= 0:
             return False
         betfair_balance = get_betfair_balance(headers)
