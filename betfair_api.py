@@ -148,6 +148,7 @@ def get_horses(target_horse, event_id, race_time, headers):
     selection_id = get_horse_id(market_type[0], target_horse)
     if selection_id is None:
         print("ERROR couldn't find horse selection_id")
+        print('%s: %s' % (target_horse, market_type[0]['Runners']))
         return 0, 0, False
     return markets_ids, selection_id, True
 
