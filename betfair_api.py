@@ -5,6 +5,7 @@ from urllib import error, request
 
 import requests
 from dotenv import load_dotenv
+from calculate_odds import round_stake
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -229,10 +230,11 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
            place_odds):
     headers = login_betfair()
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
-        markets_ids['Win'], selection_id, win_odds + 1, win_stake, headers)
-    lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
-        markets_ids['Place'], selection_id, place_odds + 1, place_stake,
+        markets_ids['Win'], selection_id, round_stake(win_odds + 1), win_stake,
         headers)
+    lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
+        markets_ids['Place'], selection_id, round_stake(place_stake + 1),
+        place_stake, headers)
     return ((lay_win, win_matched, win_stake, win_stake_matched, win_odds),
             (lay_place, place_matched, place_stake, place_stake_matched,
              place_odds))
