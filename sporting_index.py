@@ -42,7 +42,7 @@ def get_balance_sporting_index(driver, retry=False):
             balance = driver.find_element_by_class_name('btn-balance').text
             count += 1
         if balance == 'BALANCE':
-            raise TypeError()
+            raise ValueError('balance is BALANCE')
     except (NoSuchElementException, TimeoutException):
         if not retry:
             driver.refresh()
