@@ -175,7 +175,7 @@ def start_betfair(driver, race, headers):
         race.update(find_races(driver))
         print('Found arbitrage bet: %s' % race['horse_name'])
         if race['max_profit'] <= 0:
-            print('Max profit < 0')
+            print('\tMax profit < 0')
             return False
         betfair_balance = get_betfair_balance(headers)
         stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
@@ -183,20 +183,20 @@ def start_betfair(driver, race, headers):
             race['win_stake'], race['lay_odds'], race['place_stake'],
             race['lay_odds_place'], race['max_profit'])
         if not stakes_ok:
-            print('Stakes not bettable')
+            print('\tStakes not bettable')
             return False
         minutes_until_race = (
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
             datetime.now()).total_seconds() / 60
         if minutes_until_race <= 1:
-            print('Race too close to start time')
+            print('\tRace too close to start time')
             return True
 
         market_ids, selection_id, got_race = get_race(race['date_of_race'],
                                                       race['race_venue'],
                                                       race['horse_name'])
         if not got_race:
-            print("Race not found API")
+            print('\tRace not found API')
             return True
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)

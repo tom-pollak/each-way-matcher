@@ -99,9 +99,9 @@ def get_event(venue, race_time, headers):
         event_id = event_response['result'][0]['event']['id']
     except (KeyError, IndexError):
         try:
-            print('Error in getting event: %s' % event_response['error'])
+            print('\tError in getting event: %s' % event_response['error'])
         except KeyError:
-            print('Unknown error getting event: %s' % event_response)
+            print('\tUnknown error getting event: %s' % event_response)
         return False
     return event_id
 
@@ -124,13 +124,12 @@ def get_horses(target_horse, event_id, race_time, headers):
         "marketProjection": ["RUNNER_DESCRIPTION"]}}' % (event_id, race_time,
                                                          race_time_after)
     markets_response = call_api(markets_req, headers)
-    # print(markets_response)
 
     try:
         market_type = markets_response['result']
     except IndexError:
         try:
-            print('Error in getting market: %s' % markets_response['error'])
+            print('\tError in getting market: %s' % markets_response['error'])
         except KeyError:
             print('Unknown error getting market: %s' % markets_response)
         return 0, 0, False
@@ -147,8 +146,8 @@ def get_horses(target_horse, event_id, race_time, headers):
 
     selection_id = get_horse_id(market_type[0], target_horse)
     if selection_id is None:
-        print("ERROR couldn't find horse selection_id")
-        print('%s: %s' % (target_horse, market_type[0]['Runners']))
+        print("\tERROR couldn't find horse selection_id")
+        print('\t%s: %s' % (target_horse, market_type[0]['Runners']))
         return 0, 0, False
     return markets_ids, selection_id, True
 
@@ -161,7 +160,7 @@ def cancel_unmatched_bets(headers):
             return True
         raise ValueError
     except (KeyError, ValueError):
-        print('ERROR: could not cancel unmatched bets!')
+        print('\tERROR: could not cancel unmatched bets!')
         print(cancel_res)
         return False
 
@@ -170,7 +169,6 @@ def lay_bets(market_id, selection_id, price, stake, headers):
     matched = False
     bet_made = False
     stake_matched = 0
-    # print(market_id, selection_id, round(stake, 2), price)
     bet_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
@@ -199,9 +197,9 @@ def lay_bets(market_id, selection_id, price, stake, headers):
 
     except KeyError:
         try:
-            print('Error in bet response: %s' % bet_res['error'])
+            print('\tError in bet response: %s' % bet_res['error'])
         except KeyError:
-            print('Unknown error making bet: %s' % bet_res)
+            print('\tUnknown error making bet: %s' % bet_res)
     return bet_made, price, matched, stake_matched
 
 
