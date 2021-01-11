@@ -147,6 +147,9 @@ def open_betfair_oddsmonkey(driver):
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_rlbExchanges_i0"]/label/input').click()
     driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_txtEachWayRatingFrom"]').clear().send_keys(
+            '100')
+    driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_btnApplyFilter"]').click()
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_ModuleContent"]/div[10]/div[1]/a').click()

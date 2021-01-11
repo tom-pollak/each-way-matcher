@@ -182,6 +182,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'sizeMatched']
             if stake_matched == stake:
                 matched = True
+            price = bet_res['result']['instructionReports'][0]['averagePriceMatched']
             # else:
             #     unmatched_stake = stake - stake_matched
             #     cancel_unmatched_bets(headers)
