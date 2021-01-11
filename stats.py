@@ -15,6 +15,7 @@ def custom_date_parser(x):
 
 
 def calc_unfinished_races(index=-1):
+    races_liability = {}
     in_bet_balance = 0
     mask = (df['date_of_race'] >
             df.index.values[index]) & (df.index <= df.index.values[index])
@@ -24,9 +25,18 @@ def calc_unfinished_races(index=-1):
         # print(row['win_stake'], row['lay_odds'], row['place_stake'],
         #       row['lay_odds_place'])
         if row['is_lay']:
-            liability = row['win_stake'] * (row['lay_odds'] -
-                                            1) + row['place_stake'] * (
-                                                row['lay_odds_place'] - 1)
+            liability = row['win_stake'] * (row['lay_odds'] - 1)
+            lia_key = '%s %s' % (row['race_venue'], row['date_of_race'])
+            if lia_key in races_liability:
+                if liability > races_liability[lia_key]:
+                    liability -= races_liability[lia_key]
+                else:
+                    liability = 0
+                races_liability[lia_key] += liability
+            else:
+                races_liability[lia_key] = liability
+
+            liability += row['place_stake'] * (row['lay_odds_place'] - 1)
         else:
             liability = 0
         in_bet_balance += (stake + liability)
