@@ -48,14 +48,14 @@ def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
     )
 
     print(
-        f"\t Lay win: {win_bet_made} - is matched: {win_is_matched} Lay place: {place_bet_made} is matched: {place_is_matched}"
+        f"\tLay win: {win_bet_made} - is matched: {win_is_matched} Lay place: {place_bet_made} is matched: {place_is_matched}"
     )
 
     if not win_is_matched:
         print(f"\tLay win matched size: {win_matched} ", end='')
     if not place_is_matched:
         print(f"\tLay place matched size: {place_matched}")
-    else:
+    if not win_matched and place_matched:
         print()
 
     print(f"\t{race['date_of_race']} - {race['race_venue']}")
@@ -182,7 +182,8 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'sizeMatched']
             if stake_matched == stake:
                 matched = True
-            price = bet_res['result']['instructionReports'][0]['averagePriceMatched']
+            price = bet_res['result']['instructionReports'][0][
+                'averagePriceMatched']
             # else:
             #     unmatched_stake = stake - stake_matched
             #     cancel_unmatched_bets(headers)
