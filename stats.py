@@ -16,12 +16,10 @@ def custom_date_parser(x):
 
 def calc_unfinished_races(index=-1):
     in_bet_balance = 0
-    mask = (df['date_of_race'] > df.index.values[index]) & (
-        df.index <= df.index.values[index]
-    )  # making < instead of <= gives more accurate results?
+    mask = (df['date_of_race'] >
+            df.index.values[index]) & (df.index <= df.index.values[index])
     races = df.loc[mask]
-    for _, row in races.iterrows():
-        print(row['horse_name'])
+    for i, row in races.iterrows():
         stake = row['ew_stake'] * 2
         # print(row['win_stake'], row['lay_odds'], row['place_stake'],
         #       row['lay_odds_place'])
@@ -119,6 +117,8 @@ df = pd.read_csv(RETURNS_CSV,
                  date_parser=custom_date_parser,
                  squeeze=True)
 
+# Can be wrong when more than 1 bet is made on the same race as liability shared
 output_profit()
+
 plot_bal_time_series_graph()
 sys.stdout.flush()
