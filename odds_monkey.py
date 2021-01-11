@@ -175,6 +175,7 @@ def start_betfair(driver, race, headers):
         race.update(find_races(driver))
         print('Found arbitrage bet: %s' % race['horse_name'])
         if race['max_profit'] <= 0:
+            print('Max profit < 0')
             return False
         betfair_balance = get_betfair_balance(headers)
         stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
@@ -182,6 +183,7 @@ def start_betfair(driver, race, headers):
             race['win_stake'], race['lay_odds'], race['place_stake'],
             race['lay_odds_place'], race['max_profit'])
         if not stakes_ok:
+            print('Stakes not bettable')
             return False
         minutes_until_race = (
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
