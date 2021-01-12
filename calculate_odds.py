@@ -92,9 +92,6 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     bookie_stake *= min_stake_proportion
     win_stake *= min_stake_proportion
     place_stake *= min_stake_proportion
-    if profit <= 0:
-        print('\tProfit below 0')
-        return False, 0, 0, 0
     return True, round(bookie_stake, 2), round(win_stake,
                                                2), round(place_stake, 2)
 
