@@ -191,8 +191,8 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 matched = True
             matched_price = bet_res['result']['instructionReports'][0][
                 'averagePriceMatched']
-            if price != matched_price:
-                print('Odds have changed, original price: %s' % price)
+            if price - 1 != matched_price:
+                print('Odds have changed, original price: %s' % price - 1)
             # else:
             #     unmatched_stake = stake - stake_matched
             #     cancel_unmatched_bets(headers)
