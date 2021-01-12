@@ -172,7 +172,7 @@ def get_no_rows(driver):
         try:
             driver.find_element_by_xpath(
                 f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]//td'
-            )
+            ).text
             count += 1
         except NoSuchElementException:
             print(count)
@@ -180,18 +180,21 @@ def get_no_rows(driver):
 
 
 def start_sporting_index(driver, race, headers):
+    processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         for row in range(get_no_rows(driver)):
-            print(row)
-            race.update(find_races(driver, row))
-            print('Found bet no lay: %s' % race['horse_name'])
-            race, bet_made = sporting_index_bet(driver, race)
-            if bet_made:
-                hide_race(driver)
-                output_race(driver, race)
-                update_csv_sporting_index(driver, race, headers)
+            if race['horse_name'] not in processed_horses:
+                processed_horses.append(race['horse_name'])
+                print(row)
+                race.update(find_races(driver, row))
+                print('Found bet no lay: %s' % race['horse_name'])
+                race, bet_made = sporting_index_bet(driver, race)
+                if bet_made:
+                    hide_race(driver)
+                    output_race(driver, race)
+                    update_csv_sporting_index(driver, race, headers)
 
 
 def betfair_bet(driver, race, headers):
