@@ -36,7 +36,7 @@ def login():
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (By.XPATH,
-             '//*@id=[dnn_ctr1157_View_RadGrid1_ctl00""]/thead/tr/th17][/a]"]'
+             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a'
              ))).click()
     # WebDriverWait(driver, 60).until(
     #     EC.element_to_be_clickable(
