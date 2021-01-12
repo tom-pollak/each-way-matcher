@@ -114,10 +114,13 @@ df = pd.read_csv(RETURNS_CSV,
                  date_parser=custom_date_parser,
                  squeeze=True)
 
-STARTING_BALANCE = df['balance'].values[0] + df['betfair_balance'].values[
-    0] + calc_unfinished_races(0)
-STARTING_BALANCE = 163.91
-
-output_profit()
-plot_bal_time_series_graph()
-sys.stdout.flush()
+try:
+    STARTING_BALANCE = df['balance'].values[0] + df['betfair_balance'].values[
+        0] + calc_unfinished_races(0)  # Should be 160
+    # STARTING_BALANCE = 163.91
+except IndexError:
+    print('No entrys to csv')
+else:
+    output_profit()
+    plot_bal_time_series_graph()
+    sys.stdout.flush()
