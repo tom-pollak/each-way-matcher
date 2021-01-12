@@ -28,37 +28,41 @@ def show_info(count, START_TIME):
         sys.exit()
 
 
-def find_races(driver):
+def find_races(driver, row=0):
     date_of_race = driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td').text
+        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td').text
     race_time = date_of_race[-5:].lower()
     date_of_race += ' %s' % datetime.today().year
     race_venue = driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[8]'
+        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[8]'
     ).text.lower().strip()
     sizestring = len(race_venue)
     race_venue = race_venue[:sizestring - 5].strip().title()
 
     horse_name = driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[9]'
+        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
     ).text.title()
 
     horse_odds = driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[13]').text
+        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[13]'
+    ).text
 
     bookie_exchange = driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[10]/a'
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[10]/a'
     ).get_attribute('href')
 
     rating = driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[17]').text
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[17]').text
 
     max_profit = driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]/td[20]').text.split(
-            '£')[1]
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[20]'
+    ).text.split('£')[1]
 
+    # driver.find_element_by_xpath(
+    #     '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
     driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[55]/div/input'
+    ).click()
 
     driver.switch_to.frame('RadWindow2')
     lay_odds = WebDriverWait(driver, 60).until(
@@ -156,18 +160,30 @@ def open_betfair_oddsmonkey(driver):
     sleep(0.5)
 
 
+def get_no_rows(driver):
+    count = 0
+    while True:
+        try:
+            driver.find_element_by_xpath(
+                f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]')
+            count += 1
+        except NoSuchElementException:
+            return count  # should be -1 but as for loop goes up to
+
+
 def start_sporting_index(driver, race, bet, headers):
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
-        race.update(find_races(driver))
-        print('Found bet no lay: %s' % race['horse_name'])
-        race, bet_made = sporting_index_bet(driver, race)
-        if bet_made:
-            hide_race(driver)
-            output_race(driver, race)
-            update_csv_sporting_index(driver, race, headers)
-            bet = True
+        for row in range(get_no_rows(driver)):
+            race.update(find_races(driver, row))
+            print('Found bet no lay: %s' % race['horse_name'])
+            race, bet_made = sporting_index_bet(driver, race)
+            if bet_made:
+                hide_race(driver)
+                output_race(driver, race)
+                update_csv_sporting_index(driver, race, headers)
+                bet = True
     return bet
 
 
@@ -175,60 +191,63 @@ def start_betfair(driver, race, headers):
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
-        race.update(find_races(driver))
-        print('Found arbitrage bet: %s' % race['horse_name'])
-        if race['max_profit'] <= 0:
-            print('\tMax profit < 0')
-            return False
+        for row in range(get_no_rows(driver)):
+            race.update(find_races(driver, row))
+            print('Found arbitrage bet: %s' % race['horse_name'])
+            if race['max_profit'] <= 0:
+                print('\tMax profit < 0')
+                return False
 
-        betfair_balance = get_betfair_balance(headers)
-        stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
-            race['balance'], betfair_balance, race['bookie_stake'],
-            race['win_stake'], race['lay_odds'], race['place_stake'],
-            race['lay_odds_place'])
-        if not stakes_ok:
-            return False
-
-        profits = calculate_profit(race['horse_odds'], bookie_stake,
-                                   race['lay_odds'], win_stake,
-                                   race['lay_odds_place'], place_stake,
-                                   race['place'])
-        if min(*profits) <= 0:
-            print('\tProfits < £0')
-            return False
-
-        minutes_until_race = (
-            datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
-            datetime.now()).total_seconds() / 60
-        if minutes_until_race <= 5:
-            print('\tRace too close to start time')
-            return True
-
-        market_ids, selection_id, got_race = get_race(race['date_of_race'],
-                                                      race['race_venue'],
-                                                      race['horse_name'])
-        if not got_race:
-            return True
-        race['bookie_stake'] = bookie_stake
-        race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
-        if bet_made:
-            lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
-                                        race['lay_odds'], place_stake,
-                                        race['lay_odds_place'])
             betfair_balance = get_betfair_balance(headers)
-            sporting_index_balance = get_balance_sporting_index(driver)
-            win_profit, place_profit, lose_profit = calculate_profit(
-                race['horse_odds'], bookie_stake, lay_win[4], lay_win[3],
-                lay_place[4], lay_place[3], race['place'])
-            min_profit = min(win_profit, place_profit, lose_profit)
-            output_lay_ew(race, betfair_balance, sporting_index_balance,
-                          min_profit, *lay_win, *lay_place, win_profit,
-                          place_profit, lose_profit)
-            update_csv_betfair(race, sporting_index_balance, bookie_stake,
-                               win_stake, place_stake, betfair_balance,
-                               lay_win[3], lay_place[3], min_profit,
-                               lay_win[4], lay_place[4])
-            return True
+            stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
+                race['balance'], betfair_balance, race['bookie_stake'],
+                race['win_stake'], race['lay_odds'], race['place_stake'],
+                race['lay_odds_place'])
+            if not stakes_ok:
+                return False
+
+            profits = calculate_profit(race['horse_odds'], bookie_stake,
+                                       race['lay_odds'], win_stake,
+                                       race['lay_odds_place'], place_stake,
+                                       race['place'])
+            if min(*profits) <= 0:
+                print('\tProfits < £0')
+                return False
+
+            minutes_until_race = (
+                datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
+                datetime.now()).total_seconds() / 60
+            if minutes_until_race <= 5:
+                print('\tRace too close to start time')
+                return True
+
+            market_ids, selection_id, got_race = get_race(
+                race['date_of_race'], race['race_venue'], race['horse_name'])
+            if not got_race:
+                return True
+            race['bookie_stake'] = bookie_stake
+            race, bet_made = sporting_index_bet(driver,
+                                                race,
+                                                make_betfair_ew=True)
+            if bet_made:
+                lay_win, lay_place = lay_ew(market_ids, selection_id,
+                                            win_stake, race['lay_odds'],
+                                            place_stake,
+                                            race['lay_odds_place'])
+                betfair_balance = get_betfair_balance(headers)
+                sporting_index_balance = get_balance_sporting_index(driver)
+                win_profit, place_profit, lose_profit = calculate_profit(
+                    race['horse_odds'], bookie_stake, lay_win[4], lay_win[3],
+                    lay_place[4], lay_place[3], race['place'])
+                min_profit = min(win_profit, place_profit, lose_profit)
+                output_lay_ew(race, betfair_balance, sporting_index_balance,
+                              min_profit, *lay_win, *lay_place, win_profit,
+                              place_profit, lose_profit)
+                update_csv_betfair(race, sporting_index_balance, bookie_stake,
+                                   win_stake, place_stake, betfair_balance,
+                                   lay_win[3], lay_place[3], min_profit,
+                                   lay_win[4], lay_place[4])
+                return True
     return False
 
 
