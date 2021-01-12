@@ -268,7 +268,7 @@ def scrape(driver, START_TIME):
                 show_info(count, START_TIME)
 
         start_betfair(driver, race, headers)
-        start_sporting_index(driver, race, bet, headers)
+        start_sporting_index(driver, race, headers)
         sys.stdout.flush()
         sleep(REFRESH_TIME)
         count += 1
