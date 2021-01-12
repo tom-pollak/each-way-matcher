@@ -112,6 +112,11 @@ def get_horse_id(horses, target_horse):
         if horse['runnerName'].lower() == target_horse.lower():
             return horse['selectionId']
 
+    # sometimes runnerName is 1. horse_name
+    for horse in horses['runners']:
+        if horse['runnerName'].lower() in target_horse.lower():
+            return horse['selectionId']
+
 
 def get_horses(target_horse, event_id, race_time, headers):
     markets_ids = {}

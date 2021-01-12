@@ -1,3 +1,4 @@
+import re
 from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -118,10 +119,8 @@ def get_sporting_index_page(driver, race):
 
 
 def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
-    bet_made = False
-    get_sporting_index_page(driver, race)
-    horse_name_xpath = f"//td[contains(text(), '{race['horse_name']}')]/following-sibling::td[5]/wgt-price-button/button"
-    try:
+    def click_horse(horse_name):
+        horse_name_xpath_punctuation = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
             try:
                 horse_button = WebDriverWait(driver, 60).until(
@@ -135,16 +134,44 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             except StaleElementReferenceException:
                 driver.refresh()
         else:
-            raise NoSuchElementException
+            raise ValueError
 
-    except (NoSuchElementException, TimeoutException):
+    bet_made = False
+    get_sporting_index_page(driver, race)
+    try:
+        click_horse(race['horse_name'])
+    except TimeoutException:
         if not retry:
             return sporting_index_bet(driver,
                                       race,
                                       retry=True,
                                       make_betfair_ew=make_betfair_ew)
-        print('\tHorse not found')
+        print('\tTimeout finding horse')
         return race, False
+    except ValueError:
+        print('Horse race SUSP or blank')
+        return race, False
+
+    except NoSuchElementException:
+        horse_name_s = [
+            m.start() for m in re.finditer('s', race['horse_name'])
+        ]
+        for position in horse_name_s:
+            horse_name = race['horse_name'][position:] + "'" + race[
+                'horse_name'][:position]
+            try:
+                click_horse(horse_name)
+
+            except (NoSuchElementException, TimeoutException):
+                pass
+            except ValueError:
+                print('Horse race SUSP or blank')
+                return race, False
+            else:
+                break  # Clicked on horse successfully!
+        else:
+            print('\tHorse not found')
+            return race, False
 
     cur_odd_price_frac = cur_odd_price.split('/')
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
