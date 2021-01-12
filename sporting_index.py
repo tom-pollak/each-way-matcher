@@ -120,7 +120,7 @@ def get_sporting_index_page(driver, race):
 
 def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     def click_horse(horse_name):
-        horse_name_xpath_punctuation = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
+        horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
             try:
                 horse_button = WebDriverWait(driver, 60).until(
