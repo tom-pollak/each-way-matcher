@@ -59,18 +59,20 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     place_stake *= liabiltity_ratio
     max_stake = bookie_stake * 2 + win_stake + place_stake
 
-    liability_min_stake_proportion = 0
     stake_min_stake_proportion = 0
     bookie_min_stake_proportion = 0.1 / bookie_stake
 
     if max_win_liability >= 10 and max_place_liability >= 10:
-        liability_min_stake_proportion = 10 / min(max_win_liability,
-                                                  max_place_liability)
+        lay_min_stake_proportion = 10 / min(max_win_liability,
+                                            max_place_liability)
     if win_stake >= 2 and place_stake >= 2:
         stake_min_stake_proportion = 2 / min(win_stake, place_stake)
+        if lay_min_stake_proportion != 0:
+            lay_min_stake_proportion = min(lay_min_stake_proportion,
+                                           stake_min_stake_proportion)
+        else:
+            lay_min_stake_proportion = stake_min_stake_proportion
 
-    lay_min_stake_proportion = min(liability_min_stake_proportion,
-                                   stake_min_stake_proportion)
     if lay_min_stake_proportion == 0:  # Stake not above 2 or liability above 10
         print(
             f'\tStakes too small: win stake - {win_stake} place_stake - {place_stake}'
