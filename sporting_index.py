@@ -177,7 +177,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                                 race['lay_odds_place'],
                                                 race['place'], race['balance'])
     if race['ew_stake'] < 0.1:
-        print(f"\tStake is too small: {race['ew_stake']}")
+        print(f"\tStake is too small: £{race['ew_stake']}")
         return race, False
 
     if float(cur_odd_price) == float(race['horse_odds']):

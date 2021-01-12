@@ -74,7 +74,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
 
     if lay_min_stake_proportion == 0:  # Stake not above 2 or liability above 10
         print(
-            f'\tStakes too small: win stake - {win_stake} place_stake - {place_stake}'
+            f'\tStakes too small: win stake - £{win_stake} place_stake - £{place_stake}'
         )
         return False, 0, 0, 0
 

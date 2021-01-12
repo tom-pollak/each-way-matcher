@@ -194,7 +194,7 @@ def start_betfair(driver, race, headers):
                                    race['lay_odds_place'], place_stake,
                                    race['place'])
         if min(*profits) <= 0:
-            print('\tProfits < 0')
+            print('\tProfits < £0')
             return False
 
         minutes_until_race = (
