@@ -19,7 +19,7 @@ def calc_unfinished_races(index=-1):
     mask = (df['date_of_race'] >
             df.index.values[index]) & (df.index <= df.index.values[index])
     races = df.loc[mask]
-    for i, row in races.iterrows():
+    for _, row in races.iterrows():
         stake = row['ew_stake'] * 2
         if row['is_lay']:
             liability = row['win_stake'] * (row['lay_odds'] - 1)

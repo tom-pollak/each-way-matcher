@@ -118,7 +118,7 @@ def get_sporting_index_page(driver, race):
     #     ))).click()
 
 
-def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
+def sporting_index_bet(driver, race, make_betfair_ew=False):
     def click_horse(horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
@@ -133,8 +133,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                 sleep(2)
             except (StaleElementReferenceException, TimeoutException):
                 driver.refresh()
-        else:
-            raise ValueError
+        raise ValueError
 
     bet_made = False
     get_sporting_index_page(driver, race)

@@ -171,9 +171,9 @@ def get_no_rows(driver):
     count = 0
     while True:
         try:
-            a = driver.find_element_by_xpath(
+            driver.find_element_by_xpath(
                 f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]//td[1]'
-            ).text
+            )
             count += 1
         except NoSuchElementException:
             return count
