@@ -190,7 +190,7 @@ def start_betfair(driver, race, headers):
         minutes_until_race = (
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
             datetime.now()).total_seconds() / 60
-        if minutes_until_race <= 1:
+        if minutes_until_race <= 5:
             print('\tRace too close to start time')
             return True
 
