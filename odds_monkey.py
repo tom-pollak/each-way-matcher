@@ -186,7 +186,6 @@ def start_betfair(driver, race, headers):
             race['win_stake'], race['lay_odds'], race['place_stake'],
             race['lay_odds_place'], race['max_profit'])
         if not stakes_ok:
-            print('\tStakes not bettable')
             return False
         minutes_until_race = (
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
@@ -199,7 +198,6 @@ def start_betfair(driver, race, headers):
                                                       race['race_venue'],
                                                       race['horse_name'])
         if not got_race:
-            print('\tRace not found API')
             return True
         race['bookie_stake'] = bookie_stake
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
