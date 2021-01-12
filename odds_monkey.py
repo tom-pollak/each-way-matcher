@@ -179,24 +179,6 @@ def get_no_rows(driver):
             return count
 
 
-def start_sporting_index(driver, race, headers):
-    processed_horses = []
-    driver.switch_to.window(driver.window_handles[0])
-    refresh_odds_monkey(driver)
-    if not driver.find_elements_by_class_name('rgNoRecords'):
-        for row in range(get_no_rows(driver)):
-            if race['horse_name'] not in processed_horses:
-                processed_horses.append(race['horse_name'])
-                print(row)
-                race.update(find_races(driver, row))
-                print('Found bet no lay: %s' % race['horse_name'])
-                race, bet_made = sporting_index_bet(driver, race)
-                if bet_made:
-                    hide_race(driver)
-                    output_race(driver, race)
-                    update_csv_sporting_index(driver, race, headers)
-
-
 def betfair_bet(driver, race, headers):
     print('Found arbitrage bet: %s' % race['horse_name'])
     if race['max_profit'] <= 0:
@@ -249,6 +231,24 @@ def betfair_bet(driver, race, headers):
         update_csv_betfair(race, sporting_index_balance, bookie_stake,
                            win_stake, place_stake, betfair_balance, lay_win[3],
                            lay_place[3], min_profit, lay_win[4], lay_place[4])
+
+
+def start_sporting_index(driver, race, headers):
+    processed_horses = []
+    driver.switch_to.window(driver.window_handles[0])
+    refresh_odds_monkey(driver)
+    if not driver.find_elements_by_class_name('rgNoRecords'):
+        for row in range(get_no_rows(driver)):
+            race.update(find_races(driver, row))
+            if race['horse_name'] not in processed_horses:
+                processed_horses.append(race['horse_name'])
+                print(row)
+                print('Found bet no lay: %s' % race['horse_name'])
+                race, bet_made = sporting_index_bet(driver, race)
+                if bet_made:
+                    hide_race(driver)
+                    output_race(driver, race)
+                    update_csv_sporting_index(driver, race, headers)
 
 
 def start_betfair(driver, race, headers):
