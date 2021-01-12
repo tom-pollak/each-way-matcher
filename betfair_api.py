@@ -141,16 +141,17 @@ def get_horses(target_horse, event_id, race_time, headers):
         return 0, 0, False
 
     total_matched = 0
-    for market in market_type:
+    for i, market in enumerate(market_type):
         if market['marketName'] == 'Each Way':
             markets_ids['Each Way'] = market['marketId']
         elif market['marketName'] == 'To Be Placed':
             markets_ids['Place'] = market['marketId']
+            market_type_index = i
         elif market['totalMatched'] > total_matched:
             markets_ids['Win'] = market['marketId']
             total_matched = market['totalMatched']
 
-    selection_id = get_horse_id(market_type[0], target_horse)
+    selection_id = get_horse_id(market_type[market_type_index], target_horse)
     if selection_id is None:
         print("\tERROR couldn't find horse selection_id")
         print(market_type[0]['runners'])
@@ -245,8 +246,8 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
              place_odds))
 
 
-# headers = login_betfair()
-# markets_ids, selection_id, got_horse = get_race('10 Jan 16:10 2021', 'Exeter',
-#                                                 'Top Of The Bill')
-# print(markets_ids, selection_id)
+headers = login_betfair()
+markets_ids, selection_id, got_horse = get_race('12 Jan 12:30 2021',
+                                                'Wetherby', 'Mont Segur')
+print(markets_ids, selection_id)
 # cancel_unmatched_bets(headers)
