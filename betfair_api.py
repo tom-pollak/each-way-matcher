@@ -189,8 +189,10 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'sizeMatched']
             if stake_matched == stake:
                 matched = True
-            price = bet_res['result']['instructionReports'][0][
+            matched_price = bet_res['result']['instructionReports'][0][
                 'averagePriceMatched']
+            if price != matched_price:
+                print('Odds have changed, original price: %s' % price)
             # else:
             #     unmatched_stake = stake - stake_matched
             #     cancel_unmatched_bets(headers)
@@ -209,7 +211,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
             print('\tError in bet response: %s' % bet_res['error'])
         except KeyError:
             print('\tUnknown error making bet: %s' % bet_res)
-    return bet_made, price, matched, stake_matched
+    return bet_made, matched_price, matched, stake_matched
 
 
 def get_betfair_balance(headers):
@@ -246,6 +248,6 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
              place_odds))
 
 
-# markets_ids, selection_id, got_horse = get_race('12 Jan 12:30 2021',
-#                                                 'Wetherby', 'Mont Segur')
-# print(markets_ids, selection_id)
+markets_ids, selection_id, got_horse = get_race('12 Jan 12:30 2021',
+                                                'Wetherby', 'Mont Segur')
+print(markets_ids, selection_id)
