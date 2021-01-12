@@ -39,8 +39,7 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
 
 
 def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
-                     win_odds, place_stake, place_odds, avaliable_profit):
-    max_profit_ratio = avaliable_profit / win_stake
+                     win_odds, place_stake, place_odds):
     bookie_ratio = bookie_balance / bookie_stake
     liabiltity_ratio = 1
 
@@ -67,7 +66,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
                                             max_place_liability)
     if win_stake >= 2 and place_stake >= 2:
         stake_min_stake_proportion = 2 / min(win_stake, place_stake)
-        if lay_min_stake_proportion != 0:
+        if lay_min_stake_proportion != 0:  # Eligible for > 10 liability
             lay_min_stake_proportion = min(lay_min_stake_proportion,
                                            stake_min_stake_proportion)
         else:
@@ -93,7 +92,6 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     bookie_stake *= min_stake_proportion
     win_stake *= min_stake_proportion
     place_stake *= min_stake_proportion
-    profit = max_profit_ratio * win_stake
     if profit <= 0:
         print('\tProfit below 0')
         return False, 0, 0, 0

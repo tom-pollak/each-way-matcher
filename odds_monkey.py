@@ -180,13 +180,24 @@ def start_betfair(driver, race, headers):
         if race['max_profit'] <= 0:
             print('\tMax profit < 0')
             return False
+
         betfair_balance = get_betfair_balance(headers)
         stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
             race['balance'], betfair_balance, race['bookie_stake'],
             race['win_stake'], race['lay_odds'], race['place_stake'],
-            race['lay_odds_place'], race['max_profit'])
+            race['lay_odds_place'])
         if not stakes_ok:
             return False
+
+        profits = calculate_profit(race['horse_odds'], bookie_stake,
+                                   race['lay_odds'], win_stake,
+                                   race['lay_odds_place'], place_stake,
+                                   race['place'])
+        print('Profits before:', profits)
+        if min(*profits) <= 0:
+            print('\tProfits < 0')
+            return False
+
         minutes_until_race = (
             datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
             datetime.now()).total_seconds() / 60
@@ -200,14 +211,6 @@ def start_betfair(driver, race, headers):
         if not got_race:
             return True
         race['bookie_stake'] = bookie_stake
-        profits = calculate_profit(race['horse_odds'], bookie_stake,
-                                   race['lay_odds'], win_stake,
-                                   race['lay_odds_place'], place_stake,
-                                   race['place'])
-        print('Profits before:', profits)
-        if min(*profits) <= 0:
-            print('\tProfits below 0')
-            return False
         race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
         if bet_made:
             lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
