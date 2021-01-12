@@ -169,7 +169,7 @@ def get_no_rows(driver):
                 f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]')
             count += 1
         except NoSuchElementException:
-            return count  # should be -1 but as for loop goes up to
+            return count - 1
 
 
 def start_sporting_index(driver, race, headers):
