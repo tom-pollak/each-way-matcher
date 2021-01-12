@@ -172,7 +172,7 @@ def get_no_rows(driver):
             return count  # should be -1 but as for loop goes up to
 
 
-def start_sporting_index(driver, race, bet, headers):
+def start_sporting_index(driver, race, headers):
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
