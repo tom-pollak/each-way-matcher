@@ -5,16 +5,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 RETURNS_CSV = 'returns/returns.csv'
-df = pd.read_csv(RETURNS_CSV,
-                 header=0,
-                 parse_dates=[7, 0],
-                 index_col=7,
-                 date_parser=custom_date_parser,
-                 squeeze=True)
-
-STARTING_BALANCE = df['balance'].values[0] + df['betfair_balance'].values[
-    0] + calc_unfinished_races(0)
-STARTING_BALANCE = 163.91
 
 
 def custom_date_parser(x):
@@ -116,6 +106,17 @@ def plot_bal_time_series_graph():
     plt.gcf().autofmt_xdate()
     plt.savefig('graphs/balance.png')
 
+
+df = pd.read_csv(RETURNS_CSV,
+                 header=0,
+                 parse_dates=[7, 0],
+                 index_col=7,
+                 date_parser=custom_date_parser,
+                 squeeze=True)
+
+STARTING_BALANCE = df['balance'].values[0] + df['betfair_balance'].values[
+    0] + calc_unfinished_races(0)
+STARTING_BALANCE = 163.91
 
 output_profit()
 plot_bal_time_series_graph()
