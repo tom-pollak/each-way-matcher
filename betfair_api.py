@@ -100,9 +100,9 @@ def get_event(venue, race_time, headers):
         event_id = event_response['result'][0]['event']['id']
     except (KeyError, IndexError):
         try:
-            print('\tError in getting event: %s' % event_response['error'])
+            print('Error in getting event: %s' % event_response['error'])
         except KeyError:
-            print('\tUnknown error getting event: %s' % event_response)
+            print('Unknown error getting event: %s' % event_response)
         return False
     return event_id
 
@@ -135,7 +135,7 @@ def get_horses(target_horse, event_id, race_time, headers):
         market_type = markets_response['result']
     except IndexError:
         try:
-            print('\tError in getting market: %s' % markets_response['error'])
+            print('Error in getting market: %s' % markets_response['error'])
         except KeyError:
             print('Unknown error getting market: %s' % markets_response)
         return 0, 0, False
@@ -153,7 +153,7 @@ def get_horses(target_horse, event_id, race_time, headers):
 
     selection_id = get_horse_id(market_type[market_type_index], target_horse)
     if selection_id is None:
-        print("\tERROR couldn't find horse selection_id")
+        print("ERROR couldn't find horse selection_id")
         print(market_type[0]['runners'])
         return 0, 0, False
     return markets_ids, selection_id, True
@@ -167,7 +167,7 @@ def cancel_unmatched_bets(headers):
             return True
         raise ValueError
     except (KeyError, ValueError):
-        print('\tERROR: could not cancel unmatched bets!')
+        print('ERROR: could not cancel unmatched bets!')
         print(cancel_res)
         return False
 
@@ -193,15 +193,6 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'averagePriceMatched']
             if price - 1 != matched_price:
                 print('Odds have changed, original price: %s' % price - 1)
-            # else:
-            #     unmatched_stake = stake - stake_matched
-            #     cancel_unmatched_bets(headers)
-            #     print(get_next_odd_increment(price))
-            #     bet_made, matched, _, unmatched_price = lay_bets(
-            #         market_id, selection_id, get_next_odd_increment(price),
-            #         unmatched_stake, headers)
-            #     price = (stake_matched * price +
-            #              unmatched_stake * unmatched_price) / stake
         elif bet_res['result']['status'] == 'FAILURE':
             print(bet_req)
             print(bet_res)

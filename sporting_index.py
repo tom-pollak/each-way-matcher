@@ -141,7 +141,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     try:
         cur_odd_price = click_horse(race['horse_name'])
     except ValueError:
-        print('Horse race SUSP or blank')
+        # print('Horse race SUSP or blank')
         return race, False
 
     except NoSuchElementException:
@@ -155,14 +155,14 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                 cur_odd_price = click_horse(horse_name)
 
             except ValueError:
-                print('Horse race SUSP or blank')
+                # print('Horse race SUSP or blank')
                 return race, False
             except NoSuchElementException:
                 pass
             else:
                 break  # Clicked on horse successfully!
         else:
-            print('\tHorse not found')
+            # print('\tHorse not found')
             return race, False
 
     cur_odd_price_frac = cur_odd_price.split('/')
@@ -177,15 +177,15 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                                                 race['lay_odds_place'],
                                                 race['place'], race['balance'])
     if race['ew_stake'] < 0.1:
-        print(f"\tStake is too small: £{race['ew_stake']}")
+        # print(f"\tStake is too small: £{race['ew_stake']}")
         return race, False
 
     if float(cur_odd_price) == float(race['horse_odds']):
         bet_made = make_sporting_index_bet(driver, race)
         if not bet_made:
-            print('\tOdds have changed')
+            # print('\tOdds have changed')
     else:
-        print('\tOdds have changed')
+        # print('\tOdds have changed')
         for _ in range(3):
             try:
                 WebDriverWait(driver, 60).until(
