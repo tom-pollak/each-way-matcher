@@ -60,8 +60,6 @@ def find_races(driver, row=0):
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[20]'
     ).text.split('£')[1]
 
-    # driver.find_element_by_xpath(
-    #     '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl04_calcButton"]').click()
     driver.find_element_by_xpath(
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[55]/div/input'
     ).click()
@@ -132,11 +130,6 @@ def open_betfair_oddsmonkey(driver):
         '''window.open("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx","_blank");'''
     )
     driver.switch_to.window(driver.window_handles[2])
-
-    # WebDriverWait(driver, 30).until(
-    #     EC.element_to_be_clickable(
-    #         (By.ID,
-    #          'dnn_ctr1157_View_RadToolBar1_i11_lblRefreshText'))).click()
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (By.XPATH,
@@ -157,9 +150,6 @@ def open_betfair_oddsmonkey(driver):
         )
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_rlbExchanges_i0"]/label/input').click()
-    # driver.find_element_by_xpath(
-    #     '//*[@id="dnn_ctr1157_View_txtEachWayRatingFrom"]').clear().send_keys(
-    #         '100')
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_btnApplyFilter"]').click()
     driver.find_element_by_xpath(

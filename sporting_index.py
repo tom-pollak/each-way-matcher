@@ -79,10 +79,6 @@ def make_sporting_index_bet(driver, race, retry=False):
 
     try:
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        # WebDriverWait(driver, 60).until(
-        #     EC.element_to_be_clickable(
-        #         (By.CLASS_NAME, 'placeBetBtn'))).click()
-        # driver.find_element_by_class_name('placeBetBtn').click()
         WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable(
                 (By.CLASS_NAME, 'placeBetBtn'))).click()
