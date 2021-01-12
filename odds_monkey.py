@@ -31,7 +31,8 @@ def show_info(count, START_TIME):
 
 def find_races(driver, row=0):
     date_of_race = driver.find_element_by_xpath(
-        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td').text
+        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[1]'
+    ).text
     race_time = date_of_race[-5:].lower()
     date_of_race += ' %s' % datetime.today().year
     race_venue = driver.find_element_by_xpath(
@@ -171,7 +172,7 @@ def get_no_rows(driver):
     while True:
         try:
             a = driver.find_element_by_xpath(
-                f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]//td'
+                f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]//td[1]'
             ).text
             print(a)
             count += 1
@@ -240,6 +241,7 @@ def start_sporting_index(driver, race, headers):
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         for row in range(get_no_rows(driver)):
+            driver.switch_to.window(driver.window_handles[0])
             race.update(find_races(driver, row))
             if race['horse_name'] not in processed_horses:
                 processed_horses.append(race['horse_name'])
