@@ -131,7 +131,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                     horse_button.click()
                     break
                 sleep(1)
-            except StaleElementReferenceException:
+            except (StaleElementReferenceException, TimeoutException):
                 driver.refresh()
         else:
             raise ValueError
@@ -140,14 +140,6 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     get_sporting_index_page(driver, race)
     try:
         click_horse(race['horse_name'])
-    except TimeoutException:
-        if not retry:
-            return sporting_index_bet(driver,
-                                      race,
-                                      retry=True,
-                                      make_betfair_ew=make_betfair_ew)
-        print('\tTimeout finding horse')
-        return race, False
     except ValueError:
         print('Horse race SUSP or blank')
         return race, False
@@ -162,11 +154,11 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             try:
                 click_horse(horse_name)
 
-            except (NoSuchElementException, TimeoutException):
-                pass
             except ValueError:
                 print('Horse race SUSP or blank')
                 return race, False
+            except NoSuchElementException:
+                pass
             else:
                 break  # Clicked on horse successfully!
         else:
