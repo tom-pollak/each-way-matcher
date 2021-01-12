@@ -186,8 +186,6 @@ def start_sporting_index(driver, race, headers):
                 hide_race(driver)
                 output_race(driver, race)
                 update_csv_sporting_index(driver, race, headers)
-                bet = True
-    return bet
 
 
 def betfair_bet(driver, race, headers):
