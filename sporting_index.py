@@ -129,8 +129,8 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
                 cur_odd_price = horse_button.text
                 if cur_odd_price not in ['', 'SUSP']:
                     horse_button.click()
-                    break
-                sleep(1)
+                    return cur_odd_price
+                sleep(2)
             except (StaleElementReferenceException, TimeoutException):
                 driver.refresh()
         else:
@@ -139,7 +139,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
     bet_made = False
     get_sporting_index_page(driver, race)
     try:
-        click_horse(race['horse_name'])
+        cur_odd_price = click_horse(race['horse_name'])
     except ValueError:
         print('Horse race SUSP or blank')
         return race, False
@@ -152,7 +152,7 @@ def sporting_index_bet(driver, race, retry=False, make_betfair_ew=False):
             horse_name = race['horse_name'][position:] + "'" + race[
                 'horse_name'][:position]
             try:
-                click_horse(horse_name)
+                cur_odd_price = click_horse(horse_name)
 
             except ValueError:
                 print('Horse race SUSP or blank')
