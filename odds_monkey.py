@@ -201,7 +201,7 @@ def start_betfair(driver, race, headers):
             return True
         race['bookie_stake'] = bookie_stake
         profits = calculate_profit(race['horse_odds'], bookie_stake,
-                                   race['lay_odds'], race['win_stake'],
+                                   race['lay_odds'], win_stake,
                                    race['lay_odds_place'], place_stake,
                                    race['place'])
         print('Profits before:', profits)
