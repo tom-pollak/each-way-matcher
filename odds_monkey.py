@@ -136,6 +136,11 @@ def open_betfair_oddsmonkey(driver):
     #     EC.element_to_be_clickable(
     #         (By.ID,
     #          'dnn_ctr1157_View_RadToolBar1_i11_lblRefreshText'))).click()
+    WebDriverWait(driver, 60).until(
+        EC.element_to_be_clickable(
+            (By.XPATH,
+             '//*@id=[dnn_ctr1157_View_RadGrid1_ctl00""]/thead/tr/th17][/a]"]'
+             ))).click()
 
     WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((
@@ -166,7 +171,8 @@ def get_no_rows(driver):
     while True:
         try:
             driver.find_element_by_xpath(
-                f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]')
+                f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]//td'
+            )
             count += 1
         except NoSuchElementException:
             print(count)

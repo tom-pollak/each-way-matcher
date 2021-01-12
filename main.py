@@ -33,6 +33,11 @@ def login():
     sleep(2)
 
     driver.get('https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx')
+    WebDriverWait(driver, 60).until(
+        EC.element_to_be_clickable(
+            (By.XPATH,
+             '//*@id=[dnn_ctr1157_View_RadGrid1_ctl00""]/thead/tr/th17][/a]"]'
+             ))).click()
     # WebDriverWait(driver, 60).until(
     #     EC.element_to_be_clickable(
     #         (By.CLASS_NAME, 'dnn_ctr433_Login_Login_DNN_cmdLogin'))).click()
