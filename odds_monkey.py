@@ -169,6 +169,7 @@ def get_no_rows(driver):
                 f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{count}"]')
             count += 1
         except NoSuchElementException:
+            print(count)
             return count
 
 
@@ -177,6 +178,7 @@ def start_sporting_index(driver, race, headers):
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         for row in range(get_no_rows(driver)):
+            print(row)
             race.update(find_races(driver, row))
             print('Found bet no lay: %s' % race['horse_name'])
             race, bet_made = sporting_index_bet(driver, race)
