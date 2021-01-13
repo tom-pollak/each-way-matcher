@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index, output_race
 from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair, get_race
-from calculate_odds import calculate_stakes, calculate_profit
+from calculate_odds import calculate_stakes, calculate_profit, kelly_criterion
 from write_to_csv import update_csv_sporting_index, update_csv_betfair
 
 REFRESH_TIME = 62
@@ -29,7 +29,13 @@ def show_info(count, START_TIME):
         sys.exit()
 
 
-def find_races(driver, row=0):
+def find_races(driver, row=0, window=0):
+    driver.switch_to.window(driver.window_handles[window])
+    driver.switch_to.default_content()
+    horse_name = driver.find_element_by_xpath(
+        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
+    ).text.title()
+
     date_of_race = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[1]'
     ).text
@@ -38,12 +44,7 @@ def find_races(driver, row=0):
     race_venue = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[8]'
     ).text.lower().strip()
-    sizestring = len(race_venue)
-    race_venue = race_venue[:sizestring - 5].strip().title()
-
-    horse_name = driver.find_element_by_xpath(
-        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
-    ).text.title()
+    race_venue = race_venue[:len(race_venue) - 5].strip().title()
 
     horse_odds = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[13]'
@@ -61,22 +62,37 @@ def find_races(driver, row=0):
     ).text.split('£')[1]
 
     driver.find_element_by_xpath(
-        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[55]/div/input'
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl{"{:02d}".format(2 * row + 4)}_calcButton"]'
     ).click()
+    sleep(2)
 
     driver.switch_to.frame('RadWindow2')
-    lay_odds = WebDriverWait(driver, 60).until(
-        EC.presence_of_element_located(
-            (By.ID, 'txtLayOdds_win'))).get_attribute('value')
+    horse_name_window = WebDriverWait(driver, 60).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, '//*[@id="lblOutcomeName"]'))).text.title()
+
+    if horse_name != horse_name_window:
+        print(
+            'ERROR horse_name not same: %s %s %s %s' %
+            (horse_name, horse_name_window, row, "{:02d}".format(2 * row + 4)))
+        driver.switch_to.default_content()
+        driver.find_element_by_class_name('rwCloseButton').click()
+        return {}
+
+    lay_odds = WebDriverWait(driver, 600).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, '//*[@id="txtLayOdds_win"]'))).get_attribute('value')
 
     lay_odds_place = driver.find_element_by_xpath(
         '//*[@id="txtLayOdds_place"]').get_attribute('value')
-
     place = driver.find_element_by_xpath(
-        '//*[@id="txtPlacePayout"]').get_attribute('value')
+        '//*[@id="lblPlacesPaid_lay"]').get_attribute('value')
 
-    bookie_stake = driver.find_element_by_xpath(
-        '//*[@id="lblStep1"]/strong[1]').text.replace('£', '')
+    bookie_stake = WebDriverWait(driver, 15).until(
+        EC.visibility_of_element_located(
+            (By.XPATH,
+             '//*[@id="lblStep1"]/strong[1]'))).text.replace('£', '')
+
     win_stake = driver.find_element_by_xpath(
         '//*[@id="lblStep2"]/strong[1]').text.replace('£', '')
     place_stake = driver.find_element_by_xpath(
@@ -100,14 +116,14 @@ def find_races(driver, row=0):
         'bookie_stake': float(bookie_stake),
         'win_stake': float(win_stake),
         'place_stake': float(place_stake),
-        'max_profit': float(max_profit)
+        'max_profit': float(max_profit),
     }
 
 
-def hide_race(driver, window=0):
+def hide_race(driver, row=0, window=0):
     driver.switch_to.window(driver.window_handles[window])
     driver.find_element_by_xpath(
-        '//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__0"]//td[55]//div//a'
+        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[55]//div//a'
     ).click()
 
 
@@ -170,9 +186,9 @@ def get_no_rows(driver):
 
 
 def betfair_bet(driver, race, headers):
-    # print('Found arbitrage bet: %s' % race['horse_name'])
+    print('Found arbitrage bet: %s' % race['horse_name'])
     if race['max_profit'] <= 0:
-        # print('\tMax profit < 0')
+        print('\tMax profit < 0')
         return
 
     betfair_balance = get_betfair_balance(headers)
@@ -188,14 +204,14 @@ def betfair_bet(driver, race, headers):
                                race['lay_odds_place'], place_stake,
                                race['place'])
     if min(*profits) <= 0:
-        # print('\tProfits < £0')
+        print('\tProfits < £0')
         return
 
     minutes_until_race = (
         datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
         datetime.now()).total_seconds() / 60
     if minutes_until_race <= 5:
-        # print('\tRace too close to start time')
+        print('\tRace too close to start time')
         return
 
     market_ids, selection_id, got_race = get_race(race['date_of_race'],
@@ -205,12 +221,15 @@ def betfair_bet(driver, race, headers):
         return
     race['bookie_stake'] = bookie_stake
     race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
+    if bet_made is None:
+        return True
     if bet_made:
         lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
                                     race['lay_odds'], place_stake,
                                     race['lay_odds_place'])
         betfair_balance = get_betfair_balance(headers)
         sporting_index_balance = get_balance_sporting_index(driver)
+        race['balance'] = sporting_index_balance
         win_profit, place_profit, lose_profit = calculate_profit(
             race['horse_odds'], bookie_stake, lay_win[4], lay_win[3],
             lay_place[4], lay_place[3], race['place'])
@@ -223,38 +242,69 @@ def betfair_bet(driver, race, headers):
                            lay_place[3], min_profit, lay_win[4], lay_place[4])
 
 
-def start_sporting_index(driver, race, headers):
+def start_sporting_index(driver, headers):
+    race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         for row in range(get_no_rows(driver)):
-            race.update(find_races(driver, row))
-            if race['horse_name'] not in processed_horses:
+            horse_name = driver.find_element_by_xpath(
+                f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
+            ).text.title()
+            if horse_name not in processed_horses:
+                race.update(find_races(driver, row, 0))
                 processed_horses.append(race['horse_name'])
-                # print('Found bet no lay: %s' % race['horse_name'])
+
+                print('Found bet no lay: %s' % race['horse_name'])
+                race['ew_stake'], race['expected_return'], race[
+                    'expected_value'] = kelly_criterion(
+                        race['horse_odds'], race['lay_odds'],
+                        race['lay_odds_place'], race['place'], race['balance'])
+
+                if race['ew_stake'] < 0.1:
+                    print(f"\tStake is too small: £{race['ew_stake']}")
+                    return
+                if race['ew_stake'] > 2:
+                    print('EW stake is above 2')
+                    print(race['ew_stake'], race['bookie_stake'],
+                          race['horse_odds'], race['lay_odds'],
+                          race['lay_odds_place'])
+                    return
+
+                bet_made = False
                 race, bet_made = sporting_index_bet(driver, race)
+                if bet_made is None:
+                    hide_race(driver, row, 0)
+                    return
                 if bet_made:
-                    hide_race(driver)
+                    race['balance'] = get_balance_sporting_index(driver)
+                    hide_race(driver, row)
                     output_race(driver, race)
                     update_csv_sporting_index(driver, race, headers)
             driver.switch_to.window(driver.window_handles[0])
 
 
-def start_betfair(driver, race, headers):
+def start_betfair(driver, headers):
+    race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         for row in range(get_no_rows(driver)):
-            race.update(find_races(driver, row))
-            if race['horse_name'] not in processed_horses:
+            horse_name = driver.find_element_by_xpath(
+                f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
+            ).text.title()
+            if horse_name not in processed_horses:
+                race.update(find_races(driver, row, 2))
                 processed_horses.append(race['horse_name'])
-                betfair_bet(driver, race, headers)
+                hide = betfair_bet(driver, race, headers)
+                if hide:
+                    hide_race(driver, row, 2)
 
 
 def scrape(driver, START_TIME):
-    race = setup_sporting_index(driver)
+    setup_sporting_index(driver)
     open_betfair_oddsmonkey(driver)
     count = 0
     driver.switch_to.window(driver.window_handles[0])
@@ -266,8 +316,8 @@ def scrape(driver, START_TIME):
             if count % 10 == 0:
                 show_info(count, START_TIME)
 
-        start_betfair(driver, race, headers)
-        start_sporting_index(driver, race, headers)
+        start_betfair(driver, headers)
+        start_sporting_index(driver, headers)
         sys.stdout.flush()
         sleep(REFRESH_TIME)
         count += 1

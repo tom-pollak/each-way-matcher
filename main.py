@@ -38,10 +38,6 @@ def login():
             (By.XPATH,
              '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a'
              ))).click()
-    # WebDriverWait(driver, 60).until(
-    #     EC.element_to_be_clickable(
-    #         (By.CLASS_NAME, 'dnn_ctr433_Login_Login_DNN_cmdLogin'))).click()
-    # sleep(2)
 
     driver.execute_script(
         '''window.open("https://www.sportingindex.com/fixed-odds","_blank");'''
@@ -55,7 +51,7 @@ def login():
     # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
     driver.find_element_by_id('passwordCompact').send_keys(S_INDEX_PASS)
     driver.find_element_by_id('submitLogin').click()
-    sleep(10)
+    sleep(5)
     print('Logged in')
     sys.stdout.flush()
 
@@ -84,7 +80,6 @@ while True:
         scrape(driver, START_TIME)
     except KeyboardInterrupt:
         print('Exiting')
-        driver.quit()
         sys.exit()
     except Exception as e:
         print('Error occured: %s' % e)

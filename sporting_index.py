@@ -19,7 +19,7 @@ def change_to_decimal(driver):
 
 def output_race(driver, race):
     balance = get_balance_sporting_index(driver)
-    print(f"\nBet made: {race['horse_name']} - {race['horse_odds']}")
+    print(f"\nEW no lay bet made: {race['horse_name']} - {race['horse_odds']}")
     print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
     try:
         print(
@@ -33,23 +33,26 @@ def output_race(driver, race):
 
 def get_balance_sporting_index(driver, retry=False):
     driver.switch_to.window(driver.window_handles[1])
+    sleep(3)
     try:
         count = 0
         balance = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
                 (By.CLASS_NAME, 'btn-balance'))).text
-        while balance == 'BALANCE' and count < 10:
-            sleep(0.5)
-            balance = driver.find_element_by_class_name('btn-balance').text
+        while balance in ['BALANCE', ''] and count < 10:
+            sleep(1)
+            balance = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(
+                    (By.CLASS_NAME, 'btn-balance'))).text
             count += 1
-        if balance == 'BALANCE':
+        if balance in ['BALANCE', '']:
             raise ValueError('balance is BALANCE')
     except (NoSuchElementException, TimeoutException):
         if not retry:
             driver.refresh()
             balance = get_balance_sporting_index(driver, retry=True)
         else:
-            raise Exception("Couldn't find balance %s" % count)
+            raise ValueError("Couldn't find balance %s" % count)
 
     balance = balance.replace(' ', '')
     balance = balance.replace('£', '')
@@ -74,6 +77,11 @@ def make_sporting_index_bet(driver, race, retry=False):
         except (TimeoutException, StaleElementReferenceException,
                 ElementNotInteractableException):
             driver.refresh()
+            WebDriverWait(driver, 20).until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    '/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14/a]'
+                ))).click()
     else:
         return False
 
@@ -115,11 +123,15 @@ def get_sporting_index_page(driver, race):
 
 
 def sporting_index_bet(driver, race, make_betfair_ew=False):
+    if make_betfair_ew:
+        race['ew_stake'] = race['bookie_stake']
+
     def click_horse(horse_name):
+        # print(horse_name)
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
             try:
-                horse_button = WebDriverWait(driver, 60).until(
+                horse_button = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located(
                         (By.XPATH, horse_name_xpath)))
                 cur_odd_price = horse_button.text
@@ -129,73 +141,66 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
                 sleep(2)
             except (StaleElementReferenceException, TimeoutException):
                 driver.refresh()
+            except NoSuchElementException:
+                return None
         raise ValueError
 
-    bet_made = False
-    get_sporting_index_page(driver, race)
-    try:
-        cur_odd_price = click_horse(race['horse_name'])
-    except ValueError:
-        # print('Horse race SUSP or blank')
-        return race, False
-
-    except NoSuchElementException:
-        horse_name_s = [
-            m.start() for m in re.finditer('s', race['horse_name'])
-        ]
-        for position in horse_name_s:
+    def try_horse_combinations(driver, race):
+        horse_names = [m.start() for m in re.finditer('s', race['horse_name'])]
+        for position in horse_names:
             horse_name = race['horse_name'][position:] + "'" + race[
                 'horse_name'][:position]
             try:
                 cur_odd_price = click_horse(horse_name)
-
+                if cur_odd_price is not None:
+                    return cur_odd_price
             except ValueError:
-                # print('Horse race SUSP or blank')
-                return race, False
-            except NoSuchElementException:
-                pass
-            else:
-                break  # Clicked on horse successfully!
-        else:
-            # print('\tHorse not found')
-            return race, False
+                print('Horse race SUSP or blank')
+                return False
+            return None
 
+    def get_horse(driver, race):
+        try:
+            cur_odd_price = click_horse(race['horse_name'])
+            if cur_odd_price is None:
+                return try_horse_combinations(driver, race)
+            return cur_odd_price
+
+        except ValueError:
+            print('Horse race SUSP or blank')
+            return False
+
+    def close_bet(driver):
+        print('Closing bet')
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable((
+                By.XPATH,
+                '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[5]/wgt-spin-icon'
+                # "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+            ))).click()
+        # driver.find_element_by_xpath(
+        #     "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+
+    bet_made = False
+    get_sporting_index_page(driver, race)
+    cur_odd_price = get_horse(driver, race)
+    if cur_odd_price is None:
+        return race, None
+    if not cur_odd_price:
+        return race, False
     cur_odd_price_frac = cur_odd_price.split('/')
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
-    race['balance'] = get_balance_sporting_index(driver)
-    if make_betfair_ew:
-        race['ew_stake'] = race['bookie_stake']
-    else:
-        race['ew_stake'], race['expected_return'], race[
-            'expected_value'] = kelly_criterion(race['horse_odds'],
-                                                race['lay_odds'],
-                                                race['lay_odds_place'],
-                                                race['place'], race['balance'])
-    if race['ew_stake'] < 0.1:
-        # print(f"\tStake is too small: £{race['ew_stake']}")
-        return race, False
 
     if float(cur_odd_price) == float(race['horse_odds']):
         bet_made = make_sporting_index_bet(driver, race)
-        # if not bet_made:
-        # print('\tOdds have changed')
+        if not bet_made:
+            print('\tOdds have changed')
     else:
-        # print('\tOdds have changed')
-        for _ in range(3):
-            try:
-                WebDriverWait(driver, 60).until(
-                    EC.element_to_be_clickable((
-                        By.XPATH,
-                        "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-                    ))).click()
-                break
-            except (TimeoutException, StaleElementReferenceException):
-                driver.refresh()
+        print('\tOdds have changed')
+        close_bet(driver)
     return race, bet_made
 
 
 def setup_sporting_index(driver):
     driver.get(
         'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
-    balance = get_balance_sporting_index(driver)
-    return {'balance': balance}
