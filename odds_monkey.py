@@ -214,9 +214,8 @@ def betfair_bet(driver, race, headers):
         # print('\tRace too close to start time')
         return
 
-    market_ids, selection_id, got_race = get_race(race['date_of_race'],
-                                                  race['race_venue'],
-                                                  race['horse_name'])
+    market_ids, selection_id, got_race, race['horse_name'] = get_race(
+        race['date_of_race'], race['race_venue'], race['horse_name'])
     if not got_race:
         return
     race['bookie_stake'] = bookie_stake
@@ -272,6 +271,9 @@ def start_sporting_index(driver, headers):
                           race['lay_odds_place'])
                     return
 
+                _, _, _, race['horse_name'] = get_race(race['date_of_race'],
+                                                       race['race_venue'],
+                                                       race['horse_name'])
                 bet_made = False
                 race, bet_made = sporting_index_bet(driver, race)
                 if bet_made is None:

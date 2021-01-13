@@ -111,19 +111,20 @@ def get_event(venue, race_time, headers):
 def get_horse_id(horses, target_horse):
     for horse in horses['runners']:
         if horse['runnerName'].lower() == target_horse.lower():
-            return horse['selectionId']
+            return horse['selectionId'], horse['runnerName']
 
     # sometimes runnerName is 1. horse_name
     for horse in horses['runners']:
         if horse['runnerName'].lower() in target_horse.lower():
-            return horse['selectionId']
+            return horse['selectionId'], horse['runnerName']
 
+    # for horses with punctuation taken out by oddsmonkey
     horses_list = [horse['runnerName'] for horse in horses['runners']]
     close_horse = difflib.get_close_matches(target_horse, horses_list, n=1)[0]
     print('Close horse found: %s' % close_horse)
     for horse in horses:
         if horse['runnerName'] == close_horse:
-            return horse['selectionId']
+            return horse['selectionId'], horse['runnerName']
 
 
 def get_horses(target_horse, event_id, race_time, headers):
@@ -146,7 +147,7 @@ def get_horses(target_horse, event_id, race_time, headers):
             print('Error in getting market: %s' % markets_response['error'])
         except KeyError:
             print('Unknown error getting market: %s' % markets_response)
-        return 0, 0, False
+        return 0, 0, False, target_horse
 
     total_matched = 0
     for i, market in enumerate(market_type):
@@ -159,12 +160,13 @@ def get_horses(target_horse, event_id, race_time, headers):
             markets_ids['Win'] = market['marketId']
             total_matched = market['totalMatched']
 
-    selection_id = get_horse_id(market_type[market_type_index], target_horse)
+    selection_id, target_horse = get_horse_id(market_type[market_type_index],
+                                              target_horse)
     if selection_id is None:
         print("ERROR couldn't find horse selection_id")
         print(market_type[0]['runners'])
         return 0, 0, False
-    return markets_ids, selection_id, True
+    return markets_ids, selection_id, True, target_horse
 
 
 def cancel_unmatched_bets(headers):
@@ -226,11 +228,11 @@ def get_race(race_time, venue, horse):
     race_time = datetime.datetime.strptime(race_time, '%d %b %H:%M %Y')
     event_id = get_event(venue, race_time, headers)
     if not event_id:
-        return 0, 0, False
+        return 0, 0, False, horse
 
-    markets_ids, selection_id, got_horse = get_horses(horse, event_id,
-                                                      race_time, headers)
-    return markets_ids, selection_id, got_horse
+    markets_ids, selection_id, got_horse, horse = get_horses(
+        horse, event_id, race_time, headers)
+    return markets_ids, selection_id, got_horse, horse
 
 
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
