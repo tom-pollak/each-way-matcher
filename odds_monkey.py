@@ -130,6 +130,11 @@ def hide_race(driver, row=0, window=0):
 def refresh_odds_monkey(driver):
     driver.switch_to.default_content()
     WebDriverWait(driver, 60).until(
+        EC.element_to_be_clickable(
+            (By.XPATH,
+             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[55]'
+             ))).click()
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((
             By.XPATH,
             '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
