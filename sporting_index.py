@@ -127,7 +127,6 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
         race['ew_stake'] = race['bookie_stake']
 
     def click_horse(horse_name):
-        # print(horse_name)
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
             try:
@@ -155,7 +154,7 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
                 if cur_odd_price is not None:
                     return cur_odd_price
             except ValueError:
-                print('Horse race SUSP or blank')
+                # print('Horse race SUSP or blank')
                 return False
             return None
 
@@ -167,11 +166,10 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
             return cur_odd_price
 
         except ValueError:
-            print('Horse race SUSP or blank')
+            # print('Horse race SUSP or blank')
             return False
 
     def close_bet(driver):
-        print('Closing bet')
         WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable((
                 By.XPATH,
@@ -194,9 +192,9 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
     if float(cur_odd_price) == float(race['horse_odds']):
         bet_made = make_sporting_index_bet(driver, race)
         if not bet_made:
-            print('\tOdds have changed')
+            # print('\tOdds have changed')
     else:
-        print('\tOdds have changed')
+        # print('\tOdds have changed')
         close_bet(driver)
     return race, bet_made
 

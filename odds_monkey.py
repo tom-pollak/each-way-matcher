@@ -186,9 +186,9 @@ def get_no_rows(driver):
 
 
 def betfair_bet(driver, race, headers):
-    print('Found arbitrage bet: %s' % race['horse_name'])
+    # print('Found arbitrage bet: %s' % race['horse_name'])
     if race['max_profit'] <= 0:
-        print('\tMax profit < 0')
+        # print('\tMax profit < 0')
         return
 
     betfair_balance = get_betfair_balance(headers)
@@ -204,14 +204,14 @@ def betfair_bet(driver, race, headers):
                                race['lay_odds_place'], place_stake,
                                race['place'])
     if min(*profits) <= 0:
-        print('\tProfits < £0')
+        # print('\tProfits < £0')
         return
 
     minutes_until_race = (
         datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
         datetime.now()).total_seconds() / 60
     if minutes_until_race <= 5:
-        print('\tRace too close to start time')
+        # print('\tRace too close to start time')
         return
 
     market_ids, selection_id, got_race = get_race(race['date_of_race'],
@@ -256,14 +256,14 @@ def start_sporting_index(driver, headers):
                 race.update(find_races(driver, row, 0))
                 processed_horses.append(race['horse_name'])
 
-                print('Found bet no lay: %s' % race['horse_name'])
+                # print('Found bet no lay: %s' % race['horse_name'])
                 race['ew_stake'], race['expected_return'], race[
                     'expected_value'] = kelly_criterion(
                         race['horse_odds'], race['lay_odds'],
                         race['lay_odds_place'], race['place'], race['balance'])
 
                 if race['ew_stake'] < 0.1:
-                    print(f"\tStake is too small: £{race['ew_stake']}")
+                    # print(f"\tStake is too small: £{race['ew_stake']}")
                     return
                 if race['ew_stake'] > 2:
                     print('EW stake is above 2')
