@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import difflib
 from urllib import error, request
 
 import requests
@@ -115,6 +116,13 @@ def get_horse_id(horses, target_horse):
     # sometimes runnerName is 1. horse_name
     for horse in horses['runners']:
         if horse['runnerName'].lower() in target_horse.lower():
+            return horse['selectionId']
+
+    horses_list = [horse['runnerName'] for horse in horses['runners']]
+    close_horse = difflib.get_close_matches(target_horse, horses_list, n=1)[0]
+    print('Close horse found: %s' % close_horse)
+    for horse in horses:
+        if horse['runnerName'] == close_horse:
             return horse['selectionId']
 
 
@@ -239,6 +247,9 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
              place_odds))
 
 
-# markets_ids, selection_id, got_horse = get_race('12 Jan 12:30 2021',
+# markets_ids, selection_id, got_horse = get_race('15 Jan 19:00 2021',
 #                                                 'Wetherby', 'Mont Segur')
 # print(markets_ids, selection_id)
+# horses = ['sdfaf', 'ufsdfhfjsda', "Libby's Horse"]
+# close_horse = difflib.get_close_matches('Libbys Horse', horses, n=1)
+# print(close_horse)
