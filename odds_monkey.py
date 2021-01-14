@@ -23,10 +23,10 @@ def show_info(count, START_TIME):
     secs = round(diff - (hours * 60 * 60) - (mins * 60))
     print(f"\tTime alive: {hours}:{mins}:{secs}")
     print(f'Refreshes: {count}')
-    if datetime.now().hour >= 18:
-        print('\nFinished matching today')
-        print('-----------------------------------------------')
-        sys.exit()
+    # if datetime.now().hour >= 18:
+    #     print('\nFinished matching today')
+    #     print('-----------------------------------------------')
+    #     sys.exit()
 
 
 def find_races(driver, row=0, window=0):
@@ -121,19 +121,22 @@ def find_races(driver, row=0, window=0):
 
 
 def hide_race(driver, row=0, window=0):
+    print('Hiding bet')
     driver.switch_to.window(driver.window_handles[window])
     driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[55]//div//a'
     ).click()
+    WebDriverWait(driver, 60).until(
+        EC.invisibility_of_element_located((
+            By.ID,
+            'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
 
 
 def refresh_odds_monkey(driver):
     driver.switch_to.default_content()
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
-            (By.XPATH,
-             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[55]'
-             ))).click()
+            (By.XPATH, '//*[@id="Form"]/div[3]/div[1]'))).click()
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((
             By.XPATH,
@@ -269,12 +272,12 @@ def start_sporting_index(driver, headers):
                 if race['ew_stake'] < 0.1:
                     # print(f"\tStake is too small: £{race['ew_stake']}")
                     return
-                if race['ew_stake'] > 2:
-                    print('EW stake is above 2')
-                    print(race['ew_stake'], race['bookie_stake'],
-                          race['horse_odds'], race['lay_odds'],
-                          race['lay_odds_place'])
-                    return
+                # if race['ew_stake'] > 2:
+                #     print('EW stake is above 2')
+                #     print(race['ew_stake'], race['bookie_stake'],
+                #           race['horse_odds'], race['lay_odds'],
+                #           race['lay_odds_place'])
+                #     return
 
                 _, _, _, race['horse_name'] = get_race(race['date_of_race'],
                                                        race['race_venue'],
@@ -290,6 +293,7 @@ def start_sporting_index(driver, headers):
                     output_race(driver, race)
                     update_csv_sporting_index(driver, race, headers)
             driver.switch_to.window(driver.window_handles[0])
+            hide_race(driver, 0)
 
 
 def start_betfair(driver, headers):

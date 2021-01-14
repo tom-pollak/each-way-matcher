@@ -115,14 +115,14 @@ def get_horse_id(horses, target_horse):
 
     # sometimes runnerName is 1. horse_name
     for horse in horses['runners']:
-        if horse['runnerName'].lower() in target_horse.lower():
+        if target_horse.lower() in horse['runnerName'].lower():
             return horse['selectionId'], horse['runnerName']
 
     # for horses with punctuation taken out by oddsmonkey
     horses_list = [horse['runnerName'] for horse in horses['runners']]
     close_horse = difflib.get_close_matches(target_horse, horses_list, n=1)[0]
     print('Close horse found: %s' % close_horse)
-    for horse in horses:
+    for horse in horses['runners']:
         if horse['runnerName'] == close_horse:
             return horse['selectionId'], horse['runnerName']
 
