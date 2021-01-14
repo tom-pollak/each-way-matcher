@@ -127,5 +127,5 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
     return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
 
 
-print(kelly_criterion(4, 4.6, 1.65, 3, 30))
+# print(kelly_criterion(4, 4.6, 1.65, 3, 30))
 # profits = calculate_profit(5.5, 2.05, 5.38, 2, 1.77, 2.11, 4)
