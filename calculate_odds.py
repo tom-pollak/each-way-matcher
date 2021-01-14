@@ -17,8 +17,9 @@ price_increments = {
 }
 
 
-def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place, balance):
-    n = 0.5 * (horse_odds - 1) / place  # profit from place
+def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place_payout,
+                    balance):
+    n = 0.5 * (horse_odds - 1) / place_payout  # profit from place
     m = horse_odds * 0.5 - 0.5 + n  # profit from win
     n -= 0.5  # - the stake lost from losing win place
 
@@ -112,9 +113,9 @@ def get_next_odd_increment(odd):
 
 # N.B bookie_stake is half actual stake
 def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
-                     place_odds, place_stake, place):
+                     place_odds, place_stake, place_payout):
     commision = (win_stake + place_stake) * COMMISSION
-    place_profit = bookie_stake * (bookie_odds - 1) / place
+    place_profit = bookie_stake * (bookie_odds - 1) / place_payout
     win_profit = bookie_odds * bookie_stake - bookie_stake + place_profit
     place_profit -= bookie_stake
 
@@ -126,5 +127,5 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
     return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
 
 
-# print(kelly_criterion(2, 2.2, 1.15, 3, 50))
+print(kelly_criterion(4, 4.6, 1.65, 3, 30))
 # profits = calculate_profit(5.5, 2.05, 5.38, 2, 1.77, 2.11, 4)

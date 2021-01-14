@@ -85,8 +85,9 @@ def find_races(driver, row=0, window=0):
 
     lay_odds_place = driver.find_element_by_xpath(
         '//*[@id="txtLayOdds_place"]').get_attribute('value')
-    place = driver.find_element_by_xpath(
+    place_paid = driver.find_element_by_xpath(
         '//*[@id="lblPlacesPaid_lay"]').get_attribute('value')
+    place_payout = driver.find_element_by_xpath('//*[@id="txtPlacePayout"]').get_attribute('value')
 
     bookie_stake = WebDriverWait(driver, 15).until(
         EC.visibility_of_element_located(
@@ -112,7 +113,8 @@ def find_races(driver, row=0, window=0):
         'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
         'lay_odds': float(lay_odds),
         'lay_odds_place': float(lay_odds_place),
-        'place': float(place),
+        'place_paid': float(place),
+        'place_payout': float(place_payout),
         'bookie_stake': float(bookie_stake),
         'win_stake': float(win_stake),
         'place_stake': float(place_stake),
@@ -134,9 +136,9 @@ def hide_race(driver, row=0, window=0):
 
 def refresh_odds_monkey(driver):
     driver.switch_to.default_content()
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, '//*[@id="Form"]/div[3]/div[1]'))).click()
+    # WebDriverWait(driver, 60).until(
+    #     EC.element_to_be_clickable(
+    #         (By.XPATH, '//*[@id="Form"]/div[3]/div[1]'))).click()
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((
             By.XPATH,
@@ -210,7 +212,7 @@ def betfair_bet(driver, race, headers):
     profits = calculate_profit(race['horse_odds'], bookie_stake,
                                race['lay_odds'], win_stake,
                                race['lay_odds_place'], place_stake,
-                               race['place'])
+                               race['place_payout'])
     if min(*profits) <= 0:
         # print('\tProfits < £0')
         return
@@ -239,7 +241,7 @@ def betfair_bet(driver, race, headers):
         race['balance'] = sporting_index_balance
         win_profit, place_profit, lose_profit = calculate_profit(
             race['horse_odds'], bookie_stake, lay_win[4], lay_win[3],
-            lay_place[4], lay_place[3], race['place'])
+            lay_place[4], lay_place[3], race['place_payout'])
         min_profit = min(win_profit, place_profit, lose_profit)
         output_lay_ew(race, betfair_balance, sporting_index_balance,
                       min_profit, *lay_win, *lay_place, win_profit,
@@ -267,7 +269,7 @@ def start_sporting_index(driver, headers):
                 race['ew_stake'], race['expected_return'], race[
                     'expected_value'] = kelly_criterion(
                         race['horse_odds'], race['lay_odds'],
-                        race['lay_odds_place'], race['place'], race['balance'])
+                        race['lay_odds_place'], race['place_payout'], race['balance'])
 
                 if race['ew_stake'] < 0.1:
                     # print(f"\tStake is too small: £{race['ew_stake']}")
