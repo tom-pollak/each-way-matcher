@@ -36,14 +36,15 @@ def get_balance_sporting_index(driver, retry=False):
     sleep(3)
     try:
         count = 0
-        balance = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.CLASS_NAME, 'btn-balance'))).text
+        balance = 'BALANCE'
         while balance in ['BALANCE', ''] and count < 10:
             sleep(1)
             balance = WebDriverWait(driver, 10).until(
                 EC.visibility_of_element_located(
                     (By.CLASS_NAME, 'btn-balance'))).text
+            balance = balance.replace(' ', '')
+            balance = balance.replace('▸', '')
+            balance = balance.replace('£', '')
             count += 1
         if balance in ['BALANCE', '']:
             raise ValueError('balance is BALANCE')
@@ -54,9 +55,6 @@ def get_balance_sporting_index(driver, retry=False):
         else:
             raise ValueError("Couldn't find balance %s" % count)
 
-    balance = balance.replace(' ', '')
-    balance = balance.replace('£', '')
-    balance = balance.replace('▸', '')
     return float(balance)
 
 

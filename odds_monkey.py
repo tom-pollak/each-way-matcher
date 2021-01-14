@@ -87,7 +87,8 @@ def find_races(driver, row=0, window=0):
         '//*[@id="txtLayOdds_place"]').get_attribute('value')
     place_paid = driver.find_element_by_xpath(
         '//*[@id="lblPlacesPaid_lay"]').get_attribute('value')
-    place_payout = driver.find_element_by_xpath('//*[@id="txtPlacePayout"]').get_attribute('value')
+    place_payout = driver.find_element_by_xpath(
+        '//*[@id="txtPlacePayout"]').get_attribute('value')
 
     bookie_stake = WebDriverWait(driver, 15).until(
         EC.visibility_of_element_located(
@@ -113,7 +114,7 @@ def find_races(driver, row=0, window=0):
         'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
         'lay_odds': float(lay_odds),
         'lay_odds_place': float(lay_odds_place),
-        'place_paid': float(place),
+        'place_paid': float(place_paid),
         'place_payout': float(place_payout),
         'bookie_stake': float(bookie_stake),
         'win_stake': float(win_stake),
@@ -251,49 +252,57 @@ def betfair_bet(driver, race, headers):
                            lay_place[3], min_profit, lay_win[4], lay_place[4])
 
 
+def calulate_sporting_index(driver, race):
+    # print('Found bet no lay: %s' % race['horse_name'])
+    race['ew_stake'], race['expected_return'], race[
+        'expected_value'] = kelly_criterion(race['horse_odds'],
+                                            race['lay_odds'],
+                                            race['lay_odds_place'],
+                                            race['place_payout'],
+                                            race['balance'])
+
+    if race['ew_stake'] < 0.1:
+        # print(f"\tStake is too small: £{race['ew_stake']}")
+        return
+    # if race['ew_stake'] > 2:
+    #     print('EW stake is above 2')
+    #     print(race['ew_stake'], race['bookie_stake'],
+    #           race['horse_odds'], race['lay_odds'],
+    #           race['lay_odds_place'])
+    #     return
+
+    _, _, _, race['horse_name'] = get_race(race['date_of_race'],
+                                           race['race_venue'],
+                                           race['horse_name'])
+    bet_made = False
+    race, bet_made = sporting_index_bet(driver, race)
+    if bet_made is None:
+        hide_race(driver, row, 0)
+        return
+    if bet_made:
+        race['balance'] = get_balance_sporting_index(driver)
+        hide_race(driver, row)
+        output_race(driver, race)
+        update_csv_sporting_index(driver, race, headers)
+
+
 def start_sporting_index(driver, headers):
     race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
+        print(get_no_rows(driver))
         for row in range(get_no_rows(driver)):
+            print(row)
             horse_name = driver.find_element_by_xpath(
                 f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
             ).text.title()
+            print(horse_name)
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 0))
                 processed_horses.append(race['horse_name'])
-
-                # print('Found bet no lay: %s' % race['horse_name'])
-                race['ew_stake'], race['expected_return'], race[
-                    'expected_value'] = kelly_criterion(
-                        race['horse_odds'], race['lay_odds'],
-                        race['lay_odds_place'], race['place_payout'], race['balance'])
-
-                if race['ew_stake'] < 0.1:
-                    # print(f"\tStake is too small: £{race['ew_stake']}")
-                    return
-                # if race['ew_stake'] > 2:
-                #     print('EW stake is above 2')
-                #     print(race['ew_stake'], race['bookie_stake'],
-                #           race['horse_odds'], race['lay_odds'],
-                #           race['lay_odds_place'])
-                #     return
-
-                _, _, _, race['horse_name'] = get_race(race['date_of_race'],
-                                                       race['race_venue'],
-                                                       race['horse_name'])
-                bet_made = False
-                race, bet_made = sporting_index_bet(driver, race)
-                if bet_made is None:
-                    hide_race(driver, row, 0)
-                    return
-                if bet_made:
-                    race['balance'] = get_balance_sporting_index(driver)
-                    hide_race(driver, row)
-                    output_race(driver, race)
-                    update_csv_sporting_index(driver, race, headers)
+                calulate_sporting_index(driver, race)
             driver.switch_to.window(driver.window_handles[0])
             hide_race(driver, 0)
 
