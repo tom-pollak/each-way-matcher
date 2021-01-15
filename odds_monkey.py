@@ -278,14 +278,14 @@ def evaluate_bet(driver, race, row):
                                            race['horse_name'])
     bet_made = False
     race, bet_made = sporting_index_bet(driver, race)
-    if bet_made is None:
+    if bet_made is None: # horse not found
         hide_race(driver, row, 0)
         return
-    if bet_made:
-        race['balance'] = get_balance_sporting_index(driver)
+    if bet_made: # bet made
         output_race(driver, race)
         update_csv_sporting_index(driver, race)
         hide_race(driver, row, 0)
+    # bet_made = False means bet was not made
 
 
 def start_sporting_index(driver, headers):
@@ -301,11 +301,16 @@ def start_sporting_index(driver, headers):
                     f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
                 ))).text.title()
             if horse_name not in processed_horses:
+                print('starting find_races')
                 race.update(find_races(driver, row, 0))
+                print('finished find_races')
                 processed_horses.append(race['horse_name'])
                 evaluate_bet(driver, race, row)
+                print('Finished evaluate_bet')
             driver.switch_to.window(driver.window_handles[0])
+            print('Switched to window 0')
             driver.switch_to.default_content()
+            print('Switched to default_content')
 
 
 def start_betfair(driver, headers):

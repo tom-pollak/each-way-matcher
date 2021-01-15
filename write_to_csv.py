@@ -11,6 +11,7 @@ def update_csv_sporting_index(driver, race):
     race['win_matched'] = 0
     race['lay_matched'] = 0
     race['arbritrage_profit'] = 0
+    race['balance'] = get_balance_sporting_index(driver)
     race['betfair_balance'] = get_betfair_balance(headers)
     csv_columns = [
         'date_of_race', 'horse_name', 'horse_odds', 'race_venue', 'ew_stake',
