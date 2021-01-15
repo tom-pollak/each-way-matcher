@@ -254,7 +254,7 @@ def betfair_bet(driver, race, headers):
                            lay_place[3], min_profit, lay_win[4], lay_place[4])
 
 
-def evaluate_bet(driver, race):
+def evaluate_bet(driver, race, row):
     # print('Found bet no lay: %s' % race['horse_name'])
     race['ew_stake'], race['expected_return'], race[
         'expected_value'] = kelly_criterion(race['horse_odds'],
@@ -304,7 +304,7 @@ def start_sporting_index(driver, headers):
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 0))
                 processed_horses.append(race['horse_name'])
-                evaluate_bet(driver, race)
+                evaluate_bet(driver, race, row)
             driver.switch_to.window(driver.window_handles[0])
 
 
