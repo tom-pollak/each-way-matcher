@@ -87,7 +87,8 @@ def find_races(driver, row=0, window=0):
         '//*[@id="txtLayOdds_place"]').get_attribute('value')
     place_paid = driver.find_element_by_xpath(
         '//*[@id="lblPlacesPaid_lay"]').get_attribute('value')
-    place_payout = driver.find_element_by_xpath('//*[@id="txtPlacePayout"]').get_attribute('value')
+    place_payout = driver.find_element_by_xpath(
+        '//*[@id="txtPlacePayout"]').get_attribute('value')
 
     bookie_stake = WebDriverWait(driver, 15).until(
         EC.visibility_of_element_located(
@@ -269,7 +270,8 @@ def start_sporting_index(driver, headers):
                 race['ew_stake'], race['expected_return'], race[
                     'expected_value'] = kelly_criterion(
                         race['horse_odds'], race['lay_odds'],
-                        race['lay_odds_place'], race['place_payout'], race['balance'])
+                        race['lay_odds_place'], race['place_payout'],
+                        race['balance'])
 
                 if race['ew_stake'] < 0.1:
                     # print(f"\tStake is too small: £{race['ew_stake']}")
