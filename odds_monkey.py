@@ -283,10 +283,9 @@ def evaluate_bet(driver, race, row):
         return
     if bet_made:
         race['balance'] = get_balance_sporting_index(driver)
-        hide_race(driver, row)
         output_race(driver, race)
         update_csv_sporting_index(driver, race, headers)
-        hide_race(driver, 0)
+        hide_race(driver, row, 0)
 
 
 def start_sporting_index(driver, headers):
