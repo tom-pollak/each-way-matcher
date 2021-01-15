@@ -252,7 +252,7 @@ def betfair_bet(driver, race, headers):
                            lay_place[3], min_profit, lay_win[4], lay_place[4])
 
 
-def calulate_sporting_index(driver, race):
+def evaluate_bet(driver, race):
     # print('Found bet no lay: %s' % race['horse_name'])
     race['ew_stake'], race['expected_return'], race[
         'expected_value'] = kelly_criterion(race['horse_odds'],
@@ -284,6 +284,7 @@ def calulate_sporting_index(driver, race):
         hide_race(driver, row)
         output_race(driver, race)
         update_csv_sporting_index(driver, race, headers)
+        hide_race(driver, 0)
 
 
 def start_sporting_index(driver, headers):
@@ -295,7 +296,7 @@ def start_sporting_index(driver, headers):
         print(get_no_rows(driver))
         for row in range(get_no_rows(driver)):
             print(row)
-            horse_name = WebDriverWait(driver, 30).until(
+            horse_name = WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located((
                     By.XPATH,
                     f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
@@ -304,9 +305,8 @@ def start_sporting_index(driver, headers):
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 0))
                 processed_horses.append(race['horse_name'])
-                calulate_sporting_index(driver, race)
+                evaluate_bet(driver, race)
             driver.switch_to.window(driver.window_handles[0])
-            hide_race(driver, 0)
 
 
 def start_betfair(driver, headers):
