@@ -124,7 +124,7 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
     if make_betfair_ew:
         race['ew_stake'] = race['bookie_stake']
 
-    def click_horse(horse_name):
+    def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
             try:
@@ -140,32 +140,7 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
                 driver.refresh()
             except NoSuchElementException:
                 return None
-        raise ValueError
-
-    def try_horse_combinations(driver, race):
-        horse_names = [m.start() for m in re.finditer('s', race['horse_name'])]
-        for position in horse_names:
-            horse_name = race['horse_name'][position:] + "'" + race[
-                'horse_name'][:position]
-            try:
-                cur_odd_price = click_horse(horse_name)
-                if cur_odd_price is not None:
-                    return cur_odd_price
-            except ValueError:
-                # print('Horse race SUSP or blank')
-                return False
-            return None
-
-    def get_horse(driver, race):
-        try:
-            cur_odd_price = click_horse(race['horse_name'])
-            if cur_odd_price is None:
-                return try_horse_combinations(driver, race)
-            return cur_odd_price
-
-        except ValueError:
-            # print('Horse race SUSP or blank')
-            return False
+        return False
 
     def close_bet(driver):
         WebDriverWait(driver, 60).until(
@@ -179,7 +154,7 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
 
     bet_made = False
     get_sporting_index_page(driver, race)
-    cur_odd_price = get_horse(driver, race)
+    cur_odd_price = click_horse(driver, race['horse_name'])
     if cur_odd_price is None:
         return race, None
     if not cur_odd_price:
