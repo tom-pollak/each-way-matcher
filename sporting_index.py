@@ -31,7 +31,7 @@ def output_race(driver, race):
     print(f"\tCurrent balance: {balance}, stake: {race['ew_stake']}\n")
 
 
-def get_balance_sporting_index(driver, retry=False):
+def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
     sleep(3)
     try:
@@ -48,13 +48,9 @@ def get_balance_sporting_index(driver, retry=False):
             count += 1
         if balance in ['BALANCE', '']:
             raise ValueError('balance is BALANCE')
-    except (NoSuchElementException, TimeoutException):
-        if not retry:
-            driver.refresh()
-            balance = get_balance_sporting_index(driver, retry=True)
-        else:
-            raise ValueError("Couldn't find balance %s" % count)
 
+    except (NoSuchElementException, TimeoutException):
+        raise ValueError("Couldn't find balance %s" % count)
     return float(balance)
 
 
