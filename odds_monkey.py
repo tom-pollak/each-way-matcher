@@ -23,10 +23,10 @@ def show_info(count, START_TIME):
     secs = round(diff - (hours * 60 * 60) - (mins * 60))
     print(f"\tTime alive: {hours}:{mins}:{secs}")
     print(f'Refreshes: {count}')
-    # if datetime.now().hour >= 18:
-    #     print('\nFinished matching today')
-    #     print('-----------------------------------------------')
-    #     sys.exit()
+    if datetime.now().hour >= 18:
+        print('\nFinished matching today')
+        print('-----------------------------------------------')
+        sys.exit()
 
 
 def find_races(driver, row=0, window=0):
@@ -124,7 +124,7 @@ def find_races(driver, row=0, window=0):
 
 
 def hide_race(driver, row=0, window=0):
-    print('Hiding bet')
+    # print('Hiding bet')
     driver.switch_to.window(driver.window_handles[window])
     driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[55]//div//a'
@@ -137,9 +137,11 @@ def hide_race(driver, row=0, window=0):
 
 def refresh_odds_monkey(driver):
     driver.switch_to.default_content()
-    # WebDriverWait(driver, 60).until(
-    #     EC.element_to_be_clickable(
-    #         (By.XPATH, '//*[@id="Form"]/div[3]/div[1]'))).click()
+    WebDriverWait(driver, 60).until(
+        EC.element_to_be_clickable(
+            (By.XPATH,
+             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
+             ))).click()
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((
             By.XPATH,
@@ -293,15 +295,12 @@ def start_sporting_index(driver, headers):
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
     if not driver.find_elements_by_class_name('rgNoRecords'):
-        print(get_no_rows(driver))
         for row in range(get_no_rows(driver)):
-            print(row)
             horse_name = WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located((
                     By.XPATH,
                     f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
                 ))).text.title()
-            print(horse_name)
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 0))
                 processed_horses.append(race['horse_name'])
