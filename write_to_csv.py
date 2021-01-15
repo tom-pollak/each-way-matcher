@@ -1,5 +1,5 @@
-from betfair_api import get_betfair_balance
-from sporting_index import get_balance_sporting_index, login_betfair
+from betfair_api import get_betfair_balance, login_betfair
+from sporting_index import get_balance_sporting_index
 from csv import DictWriter
 
 RETURNS_CSV = 'returns/returns.csv'
