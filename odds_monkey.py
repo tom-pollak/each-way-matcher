@@ -295,9 +295,11 @@ def start_sporting_index(driver, headers):
         print(get_no_rows(driver))
         for row in range(get_no_rows(driver)):
             print(row)
-            horse_name = driver.find_element_by_xpath(
-                f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
-            ).text.title()
+            horse_name = WebDriverWait(driver, 30).until(
+                EC.visibility_of_element_located((
+                    By.XPATH,
+                    f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
+                ))).text.title()
             print(horse_name)
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 0))
