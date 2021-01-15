@@ -305,6 +305,7 @@ def start_sporting_index(driver, headers):
                 processed_horses.append(race['horse_name'])
                 evaluate_bet(driver, race, row)
             driver.switch_to.window(driver.window_handles[0])
+            driver.switch_to.default_content()
 
 
 def start_betfair(driver, headers):
