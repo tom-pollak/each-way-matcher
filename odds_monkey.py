@@ -278,10 +278,10 @@ def evaluate_bet(driver, race, row):
                                            race['horse_name'])
     bet_made = False
     race, bet_made = sporting_index_bet(driver, race)
-    if bet_made is None: # horse not found
+    if bet_made is None:  # horse not found
         hide_race(driver, row, 0)
         return
-    if bet_made: # bet made
+    if bet_made:  # bet made
         output_race(driver, race)
         update_csv_sporting_index(driver, race)
         hide_race(driver, row, 0)
