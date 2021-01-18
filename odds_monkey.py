@@ -265,7 +265,7 @@ def evaluate_bet(driver, race, row):
 
     if race['ew_stake'] < 0.1:
         # print(f"\tStake is too small: £{race['ew_stake']}")
-        return
+        return False
     # if race['ew_stake'] > 2:
     #     print('EW stake is above 2')
     #     print(race['ew_stake'], race['bookie_stake'],
@@ -278,39 +278,41 @@ def evaluate_bet(driver, race, row):
                                            race['horse_name'])
     bet_made = False
     race, bet_made = sporting_index_bet(driver, race)
-    if bet_made is None: # horse not found
+    if bet_made is None:  # horse not found
         hide_race(driver, row, 0)
-        return
-    if bet_made: # bet made
+        return False
+    if bet_made:  # bet made
         output_race(driver, race)
         update_csv_sporting_index(driver, race)
         hide_race(driver, row, 0)
+        return True
+    return False
     # bet_made = False means bet was not made
 
 
 def start_sporting_index(driver, headers):
+    bet_made = True
     race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
-    refresh_odds_monkey(driver)
-    if not driver.find_elements_by_class_name('rgNoRecords'):
-        for row in range(get_no_rows(driver)):
-            horse_name = WebDriverWait(driver, 60).until(
-                EC.visibility_of_element_located((
-                    By.XPATH,
-                    f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
-                ))).text.title()
-            if horse_name not in processed_horses:
-                print('starting find_races')
-                race.update(find_races(driver, row, 0))
-                print('finished find_races')
-                processed_horses.append(race['horse_name'])
-                evaluate_bet(driver, race, row)
-                print('Finished evaluate_bet')
-            driver.switch_to.window(driver.window_handles[0])
-            print('Switched to window 0')
-            driver.switch_to.default_content()
-            print('Switched to default_content')
+    while bet_made:
+        bet_made = False
+        refresh_odds_monkey(driver)
+        if not driver.find_elements_by_class_name('rgNoRecords'):
+            for row in range(get_no_rows(driver)):
+                horse_name = WebDriverWait(driver, 60).until(
+                    EC.visibility_of_element_located((
+                        By.XPATH,
+                        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
+                    ))).text.title()
+                if horse_name not in processed_horses:
+                    race.update(find_races(driver, row, 0))
+                    processed_horses.append(race['horse_name'])
+                    bet_made = evaluate_bet(driver, race, row)
+                    if bet_made:
+                        break
+                driver.switch_to.window(driver.window_handles[0])
+                driver.switch_to.default_content()
 
 
 def start_betfair(driver, headers):
