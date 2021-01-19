@@ -1,4 +1,4 @@
-date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,lay_odds,lay_odds_place,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place
+date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,lay_odds,lay_odds_place,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_paid
 17 Jan 16:05 2021,Kraka,21.0,Southwell,0.31,49.38,107.71,17/01/2021 16:02:04,19.22%,0.06,23.79,23.47,19.0,4.6,50.0,3.31,False,0,0,0,
 18 Jan 13:15 2021,Fricka,17.0,Lingfield,0.11,49.16,98.17,18/01/2021 08:10:26,4.55%,0.01,5.81,9.69,22.0,3.3,50.0,0.27,False,0,0,0,
 18 Jan 15:55 2021,Isayalittleprayer,8.0,Lingfield,0.57,48.02,104.04,18/01/2021 08:39:59,10.91%,0.06,74.72,99.39,8.8,2.0,50.0,6.63,False,0,0,0,
@@ -12,3 +12,6 @@ date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_ti
 18 Jan 14:10 2021,Davitt Road Glory,51.0,Punchestown,0.27,42.43,104.51,18/01/2021 13:11:25,12.65%,0.03,0.26,10.42,1000.0,5.3,50.0,0.45,False,0,0,0,
 18 Jan 14:10 2021,Red Sole Diva,51.0,Punchestown,0.1,42.23,98.29,18/01/2021 13:28:45,5.1%,0.01,0.43,17.16,1000.0,5.5,50.0,0.29,False,0,0,0,
 18 Jan 14:20 2021,Sunny Express,21.0,Lingfield,0.15,41.93,101.55,18/01/2021 13:37:30,9.45%,0.01,11.38,16.05,24.0,4.1,50.0,0.4,False,0,0,0,
+19 Jan 17:10 2021,Lunar Bounty,17.0,Southwell,0.36,47.68,104.06,19/01/2021 10:06:03,14.29%,0.05,6.48,10.84,21.0,3.15,50.0,0.65,False,0,0,0,
+19 Jan 13:35 2021,Dunboyne,3.75,Clonmel,0.24,47.2,99.46,19/01/2021 13:19:34,2.13%,0.01,19.09,21.14,3.85,1.48,50.0,0.21,False,0,0,0,
+19 Jan 19:40 2021,Misscarlett,21.0,Southwell,0.14,47.29,101.11,19/01/2021 15:46:58,8.7%,0.01,16.04,17.47,21.0,4.6,50.0,0.35,False,0,0,0,
