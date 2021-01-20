@@ -68,7 +68,7 @@ def make_sporting_index_bet(driver, race, retry=False):
                     (By.CLASS_NAME,
                      'ng-pristine'))).send_keys(str(race['ew_stake']))
             break
-        except (TimeoutException, StaleElementReferenceException,
+        except (StaleElementReferenceException,
                 ElementNotInteractableException):
             driver.refresh()
             WebDriverWait(driver, 20).until(
@@ -76,6 +76,11 @@ def make_sporting_index_bet(driver, race, retry=False):
                     By.XPATH,
                     '/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14/a]'
                 ))).click()
+        except TimeoutException:
+            if not retry:
+                driver.refresh()
+                return make_sporting_index_bet(driver, race, retry=True)
+            return False
     else:
         return False
 
