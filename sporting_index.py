@@ -74,7 +74,7 @@ def make_sporting_index_bet(driver, race, retry=False):
             WebDriverWait(driver, 20).until(
                 EC.element_to_be_clickable((
                     By.XPATH,
-                    '/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14/a]'
+                    '/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a'
                 ))).click()
         except TimeoutException:
             if not retry:

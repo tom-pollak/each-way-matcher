@@ -88,6 +88,7 @@ def output_profit():
     print(
         f'Sporting index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance} Balance in bets: £{in_bet_balance}'
     )
+    print('\n')
 
 
 def plot_bal_time_series_graph():
