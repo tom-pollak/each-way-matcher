@@ -1,4 +1,4 @@
-date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,lay_odds,lay_odds_place,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_paid
+date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,lay_odds,lay_odds_place,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout
 17 Jan 16:05 2021,Kraka,21.0,Southwell,0.31,49.38,107.71,17/01/2021 16:02:04,19.22%,0.06,23.79,23.47,19.0,4.6,50.0,3.31,False,0,0,0,
 18 Jan 13:15 2021,Fricka,17.0,Lingfield,0.11,49.16,98.17,18/01/2021 08:10:26,4.55%,0.01,5.81,9.69,22.0,3.3,50.0,0.27,False,0,0,0,
 18 Jan 15:55 2021,Isayalittleprayer,8.0,Lingfield,0.57,48.02,104.04,18/01/2021 08:39:59,10.91%,0.06,74.72,99.39,8.8,2.0,50.0,6.63,False,0,0,0,
@@ -17,3 +17,6 @@ date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_ti
 19 Jan 19:40 2021,Misscarlett,21.0,Southwell,0.14,47.29,101.11,19/01/2021 15:46:58,8.7%,0.01,16.04,17.47,21.0,4.6,50.0,0.35,False,0,0,0,
 20 Jan 13:50 2021,Artistic Streak,8.5,Newcastle,0.22,47.55,100.11,20/01/2021 08:18:16,5.06%,0.01,14.67,17.53,9.0,2.26,50.0,0.04,False,0,0,0,
 20 Jan 13:05 2021,Grumpy Charley,3.75,Chepstow,0.26,47.03,99.52,20/01/2021 08:27:32,2.14%,0.01,12.72,15.16,4.0,1.43,50.0,0.13,False,0,0,0,
+20 Jan 12:55 2021,Il Re Di Nessuno,34.0,Newbury,0.15,46.73,103.1,20/01/2021 11:13:17,12.09%,0.02,5.55,10.4,46.0,5.5,50.0,0.47,False,0,0,0,3.0
+20 Jan 12:45 2021,Enlighten,21.0,Newcastle,0.28,46.17,103.86,20/01/2021 12:42:19,13.26%,0.04,14.51,28.33,29.0,3.55,50.0,1.54,False,0,0,0,3.0
+20 Jan 14:10 2021,Firak,4.0,Chepstow,0.53,45.11,101.51,20/01/2021 12:42:57,5.26%,0.03,16.58,17.6,4.0,1.52,50.0,0.5,False,0,0,0,3.0
