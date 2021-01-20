@@ -124,7 +124,7 @@ def find_races(driver, row=0, window=0):
 
 
 def hide_race(driver, row=0, window=0):
-    print('Hiding bet')
+    # print('Hiding bet')
     driver.switch_to.window(driver.window_handles[window])
     driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[55]//div//a'
