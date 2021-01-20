@@ -18,7 +18,7 @@ def update_csv_sporting_index(driver, race):
         'balance', 'rating', 'current_time', 'expected_value',
         'expected_return', 'win_stake', 'place_stake', 'lay_odds',
         'lay_odds_place', 'betfair_balance', 'max_profit', 'is_lay',
-        'win_matched', 'lay_matched', 'arbritrage_profit', 'place_paid'
+        'win_matched', 'lay_matched', 'arbritrage_profit', 'place_payout'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,
@@ -47,7 +47,7 @@ def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
         'balance', 'rating', 'current_time', 'expected_value',
         'expected_return', 'win_stake', 'place_stake', 'lay_odds',
         'lay_odds_place', 'betfair_balance', 'max_profit', 'is_lay',
-        'win_matched', 'lay_matched', 'arbritrage_profit', 'place_paid'
+        'win_matched', 'lay_matched', 'arbritrage_profit', 'place_payout'
     ]
     with open(RETURNS_CSV, 'a+', newline='') as returns_csv:
         csv_writer = DictWriter(returns_csv,

@@ -148,6 +148,7 @@ def refresh_odds_monkey(driver):
             '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
         ))).click()
     # wait until spinner disappeared
+    # driver.execute_script('''InitiateAjaxRequest('refresh');''')
     WebDriverWait(driver, 60).until(
         EC.invisibility_of_element_located((
             By.ID,
