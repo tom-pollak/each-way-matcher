@@ -24,7 +24,7 @@ def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place_payout,
     n -= 0.5  # - the stake lost from losing win place
 
     p = 1 / lay_odds  # true odds of winning
-    q = 1 / (lay_odds_place) - p  # true odds of placeing
+    q = 1 / (lay_odds_place) - p  # true odds of placing
 
     A = m * n
     B = (p + q) * m * n + p * n + q * m - m - n
@@ -127,5 +127,5 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
     return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
 
 
-# print(kelly_criterion(34, 46, 5.5, 5, 47))
+# print(kelly_criterion(21, 21, 4, 4, 43))
 # profits = calculate_profit(5.5, 2.05, 5.38, 2, 1.77, 2.11, 4)

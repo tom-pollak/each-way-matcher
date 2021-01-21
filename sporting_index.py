@@ -90,8 +90,8 @@ def make_sporting_index_bet(driver, race, retry=False):
             EC.element_to_be_clickable(
                 (By.CLASS_NAME, 'placeBetBtn'))).click()
     except (NoSuchElementException, StaleElementReferenceException):
-        driver.find_element_by_xpath(
-            "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+        # driver.find_element_by_xpath(
+        #     "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
     except TimeoutException:
         if not retry:
@@ -147,7 +147,8 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
         WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable((
                 By.XPATH,
-                '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[5]/wgt-spin-icon'
+                # '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[5]/wgt-spin-icon'
+                '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]'
                 # "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
             ))).click()
         # driver.find_element_by_xpath(
