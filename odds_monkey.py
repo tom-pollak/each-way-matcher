@@ -314,6 +314,7 @@ def start_sporting_index(driver, headers):
                         break
                 driver.switch_to.window(driver.window_handles[0])
                 driver.switch_to.default_content()
+                sys.stdout.flush()
 
 
 def start_betfair(driver, headers):
@@ -332,6 +333,7 @@ def start_betfair(driver, headers):
                 hide = betfair_bet(driver, race, headers)
                 if hide:
                     hide_race(driver, row, 2)
+            sys.stdout.flush()
 
 
 def scrape(driver, START_TIME):
