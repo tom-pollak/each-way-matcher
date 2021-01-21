@@ -11,6 +11,7 @@ from sporting_index import setup_sporting_index, sporting_index_bet, refresh_spo
 from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair, get_race
 from calculate_odds import calculate_stakes, calculate_profit, kelly_criterion
 from write_to_csv import update_csv_sporting_index, update_csv_betfair
+from stats import check_repeat_bets
 
 REFRESH_TIME = 62
 
@@ -274,18 +275,15 @@ def evaluate_bet(driver, race, row):
     #           race['lay_odds_place'])
     #     return
 
-    _, _, _, race['horse_name'] = get_race(race['date_of_race'],
-                                           race['race_venue'],
-                                           race['horse_name'])
     bet_made = False
     race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:  # horse not found
-        hide_race(driver, row, 0)
+        # hide_race(driver, row, 0)
         return False
     if bet_made:  # bet made
         output_race(driver, race)
         update_csv_sporting_index(driver, race)
-        hide_race(driver, row, 0)
+        # hide_race(driver, row, 0)
         return True
     return False
     # bet_made = False means bet was not made
@@ -308,10 +306,20 @@ def start_sporting_index(driver, headers):
                     ))).text.title()
                 if horse_name not in processed_horses:
                     race.update(find_races(driver, row, 0))
-                    processed_horses.append(race['horse_name'])
-                    bet_made = evaluate_bet(driver, race, row)
-                    if bet_made:
-                        break
+                    processed_horses.append(
+                        race['horse_name']
+                    )  # has to be before get race as if condition above
+
+                    _, _, _, race['horse_name'] = get_race(
+                        race['date_of_race'], race['race_venue'],
+                        race['horse_name'])
+
+                    if check_repeat_bets(race['horse_name'],
+                                         race['date_of_race'],
+                                         race['race_venue']):
+                        bet_made = evaluate_bet(driver, race, row)
+                        if bet_made:
+                            break
                 driver.switch_to.window(driver.window_handles[0])
                 driver.switch_to.default_content()
                 sys.stdout.flush()
@@ -330,9 +338,10 @@ def start_betfair(driver, headers):
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 2))
                 processed_horses.append(race['horse_name'])
-                hide = betfair_bet(driver, race, headers)
-                if hide:
-                    hide_race(driver, row, 2)
+                betfair_bet(driver, race, headers)
+                # hide = betfair_bet(driver, race, headers)
+                # if hide:
+                #     hide_race(driver, row, 2)
             sys.stdout.flush()
 
 
