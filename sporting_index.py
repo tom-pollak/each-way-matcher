@@ -60,6 +60,15 @@ def refresh_sporting_index(driver):
     driver.refresh()
 
 
+def click_betslip(driver):
+    driver.refresh()
+    WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((
+            By.XPATH,
+            '/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a'
+        ))).click()
+
+
 def make_sporting_index_bet(driver, race, retry=False):
     for _ in range(3):
         try:
@@ -70,15 +79,10 @@ def make_sporting_index_bet(driver, race, retry=False):
             break
         except (StaleElementReferenceException,
                 ElementNotInteractableException):
-            driver.refresh()
-            WebDriverWait(driver, 20).until(
-                EC.element_to_be_clickable((
-                    By.XPATH,
-                    '/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a'
-                ))).click()
+            click_betslip(driver)
         except TimeoutException:
             if not retry:
-                driver.refresh()
+                click_betslip(driver)
                 return make_sporting_index_bet(driver, race, retry=True)
             return False
     else:
@@ -95,7 +99,7 @@ def make_sporting_index_bet(driver, race, retry=False):
         return False
     except TimeoutException:
         if not retry:
-            driver.refresh()
+            click_betslip(driver)
             return make_sporting_index_bet(driver, race, retry=True)
         return False
 
@@ -143,16 +147,19 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
                 return None
         return False
 
-    def close_bet(driver):
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable((
-                By.XPATH,
-                # '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[5]/wgt-spin-icon'
-                '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]'
-                # "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
-            ))).click()
-        # driver.find_element_by_xpath(
-        #     "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
+    def close_bet(driver, retry=False):
+        try:
+            WebDriverWait(driver, 60).until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    # '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[5]/wgt-spin-icon'
+                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]'
+                    # "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
+                ))).click()
+        except TimeoutException:
+            if not retry:
+                click_betslip(driver)
+                close_bet(driver, retry=True)
 
     bet_made = False
     get_sporting_index_page(driver, race)
