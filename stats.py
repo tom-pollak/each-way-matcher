@@ -130,7 +130,7 @@ df = pd.read_csv(RETURNS_CSV,
 
 try:
     STARTING_BALANCE = df['balance'].values[0] + df['betfair_balance'].values[
-        0] + calc_unfinished_races(0) 
+        0] + calc_unfinished_races(0)
 except IndexError:
     print('No entrys to csv')
 else:
