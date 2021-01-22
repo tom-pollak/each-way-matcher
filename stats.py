@@ -110,8 +110,9 @@ def plot_bal_time_series_graph():
 
 def check_repeat_bets(horse_name, date_of_race, race_venue):
     date_of_race = custom_date_parser(date_of_race)
-    mask = (df['horse_name'] == horse_name) & (
-        df['date_of_race'] == date_of_race) & (df['race_venue'] == race_venue) & (df['is_lay'] == False)
+    mask = (df['horse_name']
+            == horse_name) & (df['date_of_race'] == date_of_race) & (
+                df['race_venue'] == race_venue) & (df['is_lay'] == False)
     if len(df.loc[mask]) == 0:
         return True
     if len(df.loc[mask]) > 1:
