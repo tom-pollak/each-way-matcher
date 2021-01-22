@@ -4,13 +4,9 @@ import time
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from odds_monkey import custom_date_parser
+
 RETURNS_CSV = 'returns/returns.csv'
-
-
-def custom_date_parser(x):
-    if '/' not in x:
-        return datetime.datetime(*(time.strptime(x, '%d %b %H:%M %Y')[0:6]))
-    return datetime.datetime(*(time.strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 
 def calc_unfinished_races(index=-1):
@@ -109,25 +105,6 @@ def plot_bal_time_series_graph():
     plt.savefig('graphs/balance.png')
 
 
-def check_repeat_bets(horse_name, date_of_race, race_venue):
-    df = pd.read_csv(RETURNS_CSV,
-                     header=0,
-                     parse_dates=[7, 0],
-                     index_col=7,
-                     date_parser=custom_date_parser,
-                     squeeze=True)
-    date_of_race = custom_date_parser(date_of_race)
-    mask = (df['horse_name']
-            == horse_name) & (df['date_of_race'] == date_of_race) & (
-                df['race_venue'] == race_venue) & (df['is_lay'] == False)
-    if len(df.loc[mask]) == 0:
-        return True
-    if len(df.loc[mask]) > 1:
-        print('ERROR more than one race matched')
-        print(df.loc[mask])
-    return False
-
-
 df = pd.read_csv(RETURNS_CSV,
                  header=0,
                  parse_dates=[7, 0],
@@ -144,4 +121,3 @@ else:
     output_profit()
     plot_bal_time_series_graph()
     sys.stdout.flush()
-# print(check_repeat_bets('Act Naturally', '22 Jan 16:10 2021', 'Lingfield'))
