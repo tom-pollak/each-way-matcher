@@ -236,7 +236,7 @@ def betfair_bet(driver, race, headers):
     race['bookie_stake'] = bookie_stake
     race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
     if bet_made is None:
-        return True
+        return
     if bet_made:
         lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
                                     race['lay_odds'], place_stake,

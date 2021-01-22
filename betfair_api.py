@@ -206,8 +206,8 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'sizeMatched']
             if stake_matched == stake:
                 matched = True
-            matched_price = bet_res['result']['instructionReports'][0][
-                'averagePriceMatched']
+            matched_price = float(bet_res['result']['instructionReports'][0]
+                                  ['averagePriceMatched'])
             if price - 1 != matched_price:
                 print('Odds have changed, original price: %s' % price - 1)
         elif bet_res['result']['status'] == 'FAILURE':
@@ -245,11 +245,12 @@ def get_race(race_time, venue, horse):
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
            place_odds):
     headers = login_betfair()
+    print('making lay bets')
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
         markets_ids['Win'], selection_id, round_stake(win_odds + 1), win_stake,
         headers)
     lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
-        markets_ids['Place'], selection_id, round_stake(place_stake + 1),
+        markets_ids['Place'], selection_id, round_stake(place_odds + 1),
         place_stake, headers)
     return ((lay_win, win_matched, win_stake, win_stake_matched, win_odds),
             (lay_place, place_matched, place_stake, place_stake_matched,

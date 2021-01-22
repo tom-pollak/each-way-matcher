@@ -112,7 +112,8 @@ def check_repeat_bets(horse_name, date_of_race, race_venue):
     date_of_race = custom_date_parser(date_of_race)
     mask = (df['horse_name']
             == horse_name) & (df['date_of_race'] == date_of_race) & (
-                df['race_venue'] == race_venue) & (df['is_lay'] is False)
+                df['race_venue'] == race_venue) & (df['is_lay'] == False)
+    print(df.loc[mask])
     if len(df.loc[mask]) == 0:
         return True
     if len(df.loc[mask]) > 1:
@@ -130,10 +131,11 @@ df = pd.read_csv(RETURNS_CSV,
 
 try:
     STARTING_BALANCE = df['balance'].values[0] + df['betfair_balance'].values[
-        0] + calc_unfinished_races(0) 
+        0] + calc_unfinished_races(0)
 except IndexError:
     print('No entrys to csv')
 else:
     output_profit()
     plot_bal_time_series_graph()
     sys.stdout.flush()
+# print(check_repeat_bets('Herculaneum', '22 Jan 16:30 2021', 'Dundalk'))
