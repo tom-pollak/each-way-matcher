@@ -1,11 +1,8 @@
-import re
 from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException, ElementNotInteractableException
-
-from calculate_odds import kelly_criterion
 
 
 def change_to_decimal(driver):
