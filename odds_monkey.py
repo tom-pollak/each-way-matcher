@@ -7,10 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 
-from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index, output_race
-from betfair_api import lay_ew, get_betfair_balance, output_lay_ew, login_betfair, get_race
+from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
+from betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
 from calculate_odds import calculate_stakes, calculate_profit, kelly_criterion
-from write_to_csv import update_csv_sporting_index, update_csv_betfair
+from output import update_csv_sporting_index, update_csv_betfair, show_info, output_lay_ew, output_race
 
 REFRESH_TIME = 60
 RETURNS_CSV = 'returns/returns.csv'
@@ -22,18 +22,6 @@ def custom_date_parser(x):
     return datetime(*(strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 
-def show_info(count, START_TIME):
-    print(f'Time is: {datetime.now().strftime("%H:%M:%S")}', end='')
-    diff = time() - START_TIME
-    hours = int(diff // 60**2)
-    mins = int(diff // 60 - hours * 60)
-    secs = round(diff - (hours * 60 * 60) - (mins * 60))
-    print(f"\tTime alive: {hours}:{mins}:{secs}")
-    print(f'Refreshes: {count}')
-    if datetime.now().hour >= 18:
-        print('\nFinished matching today')
-        print('-----------------------------------------------')
-        sys.exit()
 
 
 def check_repeat_bets(horse_name, date_of_race, race_venue):

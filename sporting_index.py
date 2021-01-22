@@ -14,20 +14,6 @@ def change_to_decimal(driver):
                       (By.ID, 'decimalBtn'))).click()
 
 
-def output_race(driver, race):
-    balance = get_balance_sporting_index(driver)
-    print(f"\nEW no lay bet made: {race['horse_name']} - {race['horse_odds']}")
-    print(f"\tLay win: {race['lay_odds']} Lay place: {race['lay_odds_place']}")
-    try:
-        print(
-            f"\tExpected value: {race['expected_value']}, Expected return: {race['expected_return']}"
-        )
-    except KeyError:
-        print('Key Error in output_race')
-    print(f"\t{race['date_of_race']} - {race['race_venue']}")
-    print(f"\tCurrent balance: {balance}, stake: {race['ew_stake']}\n")
-
-
 def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
     sleep(3)

@@ -39,36 +39,6 @@ def login_betfair():
     raise Exception("Can't login")
 
 
-def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
-                  win_bet_made, win_is_matched, win_stake, win_matched,
-                  win_odds, place_bet_made, place_is_matched, place_stake,
-                  place_matched, place_odds, win_profit, place_profit,
-                  lose_profit):
-    print(f"\nArb bet made: {race['horse_name']} - profit: £{profit}")
-    print(f"\t{race['date_of_race']} - {race['race_venue']}")
-    print(
-        f"\tBack bookie: {race['horse_odds']} - {race['bookie_stake']} Lay win: {win_odds} - {win_stake} Lay place: {place_odds} - {place_stake}"
-    )
-
-    print(
-        f"\tLay win: {win_bet_made} - is matched: {win_is_matched} Lay place: {place_bet_made} is matched: {place_is_matched}"
-    )
-
-    if not win_is_matched:
-        print(f"\tLay win matched size: {win_matched} ", end='')
-    if not place_is_matched:
-        print(f"\tLay place matched size: {place_matched}")
-    if not win_matched and place_matched:
-        print()
-
-    print(
-        f"\tWin profit: {win_profit} Place profit: {place_profit} Lose profit: {lose_profit}"
-    )
-    print(
-        f"Current balance: {sporting_index_balance}, betfair balance: {betfair_balance}\n"
-    )
-
-
 def call_api(jsonrpc_req, headers, url=betting_url):
     try:
         if url.lower().startswith('http'):
