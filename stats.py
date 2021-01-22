@@ -40,7 +40,7 @@ def calc_unfinished_races(index=-1):
     return round(in_bet_balance, 2)
 
 
-def output_profit():
+def output_profit(current_sporting_index_balance=False):
     def get_today_starting_balance():
         try:
             today_first_bet = df.loc[datetime.datetime.now().strftime(
@@ -60,7 +60,8 @@ def output_profit():
 
     today_starting_balance = get_today_starting_balance()
 
-    current_sporting_index_balance = df['balance'].values[-1]
+    if not current_sporting_index_balance:
+        current_sporting_index_balance = df['balance'].values[-1]
     current_betfair_balance = df['betfair_balance'].values[-1]
     in_bet_balance = calc_unfinished_races()
     current_balance = current_sporting_index_balance + current_betfair_balance + in_bet_balance
@@ -109,11 +110,16 @@ def plot_bal_time_series_graph():
 
 
 def check_repeat_bets(horse_name, date_of_race, race_venue):
+    df = pd.read_csv(RETURNS_CSV,
+                     header=0,
+                     parse_dates=[7, 0],
+                     index_col=7,
+                     date_parser=custom_date_parser,
+                     squeeze=True)
     date_of_race = custom_date_parser(date_of_race)
     mask = (df['horse_name']
             == horse_name) & (df['date_of_race'] == date_of_race) & (
                 df['race_venue'] == race_venue) & (df['is_lay'] == False)
-    print(df.loc[mask])
     if len(df.loc[mask]) == 0:
         return True
     if len(df.loc[mask]) > 1:
@@ -138,4 +144,4 @@ else:
     output_profit()
     plot_bal_time_series_graph()
     sys.stdout.flush()
-# print(check_repeat_bets('Herculaneum', '22 Jan 16:30 2021', 'Dundalk'))
+# print(check_repeat_bets('Act Naturally', '22 Jan 16:10 2021', 'Lingfield'))
