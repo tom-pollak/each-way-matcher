@@ -22,8 +22,6 @@ def custom_date_parser(x):
     return datetime(*(strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 
-
-
 def check_repeat_bets(horse_name, date_of_race, race_venue):
     df = pd.read_csv(RETURNS_CSV,
                      header=0,
