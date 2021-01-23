@@ -25,13 +25,13 @@ def custom_date_parser(x):
 
 
 def check_repeat_bets(horse_name, date_of_race, race_venue):
+    date_of_race = custom_date_parser(date_of_race)
     df = pd.read_csv(RETURNS_CSV,
                      header=0,
                      parse_dates=[7, 0],
                      index_col=7,
                      date_parser=custom_date_parser,
                      squeeze=True)
-    date_of_race = custom_date_parser(date_of_race)
     mask = (df['horse_name']
             == horse_name) & (df['date_of_race'] == date_of_race) & (
                 df['race_venue'] == race_venue) & (df['is_lay'] == False)
