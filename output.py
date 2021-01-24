@@ -14,14 +14,14 @@ def show_info(count, START_TIME):
         hours = int(diff // 60**2)
         mins = int(diff // 60 - hours * 60)
         secs = round(diff - (hours * 60 * 60) - (mins * 60))
-        return f'{hours}:{mins}:{secs}'
+        return f"{format(hours, '.2f')}:{format(mins, '.2f')}:{format(secs, '.2f')}"
 
     diff = time() - START_TIME
     time_alive = convert_time(diff)
     if count == 0:
-        avg_refresh_time = 0
+        avg_refresh_time = '00:00'
     else:
-        avg_refresh_time = convert_time(round(diff / count))
+        avg_refresh_time = convert_time(round(diff / count))[3:]
 
     print(
         f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}"
