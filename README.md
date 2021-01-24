@@ -30,3 +30,4 @@ python3 main.py
 or
 - Run with run.sh
 - Use cron.sh in a cron job or to write to output to log files (recommended)
+  + Can also be run manually with ```./cron.sh &``` in a tmux window
