@@ -5,7 +5,7 @@ import pandas as pd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
 from betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
@@ -149,24 +149,31 @@ def hide_race(driver, row=0, window=0):
             'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
 
 
-def refresh_odds_monkey(driver):
+def refresh_odds_monkey(driver, retry=False):
     driver.switch_to.default_content()
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (By.XPATH,
-             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
-             ))).click()
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable((
-            By.XPATH,
-            '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
-        ))).click()
-    # wait until spinner disappeared
-    # driver.execute_script("InitiateAjaxRequest('refresh');")
-    WebDriverWait(driver, 60).until(
-        EC.invisibility_of_element_located((
-            By.ID,
-            'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable(
+                (By.XPATH,
+                 '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
+                 ))).click()
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable((
+                By.XPATH,
+                '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
+            ))).click()
+        # wait until spinner disappeared
+        # driver.execute_script("InitiateAjaxRequest('refresh');")
+        WebDriverWait(driver, 60).until(
+            EC.invisibility_of_element_located((
+                By.ID,
+                'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
+    except TimeoutException:
+        if not retry:
+            driver.refresh()
+            refresh_odds_monkey(driver, retry=True)
+        else:
+            raise ValueError('Timeout in refresh_odds_monkey')
 
 
 def open_betfair_oddsmonkey(driver):
