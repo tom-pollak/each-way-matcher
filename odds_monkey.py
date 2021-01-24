@@ -1,7 +1,6 @@
 import sys
-from time import sleep, time, strptime
+from time import sleep
 from datetime import datetime
-import pandas as pd
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
