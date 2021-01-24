@@ -1,6 +1,6 @@
 import math
 from datetime import datetime
-from time import sleep, time, strptime
+from time import strptime
 import pandas as pd
 
 MIN_PERCENTAGE_BALANCE = 0
