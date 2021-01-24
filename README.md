@@ -38,4 +38,4 @@ or
 
 - Run with run.sh - uses xvfb to run selenium headless on a virtual screen and
 logs output
-  - Can also be run manually with ```./run.sh &``` in a tmux window
+  - Can be run as a cron job or manually with ```./run.sh &``` in a tmux window
