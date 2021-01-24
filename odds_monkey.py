@@ -13,7 +13,6 @@ from calculate import calculate_stakes, calculate_profit, kelly_criterion, check
 from output import update_csv_sporting_index, update_csv_betfair, show_info, output_lay_ew, output_race
 
 REFRESH_TIME = 60
-RETURNS_CSV = 'returns/returns.csv'
 
 
 def find_races(driver, row=0, window=0):
