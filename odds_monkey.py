@@ -10,7 +10,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
 from betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
-from calculate_odds import calculate_stakes, calculate_profit, kelly_criterion, check_repeat_bets
+from calculate import calculate_stakes, calculate_profit, kelly_criterion, check_repeat_bets
 from output import update_csv_sporting_index, update_csv_betfair, show_info, output_lay_ew, output_race
 
 REFRESH_TIME = 60
