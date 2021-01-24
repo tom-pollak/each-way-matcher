@@ -1,8 +1,8 @@
 # Each way matcher
 
-Scrapes OddsMonkey for profitable each way horse races, automatically bets on
-sporting index.  
-Also lays arbritage bets on sporting index and betfair.
+Scrapes OddsMonkey for profitable each way horse races, then automatically places bets on
+Sporting Index.  
+Also lays arbitrage bets on Sporting Index and Betfair.
 
 ## Login variables
 
@@ -18,8 +18,11 @@ client-2048.pub/key [connected to the betfair api](https://docs.developer.betfai
 ## Install
 
 ```bash
+sudo apt-get install xvfb -y
 pip install -r requirements.txt
 ```
+
+Install the latest chrome or chromium browser with the appropiate [chromedriver](https://chromedriver.chromium.org/downloads) at default program location (/usr/bin/chromedriver for linux)
 
 ## Run
 
@@ -28,6 +31,6 @@ python3 main.py
 ```
 
 or
-- Run with run.sh
-- Use cron.sh in a cron job to write output to log files (recommended)
+- Run with run.sh - uses xvfb to run selenium headless on a virtual screen
+- Use cron.sh - executes run.sh and writes output to log files **(recommended)**
   + Can also be run manually with ```./cron.sh &``` in a tmux window
