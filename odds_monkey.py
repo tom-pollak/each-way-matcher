@@ -231,7 +231,7 @@ def betfair_bet(driver, race):
         datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
         datetime.now()).total_seconds() / 60
     if minutes_until_race <= 5:
-        # print('\tRace too close to start time')
+        print('\tRace too close to start time: %s' % minutes_until_race)
         return
 
     market_ids, selection_id, got_race, race['horse_name'] = get_race(
@@ -241,6 +241,7 @@ def betfair_bet(driver, race):
     race['bookie_stake'] = bookie_stake
     race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
     if bet_made is None:
+        print(f"Horse not found: {race['horse_name']}  venue: {race['race_venue']}  race time: {race['date_of_race']}")
         return
     if bet_made:
         lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
@@ -277,6 +278,7 @@ def evaluate_bet(driver, race):
     bet_made = False
     race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:  # horse not found
+        print(f"Horse not found: {race['horse_name']}  venue: {race['race_venue']}  race time: {race['date_of_race']}")
         return False
     if bet_made:  # bet made
         output_race(driver, race)

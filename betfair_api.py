@@ -87,7 +87,7 @@ def get_horse_id(horses, target_horse):
     # sometimes runnerName is 1. horse_name
     for horse in horses['runners']:
         if target_horse.lower() in horse['runnerName'].lower():
-            return horse['selectionId'], horse['runnerName']
+            return horse['selectionId'], target_horse  # as 1. is not the valid horse name
 
     # for horses with punctuation taken out by oddsmonkey
     horses_list = [horse['runnerName'] for horse in horses['runners']]
