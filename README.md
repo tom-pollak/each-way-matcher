@@ -28,5 +28,5 @@ python3 main.py
 ```
 
 or
-- run with run.sh
-- use cron.sh in a cron job or to write to output to log files (recommended)
+- Run with run.sh
+- Use cron.sh in a cron job or to write to output to log files (recommended)
