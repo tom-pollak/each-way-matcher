@@ -11,9 +11,9 @@ RETURNS_CSV = 'returns/returns.csv'
 
 def show_info(count, START_TIME):
     def convert_time(time):
-        hours = int(diff // 60**2)
-        mins = int(diff // 60 - hours * 60)
-        secs = round(diff - (hours * 60 * 60) - (mins * 60))
+        hours = int(time // 60**2)
+        mins = int(time // 60 - hours * 60)
+        secs = round(time - (hours * 60 * 60) - (mins * 60))
         return f"{hours:02}:{min:02}:{secs:02}"
 
     diff = time() - START_TIME
@@ -21,12 +21,12 @@ def show_info(count, START_TIME):
     if count == 0:
         avg_refresh_time = '00:00'
     else:
-        avg_refresh_time = convert_time(round(diff / count))[3:]
+        avg_refresh_time = convert_time(round(diff / count))[4:]
 
     print(
         f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}"
     )
-    print(f'Refreshes: {count}     \tAverage refresh time: {avg_refresh_time}')
+    print(f'Refreshes: {count} - Avg refresh time: {avg_refresh_time}')
     if datetime.now().hour >= 18:
         print('\nFinished matching today')
         57
