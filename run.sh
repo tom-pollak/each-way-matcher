@@ -6,6 +6,7 @@ git pull -q
 
 xvfb-run -a python3 main.py & 
 wait
-python3 stats.py
 
-git pull -q && git commit -q -a -m "update returns" && git push -q
+git pull -q
+python3 stats.py
+git commit -q -a -m "update returns" && git push -q
