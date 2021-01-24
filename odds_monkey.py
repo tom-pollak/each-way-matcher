@@ -22,8 +22,6 @@ def custom_date_parser(x):
     return datetime(*(strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 
-
-
 def check_repeat_bets(horse_name, date_of_race, race_venue):
     date_of_race = custom_date_parser(date_of_race)
     df = pd.read_csv(RETURNS_CSV,
@@ -167,7 +165,8 @@ def refresh_odds_monkey(driver, retry=False):
         WebDriverWait(driver, 60).until(
             EC.invisibility_of_element_located((
                 By.ID,
-                'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
+                'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1'
+            )))
     except TimeoutException:
         if not retry:
             driver.refresh()
