@@ -16,7 +16,7 @@ def change_to_decimal(driver):
 
 def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
-    sleep(3)
+    # sleep(3)
     try:
         count = 0
         balance = 'BALANCE'
@@ -104,7 +104,7 @@ def get_sporting_index_page(driver, race):
     # WebDriverWait(driver, 60).until(
     #     EC.presence_of_element_located((
     #         By.XPATH,
-    #         f"//th[contains(text(), '{race['race_venue']}')]/../../../tbody/tr/td/span/a/strong[contains(text(), '{race['race_time']}')]/.."
+    #         f"//th[contains(text(), '{race['venue']}')]/../../../tbody/tr/td/span/a/strong[contains(text(), '{race['race_time']}')]/.."
     #     ))).click()
 
 
@@ -154,7 +154,7 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
     cur_odd_price_frac = cur_odd_price.split('/')
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
 
-    if float(cur_odd_price) == float(race['horse_odds']):
+    if float(cur_odd_price) == float(race['bookie_odds']):
         bet_made = make_sporting_index_bet(driver, race)
         if not bet_made:
             close_bet(driver)

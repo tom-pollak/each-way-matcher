@@ -27,7 +27,7 @@ def custom_date_parser(x):
     return datetime(*(strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
 
 
-def check_repeat_bets(horse_name, date_of_race, race_venue):
+def check_repeat_bets(horse_name, date_of_race, venue):
     date_of_race = custom_date_parser(date_of_race)
     df = pd.read_csv(RETURNS_CSV,
                      header=0,
@@ -37,7 +37,7 @@ def check_repeat_bets(horse_name, date_of_race, race_venue):
                      squeeze=True)
     mask = (df['horse_name']
             == horse_name) & (df['date_of_race'] == date_of_race) & (
-                df['race_venue'] == race_venue) & (df['is_lay'] == False)
+                df['venue'] == venue) & (df['is_lay'] == False)
     if len(df.loc[mask]) == 0:
         return True
     if len(df.loc[mask]) > 1:
@@ -46,14 +46,13 @@ def check_repeat_bets(horse_name, date_of_race, race_venue):
     return False
 
 
-def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place_payout,
-                    balance):
-    n = 0.5 * (horse_odds - 1) / place_payout  # profit from place
-    m = horse_odds * 0.5 - 0.5 + n  # profit from win
+def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
+    n = 0.5 * (bookie_odds - 1) / place_payout  # profit from place
+    m = bookie_odds * 0.5 - 0.5 + n  # profit from win
     n -= 0.5  # - the stake lost from losing win place
 
-    p = 1 / lay_odds  # true odds of winning
-    q = 1 / (lay_odds_place) - p  # true odds of placing
+    p = 1 / win_odds  # true odds of winning
+    q = 1 / (place_odds) - p  # true odds of placing
 
     A = m * n
     B = (p + q) * m * n + p * n + q * m - m - n
@@ -104,7 +103,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
 
     if lay_min_stake_proportion == 0:  # Stake not above 2 or liability above 10
         print(
-            f'\tStakes too small: win stake - £{win_stake} place_stake - £{place_stake}'
+            f'\tStakes too small: win stake - £{format(win_stake, ".2f")} place_stake - £{format(place_stake, ".2f")}'
         )
         return False, 0, 0, 0
 

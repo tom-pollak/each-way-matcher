@@ -184,6 +184,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 print('Odds have changed, original price: %s' % price - 1)
         elif bet_res['result']['status'] == 'FAILURE':
             print(bet_req)
+            print()
             print(bet_res)
 
     except KeyError:
@@ -217,7 +218,6 @@ def get_race(race_time, venue, horse):
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
            place_odds):
     headers = login_betfair()
-    print('making lay bets')
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
         markets_ids['Win'], selection_id, round_stake(win_odds + 1), win_stake,
         headers)

@@ -27,12 +27,12 @@ def find_races(driver, row=0, window=0):
     ).text
     race_time = date_of_race[-5:].lower()
     date_of_race += ' %s' % datetime.today().year
-    race_venue = driver.find_element_by_xpath(
+    venue = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[8]'
     ).text.lower().strip()
-    race_venue = race_venue[:len(race_venue) - 5].strip().title()
+    venue = venue[:len(venue) - 5].strip().title()
 
-    horse_odds = driver.find_element_by_xpath(
+    bookie_odds = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[13]'
     ).text
 
@@ -65,13 +65,13 @@ def find_races(driver, row=0, window=0):
         driver.find_element_by_class_name('rwCloseButton').click()
         return {}
 
-    lay_odds = WebDriverWait(driver, 600).until(
+    win_odds = WebDriverWait(driver, 600).until(
         EC.visibility_of_element_located(
             (By.XPATH, '//*[@id="txtLayOdds_win"]'))).get_attribute('value')
 
-    lay_odds_place = driver.find_element_by_xpath(
+    place_odds = driver.find_element_by_xpath(
         '//*[@id="txtLayOdds_place"]').get_attribute('value')
-    place_paid = driver.find_element_by_xpath(
+    places_paid = driver.find_element_by_xpath(
         '//*[@id="lblPlacesPaid_lay"]').get_attribute('value')
     place_payout = driver.find_element_by_xpath(
         '//*[@id="txtPlacePayout"]').get_attribute('value')
@@ -93,14 +93,14 @@ def find_races(driver, row=0, window=0):
         'date_of_race': date_of_race,
         'race_time': race_time,
         'horse_name': horse_name,
-        'horse_odds': float(horse_odds),
-        'race_venue': race_venue,
+        'bookie_odds': float(bookie_odds),
+        'venue': venue,
         'bookie_exchange': bookie_exchange,
         'rating': float(rating),
         'current_time': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
-        'lay_odds': float(lay_odds),
-        'lay_odds_place': float(lay_odds_place),
-        'place_paid': float(place_paid),
+        'win_odds': float(win_odds),
+        'place_odds': float(place_odds),
+        'places_paid': float(places_paid),
         'place_payout': float(place_payout),
         'bookie_stake': float(bookie_stake),
         'win_stake': float(win_stake),
@@ -214,14 +214,14 @@ def betfair_bet(driver, race):
     betfair_balance = get_betfair_balance(headers)
     stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
         race['balance'], betfair_balance, race['bookie_stake'],
-        race['win_stake'], race['lay_odds'], race['place_stake'],
-        race['lay_odds_place'])
+        race['win_stake'], race['win_odds'], race['place_stake'],
+        race['place_odds'])
     if not stakes_ok:
         return
 
-    profits = calculate_profit(race['horse_odds'], bookie_stake,
-                               race['lay_odds'], win_stake,
-                               race['lay_odds_place'], place_stake,
+    profits = calculate_profit(race['bookie_odds'], bookie_stake,
+                               race['win_odds'], win_stake,
+                               race['place_odds'], place_stake,
                                race['place_payout'])
     if min(*profits) <= 0:
         # print('\tProfits < £0')
@@ -235,25 +235,25 @@ def betfair_bet(driver, race):
         return
 
     market_ids, selection_id, got_race, race['horse_name'] = get_race(
-        race['date_of_race'], race['race_venue'], race['horse_name'])
+        race['date_of_race'], race['venue'], race['horse_name'])
     if not got_race:
         return
     race['bookie_stake'] = bookie_stake
     race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
     if bet_made is None:
         print(
-            f"Horse not found: {race['horse_name']}  venue: {race['race_venue']}  race time: {race['date_of_race']}"
+            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
         return
     if bet_made:
         lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
-                                    race['lay_odds'], place_stake,
-                                    race['lay_odds_place'])
+                                    race['win_odds'], place_stake,
+                                    race['place_odds'])
         betfair_balance = get_betfair_balance(headers)
         sporting_index_balance = get_balance_sporting_index(driver)
         race['balance'] = sporting_index_balance
         win_profit, place_profit, lose_profit = calculate_profit(
-            race['horse_odds'], bookie_stake, lay_win[4], lay_win[3],
+            race['bookie_odds'], bookie_stake, lay_win[4], lay_win[3],
             lay_place[4], lay_place[3], race['place_payout'])
         min_profit = min(win_profit, place_profit, lose_profit)
         output_lay_ew(race, betfair_balance, sporting_index_balance,
@@ -267,9 +267,9 @@ def betfair_bet(driver, race):
 def evaluate_bet(driver, race):
     # print('Found bet no lay: %s' % race['horse_name'])
     race['ew_stake'], race['expected_return'], race[
-        'expected_value'] = kelly_criterion(race['horse_odds'],
-                                            race['lay_odds'],
-                                            race['lay_odds_place'],
+        'expected_value'] = kelly_criterion(race['bookie_odds'],
+                                            race['win_odds'],
+                                            race['place_odds'],
                                             race['place_payout'],
                                             race['balance'])
 
@@ -281,7 +281,7 @@ def evaluate_bet(driver, race):
     race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:  # horse not found
         print(
-            f"Horse not found: {race['horse_name']}  venue: {race['race_venue']}  race time: {race['date_of_race']}"
+            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
         return False
     if bet_made:  # bet made
@@ -310,11 +310,11 @@ def start_sporting_index(driver):
                 )  # has to be before get race because of if condition above
 
                 _, _, _, race['horse_name'] = get_race(race['date_of_race'],
-                                                       race['race_venue'],
+                                                       race['venue'],
                                                        race['horse_name'])
 
                 if check_repeat_bets(race['horse_name'], race['date_of_race'],
-                                     race['race_venue']):
+                                     race['venue']):
                     evaluate_bet(driver, race)
             driver.switch_to.window(driver.window_handles[0])
             driver.switch_to.default_content()

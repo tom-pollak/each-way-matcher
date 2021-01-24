@@ -1,5 +1,4 @@
 import datetime
-import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -17,8 +16,8 @@ def calc_unfinished_races(index=-1):
     for _, row in races.iterrows():
         stake = row['ew_stake'] * 2
         if row['is_lay']:
-            liability = row['win_stake'] * (row['lay_odds'] - 1)
-            lia_key = '%s %s' % (row['race_venue'], row['date_of_race'])
+            liability = row['win_stake'] * (row['win_odds'] - 1)
+            lia_key = '%s %s' % (row['venue'], row['date_of_race'])
             if lia_key in races_liability:
                 if liability > races_liability[lia_key]:
                     liability -= races_liability[lia_key]
@@ -28,7 +27,7 @@ def calc_unfinished_races(index=-1):
             else:
                 races_liability[lia_key] = liability
 
-            liability += row['place_stake'] * (row['lay_odds_place'] - 1)
+            liability += row['place_stake'] * (row['place_odds'] - 1)
         else:
             liability = 0
         in_bet_balance += (stake + liability)
@@ -84,7 +83,6 @@ def output_profit(current_sporting_index_balance=False):
     print(
         f'Sporting index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance} Balance in bets: £{in_bet_balance}'
     )
-    print('\n')
 
 
 def plot_bal_time_series_graph():
@@ -119,4 +117,3 @@ except IndexError:
 else:
     output_profit()
     plot_bal_time_series_graph()
-    sys.stdout.flush()

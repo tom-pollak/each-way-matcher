@@ -1,4 +1,4 @@
-date_of_race,horse_name,horse_odds,race_venue,ew_stake,balance,rating,current_time
+date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,current_time
 09 nov 12:30,Dothraki Prince,26.00,chepstow,0.1,5.17,102.27,09/11/2020 11:55:59
 09 nov 13:30,Thedancingman,29.00,chepstow,0.1,4.97,107.16,09/11/2020 11:58:28
 09 nov 12:50,The Caretaker,8.50,carlisle,0.1,4.77,102.50,09/11/2020 11:59:08
