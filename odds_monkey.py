@@ -330,9 +330,11 @@ def start_betfair(driver):
     refresh_odds_monkey(driver, betfair=True)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         for row in range(get_no_rows(driver)):
-            horse_name = driver.find_element_by_xpath(
-                f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
-            ).text.title()
+            horse_name = WebDriverWait(driver, 60).until(
+                EC.visibility_of_element_located((
+                    By.XPATH,
+                    f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
+                ))).text.title()
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 2))
                 processed_horses.append(race['horse_name'])
