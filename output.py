@@ -18,7 +18,10 @@ def show_info(count, START_TIME):
 
     diff = time() - START_TIME
     time_alive = convert_time(diff)
-    avg_refresh_time = convert_time(round(diff / count))
+    if count == 0:
+        avg_refresh_time = 0
+    else:
+        avg_refresh_time = convert_time(round(diff / count))
 
     print(
         f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {hours}:{mins}:{secs}"
