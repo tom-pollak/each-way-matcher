@@ -24,7 +24,7 @@ def show_info(count, START_TIME):
         avg_refresh_time = convert_time(round(diff / count))
 
     print(
-        f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {hours}:{mins}:{secs}"
+        f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}"
     )
     print(f'Refreshes: {count}     \tAverage refresh time: {avg_refresh_time}')
     if datetime.now().hour >= 18:
