@@ -2,6 +2,7 @@ import sys
 from time import sleep
 from datetime import datetime
 
+from select.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -153,11 +154,17 @@ def refresh_odds_monkey(driver, betfair=False):
     for i in range(5):
         driver.switch_to.default_content()
         try:
-            WebDriverWait(driver, 60).until(
-                EC.element_to_be_clickable((
-                    By.XPATH,
-                    '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
-                ))).click()
+            # WebDriverWait(driver, 60).until(
+            #     EC.element_to_be_clickable((
+            #         By.XPATH,
+            #         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
+            #     ))).click()
+            action = ActionChains(driver)
+            element = WebDriverWait(driver, 60).until(EC.visibility_of_element_located((
+                By.XPATH, '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]')))
+            action.move_to_element(element)
+            action.perform()
+
             WebDriverWait(driver, 60).until(
                 EC.element_to_be_clickable((
                     By.XPATH,
