@@ -1,8 +1,8 @@
 # Each way matcher
 
-Scrapes OddsMonkey for profitable each way horse races, automatically bets on
-sporting index.  
-Also lays arbritage bets on sporting index and betfair.
+Scrapes OddsMonkey for profitable each way horse races, then automatically places bets on
+Sporting Index.  
+Also lays arbitrage bets on Sporting Index and Betfair.
 
 ## Login variables
 
@@ -31,6 +31,6 @@ python3 main.py
 ```
 
 or
-- Run with run.sh - uses xvfb to run program headless on a virtual screen
+- Run with run.sh - uses xvfb to run selenium headless on a virtual screen
 - Use cron.sh - executes run.sh and writes output to log files **(recommended)**
   + Can also be run manually with ```./cron.sh &``` in a tmux window
