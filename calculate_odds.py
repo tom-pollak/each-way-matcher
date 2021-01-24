@@ -1,4 +1,7 @@
 import math
+from datetime import datetime
+from time import sleep, time, strptime
+import pandas as pd
 
 MIN_PERCENTAGE_BALANCE = 0
 COMMISSION = 0.05
@@ -15,6 +18,31 @@ price_increments = {
     100: 5,
     1000: 10
 }
+
+
+def custom_date_parser(x):
+    if '/' not in x:
+        return datetime(*(strptime(x, '%d %b %H:%M %Y')[0:6]))
+    return datetime(*(strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
+
+
+def check_repeat_bets(horse_name, date_of_race, race_venue):
+    date_of_race = custom_date_parser(date_of_race)
+    df = pd.read_csv(RETURNS_CSV,
+                     header=0,
+                     parse_dates=[7, 0],
+                     index_col=7,
+                     date_parser=custom_date_parser,
+                     squeeze=True)
+    mask = (df['horse_name']
+            == horse_name) & (df['date_of_race'] == date_of_race) & (
+                df['race_venue'] == race_venue) & (df['is_lay'] == False)
+    if len(df.loc[mask]) == 0:
+        return True
+    if len(df.loc[mask]) > 1:
+        print('ERROR more than one race matched')
+        print(df.loc[mask])
+    return False
 
 
 def kelly_criterion(horse_odds, lay_odds, lay_odds_place, place_payout,

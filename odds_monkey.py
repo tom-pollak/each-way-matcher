@@ -2,6 +2,7 @@ import sys
 from time import sleep, time, strptime
 from datetime import datetime
 import pandas as pd
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,38 +10,11 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
 from betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
-from calculate_odds import calculate_stakes, calculate_profit, kelly_criterion
+from calculate_odds import calculate_stakes, calculate_profit, kelly_criterion, check_repeat_bets
 from output import update_csv_sporting_index, update_csv_betfair, show_info, output_lay_ew, output_race
 
 REFRESH_TIME = 60
 RETURNS_CSV = 'returns/returns.csv'
-
-
-def custom_date_parser(x):
-    if '/' not in x:
-        return datetime(*(strptime(x, '%d %b %H:%M %Y')[0:6]))
-    return datetime(*(strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
-
-
-
-
-def check_repeat_bets(horse_name, date_of_race, race_venue):
-    date_of_race = custom_date_parser(date_of_race)
-    df = pd.read_csv(RETURNS_CSV,
-                     header=0,
-                     parse_dates=[7, 0],
-                     index_col=7,
-                     date_parser=custom_date_parser,
-                     squeeze=True)
-    mask = (df['horse_name']
-            == horse_name) & (df['date_of_race'] == date_of_race) & (
-                df['race_venue'] == race_venue) & (df['is_lay'] == False)
-    if len(df.loc[mask]) == 0:
-        return True
-    if len(df.loc[mask]) > 1:
-        print('ERROR more than one race matched')
-        print(df.loc[mask])
-    return False
 
 
 def find_races(driver, row=0, window=0):
@@ -167,7 +141,8 @@ def refresh_odds_monkey(driver, retry=False):
         WebDriverWait(driver, 60).until(
             EC.invisibility_of_element_located((
                 By.ID,
-                'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
+                'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1'
+            )))
     except TimeoutException:
         if not retry:
             driver.refresh()

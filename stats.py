@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from odds_monkey import custom_date_parser
+from calculate_odds import custom_date_parser
 
 RETURNS_CSV = 'returns/returns.csv'
 
