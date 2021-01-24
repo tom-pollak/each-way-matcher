@@ -121,7 +121,35 @@ def hide_race(driver, row=0, window=0):
             'dnn_ctr1157_View_RadAjaxLoadingPanel1dnn_ctr1157_View_RadGrid1')))
 
 
-def refresh_odds_monkey(driver):
+def trigger_betfair_options(driver):
+    WebDriverWait(driver, 60).until(
+        EC.element_to_be_clickable(
+            (By.XPATH,
+             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a'
+             ))).click()
+
+    WebDriverWait(driver, 60).until(
+        EC.visibility_of_element_located((
+            By.XPATH,
+            '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[6]/a/span/span/span/span'
+        ))).click()
+    WebDriverWait(driver, 60).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, '//*[@id="headingFour"]/h4/a'))).click()
+    sleep(0.5)
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_rlbExchanges"]/div/div/label/input').click(
+        )
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_rlbExchanges_i0"]/label/input').click()
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_View_btnApplyFilter"]').click()
+    driver.find_element_by_xpath(
+        '//*[@id="dnn_ctr1157_ModuleContent"]/div[10]/div[1]/a').click()
+    sleep(0.5)
+
+
+def refresh_odds_monkey(driver, betfair=False):
     for _ in range(5):
         driver.switch_to.default_content()
         try:
@@ -150,6 +178,8 @@ def refresh_odds_monkey(driver):
             WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located(
                     (By.XPATH, '//*[@id="dnn_LOGO1_imgLogo"]')))
+            if betfair:
+                trigger_betfair_options(driver)
 
     raise ValueError('Timeout in refresh_odds_monkey')
 
@@ -159,31 +189,7 @@ def open_betfair_oddsmonkey(driver):
         '''window.open("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx","_blank");'''
     )
     driver.switch_to.window(driver.window_handles[2])
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (By.XPATH,
-             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a'
-             ))).click()
-
-    WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located((
-            By.XPATH,
-            '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[6]/a/span/span/span/span'
-        ))).click()
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, '//*[@id="headingFour"]/h4/a'))).click()
-    sleep(0.5)
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_rlbExchanges"]/div/div/label/input').click(
-        )
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_rlbExchanges_i0"]/label/input').click()
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_btnApplyFilter"]').click()
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_ModuleContent"]/div[10]/div[1]/a').click()
-    sleep(0.5)
+    trigger_betfair_options(driver)
 
 
 def get_no_rows(driver):
@@ -280,46 +286,40 @@ def evaluate_bet(driver, race):
 
 
 def start_sporting_index(driver):
-    bet_made = True
     race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
-    while bet_made:
-        bet_made = False
-        refresh_odds_monkey(driver)
-        if not driver.find_elements_by_class_name('rgNoRecords'):
-            for row in range(get_no_rows(driver)):
-                horse_name = WebDriverWait(driver, 60).until(
-                    EC.visibility_of_element_located((
-                        By.XPATH,
-                        f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
-                    ))).text.title()
-                if horse_name not in processed_horses:
-                    race.update(find_races(driver, row, 0))
-                    processed_horses.append(
-                        race['horse_name']
-                    )  # has to be before get race as if condition above
+    refresh_odds_monkey(driver)
+    if not driver.find_elements_by_class_name('rgNoRecords'):
+        for row in range(get_no_rows(driver)):
+            horse_name = WebDriverWait(driver, 60).until(
+                EC.visibility_of_element_located((
+                    By.XPATH,
+                    f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
+                ))).text.title()
+            if horse_name not in processed_horses:
+                race.update(find_races(driver, row, 0))
+                processed_horses.append(
+                    race['horse_name']
+                )  # has to be before get race because of if condition above
 
-                    _, _, _, race['horse_name'] = get_race(
-                        race['date_of_race'], race['race_venue'],
-                        race['horse_name'])
+                _, _, _, race['horse_name'] = get_race(race['date_of_race'],
+                                                       race['race_venue'],
+                                                       race['horse_name'])
 
-                    if check_repeat_bets(race['horse_name'],
-                                         race['date_of_race'],
-                                         race['race_venue']):
-                        bet_made = evaluate_bet(driver, race)
-                        if bet_made:
-                            break
-                driver.switch_to.window(driver.window_handles[0])
-                driver.switch_to.default_content()
-                sys.stdout.flush()
+                if check_repeat_bets(race['horse_name'], race['date_of_race'],
+                                     race['race_venue']):
+                    evaluate_bet(driver, race)
+            driver.switch_to.window(driver.window_handles[0])
+            driver.switch_to.default_content()
+            sys.stdout.flush()
 
 
 def start_betfair(driver):
     race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[2])
-    refresh_odds_monkey(driver)
+    refresh_odds_monkey(driver, betfair=True)
     if not driver.find_elements_by_class_name('rgNoRecords'):
         for row in range(get_no_rows(driver)):
             horse_name = driver.find_element_by_xpath(
