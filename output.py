@@ -19,7 +19,7 @@ def show_info(count, START_TIME):
     diff = time() - START_TIME
     time_alive = convert_time(diff)
     if count == 0:
-        avg_refresh_time = '00:00'
+        avg_refresh_time = '0:00'
     else:
         avg_refresh_time = convert_time(round(diff / count))[4:]
 
@@ -29,7 +29,6 @@ def show_info(count, START_TIME):
     print(f'Refreshes: {count} - Avg refresh time: {avg_refresh_time}')
     if datetime.now().hour >= 18:
         print('\nFinished matching today')
-        57
         print('---------------------------------------------------------')
         sys.exit()
 
