@@ -194,12 +194,13 @@ def get_no_rows(driver):
             return count
 
 
-def betfair_bet(driver, race, headers):
+def betfair_bet(driver, race):
     # print('Found arbitrage bet: %s' % race['horse_name'])
     if race['max_profit'] <= 0:
         # print('\tMax profit < 0')
         return
 
+    headers = login_betfair()
     betfair_balance = get_betfair_balance(headers)
     stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
         race['balance'], betfair_balance, race['bookie_stake'],
@@ -250,7 +251,7 @@ def betfair_bet(driver, race, headers):
                            lay_place[3], min_profit, lay_win[4], lay_place[4])
 
 
-def evaluate_bet(driver, race, row):
+def evaluate_bet(driver, race):
     # print('Found bet no lay: %s' % race['horse_name'])
     race['ew_stake'], race['expected_return'], race[
         'expected_value'] = kelly_criterion(race['horse_odds'],
@@ -262,28 +263,19 @@ def evaluate_bet(driver, race, row):
     if race['ew_stake'] < 0.1:
         # print(f"\tStake is too small: £{race['ew_stake']}")
         return False
-    # if race['ew_stake'] > 2:
-    #     print('EW stake is above 2')
-    #     print(race['ew_stake'], race['bookie_stake'],
-    #           race['horse_odds'], race['lay_odds'],
-    #           race['lay_odds_place'])
-    #     return
 
     bet_made = False
     race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:  # horse not found
-        # hide_race(driver, row, 0)
         return False
     if bet_made:  # bet made
         output_race(driver, race)
         update_csv_sporting_index(driver, race)
-        # hide_race(driver, row, 0)
         return True
     return False
-    # bet_made = False means bet was not made
 
 
-def start_sporting_index(driver, headers):
+def start_sporting_index(driver):
     bet_made = True
     race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
@@ -311,7 +303,7 @@ def start_sporting_index(driver, headers):
                     if check_repeat_bets(race['horse_name'],
                                          race['date_of_race'],
                                          race['race_venue']):
-                        bet_made = evaluate_bet(driver, race, row)
+                        bet_made = evaluate_bet(driver, race)
                         if bet_made:
                             break
                 driver.switch_to.window(driver.window_handles[0])
@@ -319,7 +311,7 @@ def start_sporting_index(driver, headers):
                 sys.stdout.flush()
 
 
-def start_betfair(driver, headers):
+def start_betfair(driver):
     race = {'balance': get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[2])
@@ -332,10 +324,7 @@ def start_betfair(driver, headers):
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 2))
                 processed_horses.append(race['horse_name'])
-                betfair_bet(driver, race, headers)
-                # hide = betfair_bet(driver, race, headers)
-                # if hide:
-                #     hide_race(driver, row, 2)
+                betfair_bet(driver, race)
             sys.stdout.flush()
 
 
@@ -348,12 +337,11 @@ def scrape(driver, START_TIME):
         # So sporting index dosent logout
         if count % 2 == 0:
             refresh_sporting_index(driver)
-            headers = login_betfair()
             if count % 10 == 0:
                 show_info(count, START_TIME)
 
-        start_betfair(driver, headers)
-        start_sporting_index(driver, headers)
+        start_betfair(driver)
+        start_sporting_index(driver)
         sys.stdout.flush()
         sleep(REFRESH_TIME)
         count += 1
