@@ -13,9 +13,8 @@ def show_info(count, START_TIME):
     def convert_time(time):
         hours = int(time // 60**2)
         mins = int(time // 60 - hours * 60)
-        secs = int(round(time - (hours * 60 * 60) - (mins * 60)))
-        print(hours, mins, secs)
-        return f"{hours:02}:{min:02}:{secs:02}"
+        secs = round(time - (hours * 60 * 60) - (mins * 60))
+        return f"{hours:02}:{mins:02}:{secs:02}"
 
     diff = time() - START_TIME
     time_alive = convert_time(diff)
