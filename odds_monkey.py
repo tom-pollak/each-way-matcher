@@ -2,7 +2,7 @@ import sys
 from time import sleep
 from datetime import datetime
 
-from select.webdriver import ActionChains
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
