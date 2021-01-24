@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from odds_monkey import scrape
 from time import sleep
 
@@ -19,6 +20,10 @@ S_INDEX_USER = os.environ.get('S_INDEX_USER')
 S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
 if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
     raise Exception('sporting index or oddsmonkey env variables not set')
+
+if not os.path.isfile('client-2048.crt') or not os.path.isfile(
+        'client-2048.key'):
+    raise Exception('client-2048 certificates not found')
 
 
 def login():
@@ -32,12 +37,17 @@ def login():
     driver.find_element_by_id('dnn_ctr433_Login_Login_DNN_cmdLogin').click()
     sleep(2)
 
-    driver.get('https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx')
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (By.XPATH,
-             '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a'
-             ))).click()
+    try:
+        driver.get(
+            'https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx')
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable(
+                (By.XPATH,
+                 '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a'
+                 ))).click()
+    except TimeoutException:
+        print('ERROR: Need Oddsmonkey premium membership (OM12FOR1)')
+        sys.exit()
 
     driver.execute_script(
         '''window.open("https://www.sportingindex.com/fixed-odds","_blank");'''
