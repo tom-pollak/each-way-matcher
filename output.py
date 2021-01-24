@@ -10,16 +10,24 @@ RETURNS_CSV = 'returns/returns.csv'
 
 
 def show_info(count, START_TIME):
-    print(f'Time is: {datetime.now().strftime("%H:%M:%S")}', end='')
+    def convert_time(time):
+        hours = int(diff // 60**2)
+        mins = int(diff // 60 - hours * 60)
+        secs = round(diff - (hours * 60 * 60) - (mins * 60))
+        return f'{hours}:{mins}:{secs}'
+
     diff = time() - START_TIME
-    hours = int(diff // 60**2)
-    mins = int(diff // 60 - hours * 60)
-    secs = round(diff - (hours * 60 * 60) - (mins * 60))
-    print(f"\tTime alive: {hours}:{mins}:{secs}")
-    print(f'Refreshes: {count}')
+    time_alive = convert_time(diff)
+    avg_refresh_time = convert_time(round(diff / count))
+
+    print(
+        f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {hours}:{mins}:{secs}"
+    )
+    print(f'Refreshes: {count}     \tAverage refresh time: {avg_refresh_time}')
     if datetime.now().hour >= 18:
         print('\nFinished matching today')
-        print('-----------------------------------------------')
+        57
+        print('---------------------------------------------------------')
         sys.exit()
 
 
