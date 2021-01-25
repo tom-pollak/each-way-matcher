@@ -1,5 +1,5 @@
 import sys
-from time import sleep
+from time import sleep, time
 from datetime import datetime
 
 from selenium.webdriver import ActionChains
@@ -349,7 +349,8 @@ def start_betfair(driver):
             sys.stdout.flush()
 
 
-def scrape(driver, START_TIME):
+def scrape(driver):
+    START_TIME = time()
     setup_sporting_index(driver)
     open_betfair_oddsmonkey(driver)
     count = 0

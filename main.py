@@ -1,7 +1,6 @@
 import os
 import sys
 import traceback
-from time import time
 from datetime import datetime
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -12,7 +11,6 @@ from selenium.common.exceptions import TimeoutException
 from odds_monkey import scrape
 from time import sleep
 
-START_TIME = time()
 load_dotenv(dotenv_path='.env')
 ODD_M_USER = os.environ.get('ODD_M_USER')
 ODD_M_PASS = os.environ.get('ODD_M_PASS')
@@ -87,7 +85,7 @@ while True:
         driver = webdriver.Chrome(options=chrome_options)
         sys.stdout.flush()
         login()
-        scrape(driver, START_TIME)
+        scrape(driver)
     except KeyboardInterrupt:
         print('Exiting')
         sys.exit()
