@@ -18,14 +18,12 @@ def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
     for _ in range(10):
         try:
-            sleep(1)
-            balance = WebDriverWait(driver, 10).until(
+            balance = WebDriverWait(driver, 15).until(
                 EC.visibility_of_element_located(
                     (By.CLASS_NAME, 'btn-balance'))).text
             balance = balance.replace(' ', '')
             balance = balance.replace('▸', '')
             balance = balance.replace('£', '')
-            count += 1
             if balance not in ['BALANCE', '']:
                 return float(balance)
         except (NoSuchElementException, TimeoutException):
