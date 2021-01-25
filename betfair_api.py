@@ -45,7 +45,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
         if url.lower().startswith('http'):
             req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
         else:
-            raise TypeError('url does not start with http')
+            raise ValueError('url does not start with http')
         with request.urlopen(req) as response:
             json_res = response.read()
             return json.loads(json_res.decode('utf-8'))
@@ -150,15 +150,14 @@ def get_horses(target_horse, event_id, race_time, headers):
 
 def cancel_unmatched_bets(headers):
     cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
-    cancel_res = call_api(cancel_req, headers)
     try:
+        cancel_res = call_api(cancel_req, headers)
         if cancel_res['result']['status'] == 'SUCCESS':
             return True
-        raise TypeError
-    except (KeyError, TypeError):
-        print('ERROR: could not cancel unmatched bets!')
+    except (KeyError, ValueError):
+        print('ERROR: Could not cancel unmatched bets!')
         print(cancel_res)
-        return False
+    return False
 
 
 def lay_bets(market_id, selection_id, price, stake, headers):
