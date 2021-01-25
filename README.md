@@ -1,4 +1,4 @@
-# Each way matcher
+# Each Way Matcher
 
 Scrapes OddsMonkey for profitable each way horse races, then automatically
 places bets on
