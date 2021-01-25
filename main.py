@@ -2,14 +2,16 @@ import os
 import sys
 import traceback
 from datetime import datetime
+from time import sleep
 from dotenv import load_dotenv
 from selenium import webdriver
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+
 from odds_monkey import scrape
-from time import sleep
 
 load_dotenv(dotenv_path='.env')
 ODD_M_USER = os.environ.get('ODD_M_USER')

@@ -1,7 +1,7 @@
 import sys
 from time import time
-from csv import DictWriter
 from datetime import datetime
+from csv import DictWriter
 
 from betfair_api import get_betfair_balance, login_betfair
 from sporting_index import get_balance_sporting_index
