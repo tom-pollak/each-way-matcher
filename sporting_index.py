@@ -29,9 +29,6 @@ def get_balance_sporting_index(driver):
                 return float(balance)
         except (NoSuchElementException, TimeoutException):
             driver.refresh()
-            WebDriverWait(driver, 60).until(
-                EC.visibility_of_element_located(
-                    (By.CLASS_NAME, 'btn-balance')))
     raise ValueError("Couldn't get balance")
 
 

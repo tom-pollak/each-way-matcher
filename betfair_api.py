@@ -72,11 +72,10 @@ def get_event(venue, race_time, headers):
         event_id = event_response['result'][0]['event']['id']
     except (KeyError, IndexError):
         try:
-            print(venue, race_time)
             print('Error in getting event: %s' % event_response['error'])
         except KeyError:
-            print(venue, race_time)
             print('Unknown error getting event: %s' % event_response)
+            print(venue)
         return False
     return event_id
 
