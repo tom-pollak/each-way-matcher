@@ -16,11 +16,8 @@ def change_to_decimal(driver):
 
 def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
-    # sleep(3)
-    try:
-        count = 0
-        balance = 'BALANCE'
-        while balance in ['BALANCE', ''] and count < 10:
+    for _ in range(10):
+        try:
             sleep(1)
             balance = WebDriverWait(driver, 10).until(
                 EC.visibility_of_element_located(
@@ -29,12 +26,14 @@ def get_balance_sporting_index(driver):
             balance = balance.replace('▸', '')
             balance = balance.replace('£', '')
             count += 1
-        if balance in ['BALANCE', '']:
-            raise ValueError('balance is BALANCE')
-
-    except (NoSuchElementException, TimeoutException):
-        raise ValueError("Couldn't find balance %s" % count)
-    return float(balance)
+            if balance not in ['BALANCE', '']:
+                return float(balance)
+        except (NoSuchElementException, TimeoutException):
+            driver.refresh()
+            WebDriverWait(driver, 60).until(
+                EC.visibility_of_element_located(
+                    (By.CLASS_NAME, 'btn-balance')))
+    raise ValueError("Couldn't get balance")
 
 
 def refresh_sporting_index(driver):
