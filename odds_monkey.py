@@ -220,9 +220,8 @@ def betfair_bet(driver, race):
         return
 
     profits = calculate_profit(race['bookie_odds'], bookie_stake,
-                               race['win_odds'], win_stake,
-                               race['place_odds'], place_stake,
-                               race['place_payout'])
+                               race['win_odds'], win_stake, race['place_odds'],
+                               place_stake, race['place_payout'])
     if min(*profits) <= 0:
         # print('\tProfits < £0')
         return
