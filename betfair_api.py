@@ -45,7 +45,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
         if url.lower().startswith('http'):
             req = request.Request(url, jsonrpc_req.encode('utf-8'), headers)
         else:
-            raise ValueError('url does not start with http')
+            raise TypeError('url does not start with http')
         with request.urlopen(req) as response:
             json_res = response.read()
             return json.loads(json_res.decode('utf-8'))
@@ -154,8 +154,8 @@ def cancel_unmatched_bets(headers):
     try:
         if cancel_res['result']['status'] == 'SUCCESS':
             return True
-        raise ValueError
-    except (KeyError, ValueError):
+        raise TypeError
+    except (KeyError, TypeError):
         print('ERROR: could not cancel unmatched bets!')
         print(cancel_res)
         return False
