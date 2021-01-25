@@ -1,7 +1,7 @@
 import sys
+from time import time
 from csv import DictWriter
 from datetime import datetime
-from time import time
 
 from betfair_api import get_betfair_balance, login_betfair
 from sporting_index import get_balance_sporting_index
@@ -10,10 +10,10 @@ RETURNS_CSV = 'returns/returns.csv'
 
 
 def show_info(count, START_TIME):
-    def convert_time(time):
-        hours = int(time // 60**2)
-        mins = int(time // 60 - hours * 60)
-        secs = round(time - (hours * 60 * 60) - (mins * 60))
+    def convert_time(time_secs):
+        hours = int(time_secs // 60**2)
+        mins = int(time_secs // 60 - hours * 60)
+        secs = round(time_secs - (hours * 60 * 60) - (mins * 60))
         return f"{hours:02}:{mins:02}:{secs:02}"
 
     diff = time() - START_TIME

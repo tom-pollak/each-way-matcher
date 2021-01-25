@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -37,7 +37,7 @@ def calc_unfinished_races(index=-1):
 def output_profit(current_sporting_index_balance=False):
     def get_today_starting_balance():
         try:
-            today_first_bet = df.loc[datetime.datetime.now().strftime(
+            today_first_bet = df.loc[datetime.now().strftime(
                 '%Y-%m-%d')].index.values[0]
         except KeyError:
             return None
@@ -47,10 +47,10 @@ def output_profit(current_sporting_index_balance=False):
                 break
             count += 1
 
-        return df.loc[datetime.datetime.now().strftime(
-            '%Y-%m-%d')]['balance'].values[0] + df.loc[
-                datetime.datetime.now().strftime('%Y-%m-%d')][
-                    'betfair_balance'].values[0] + calc_unfinished_races(count)
+        return df.loc[datetime.now().strftime(
+            '%Y-%m-%d')]['balance'].values[0] + df.loc[datetime.now().strftime(
+                '%Y-%m-%d'
+            )]['betfair_balance'].values[0] + calc_unfinished_races(count)
 
     today_starting_balance = get_today_starting_balance()
 
