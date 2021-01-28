@@ -11,6 +11,8 @@ from calculate import round_stake
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
+venue_names = {'Cagnes-Sur-Mer': 'Cagnes Sur Mer'}
+
 load_dotenv(dotenv_path='.env')
 APP_KEY = os.environ.get('APP_KEY')
 USERNAME = os.environ.get('BETFAIR_USR')
@@ -60,6 +62,8 @@ def get_event(venue, race_time, headers):
     race_time_after = race_time + datetime.timedelta(0, 60)
     race_time = race_time.strftime('%Y-%m-%dT%H:%M:%SZ')
     race_time_after = race_time_after.strftime('%Y-%m-%dT%H:%M:%SZ')
+    if venue in venue_names:
+        venue = venue_names[venue]
 
     event_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listEvents", \
         "params": {"filter": {"eventTypeIds": ["7"], "marketTypeCodes": ["WIN"], \
