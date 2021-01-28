@@ -154,11 +154,6 @@ def refresh_odds_monkey(driver, betfair=False):
     for i in range(5):
         driver.switch_to.default_content()
         try:
-            # WebDriverWait(driver, 60).until(
-            #     EC.element_to_be_clickable((
-            #         By.XPATH,
-            #         '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
-            #     ))).click()
             action = ActionChains(driver)
             element = WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located((
@@ -172,7 +167,6 @@ def refresh_odds_monkey(driver, betfair=False):
                 EC.element_to_be_clickable((
                     By.XPATH,
                     '//*[@id="dnn_ctr1157_View_RadToolBar1_i11_lblRefreshText"]'
-                    # '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[8]/div/button[1]'
                 ))).click()
             # driver.execute_script("InitiateAjaxRequest('refresh');")
             # wait until spinner disappeared
@@ -192,7 +186,7 @@ def refresh_odds_monkey(driver, betfair=False):
                     (By.XPATH, '//*[@id="dnn_LOGO1_imgLogo"]')))
             if betfair:
                 trigger_betfair_options(driver)
-
+                driver.switch_to.default_content()
     raise ValueError('Timeout in refresh_odds_monkey')
 
 
