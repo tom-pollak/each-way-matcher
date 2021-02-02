@@ -172,6 +172,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
     matched = False
     bet_made = False
     stake_matched = 0
+    matched_price = False
     bet_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
@@ -188,7 +189,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
             matched_price = float(bet_res['result']['instructionReports'][0]
                                   ['averagePriceMatched'])
             if price - 1 != matched_price:
-                print('Odds have changed, original price: %s' % price - 1)
+                print('Odds have changed, original price: %s' % (price - 1))
         elif bet_res['result']['status'] == 'FAILURE':
             print(bet_req)
             print()

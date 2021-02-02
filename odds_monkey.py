@@ -222,6 +222,7 @@ def betfair_bet(driver, race):
         race['balance'], betfair_balance, race['bookie_stake'],
         race['win_stake'], race['win_odds'], race['place_stake'],
         race['place_odds'])
+
     if not stakes_ok:
         return
 
@@ -257,10 +258,14 @@ def betfair_bet(driver, race):
         betfair_balance = get_betfair_balance(headers)
         sporting_index_balance = get_balance_sporting_index(driver)
         race['balance'] = sporting_index_balance
-        win_profit, place_profit, lose_profit = calculate_profit(
-            race['bookie_odds'], bookie_stake, lay_win[4], lay_win[3],
-            lay_place[4], lay_place[3], race['place_payout'])
-        min_profit = min(win_profit, place_profit, lose_profit)
+        if lay_win[4] and lay_place[4]:
+            win_profit, place_profit, lose_profit = calculate_profit(
+                race['bookie_odds'], bookie_stake, lay_win[4], lay_win[3],
+                lay_place[4], lay_place[3], race['place_payout'])
+            min_profit = min(win_profit, place_profit, lose_profit)
+        else:
+            win_profit, place_profit, lose_profit, min_profit = 0
+
         output_lay_ew(race, betfair_balance, sporting_index_balance,
                       min_profit, *lay_win, *lay_place, win_profit,
                       place_profit, lose_profit)
