@@ -347,6 +347,8 @@ def start_betfair(driver):
                 race.update(find_races(driver, row, 2))
                 processed_horses.append(race['horse_name'])
                 betfair_bet(driver, race)
+            driver.switch_to.window(driver.window_handles[2])
+            driver.switch_to.default_content()
             sys.stdout.flush()
 
 

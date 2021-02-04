@@ -56,6 +56,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
     except error.URLError as e:
         print(e.reason)
         print('No service available at ' + str(url))
+    raise ValueError("Couldn't get betfair balance")
 
 
 def get_event(venue, race_time, headers):
@@ -119,7 +120,7 @@ def get_horses(target_horse, event_id, race_time, headers):
 
     try:
         market_type = markets_response['result']
-    except IndexError:
+    except KeyError:
         try:
             print('Error in getting market: %s' % markets_response['error'])
             print(event_id, race_time)
@@ -186,8 +187,9 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 'sizeMatched']
             if stake_matched == stake:
                 matched = True
-            matched_price = float(bet_res['result']['instructionReports'][0]
-                                  ['averagePriceMatched'])
+            matched_price = round(
+                float(bet_res['result']['instructionReports'][0]
+                      ['averagePriceMatched']), 2)
             if price - 1 != matched_price:
                 print('Odds have changed, original price: %s' % (price - 1))
         elif bet_res['result']['status'] == 'FAILURE':

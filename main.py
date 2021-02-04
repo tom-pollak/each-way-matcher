@@ -89,6 +89,7 @@ while True:
         login()
         scrape(driver)
     except ValueError as e:
+        sys.stdout.flush()
         print('ERROR: %s\n' % e)
     except KeyboardInterrupt:
         print('Exiting')
