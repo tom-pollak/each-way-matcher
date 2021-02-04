@@ -28,10 +28,13 @@ if not os.path.isfile('client-2048.crt') or not os.path.isfile(
 
 def login():
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
-    WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located(
-            (By.ID,
-             'dnn_ctr433_Login_Login_DNN_txtUsername'))).send_keys(ODD_M_USER)
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(
+                (By.ID, 'dnn_ctr433_Login_Login_DNN_txtUsername'
+                 ))).send_keys(ODD_M_USER)
+    except TimeoutException:
+        raise ValueError("Couldn't login Oddsmonkey")
     driver.find_element_by_id(
         'dnn_ctr433_Login_Login_DNN_txtPassword').send_keys(ODD_M_PASS)
     driver.find_element_by_id('dnn_ctr433_Login_Login_DNN_cmdLogin').click()
@@ -55,9 +58,12 @@ def login():
     sleep(2)
 
     driver.switch_to.window(driver.window_handles[1])
-    WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located(
-            (By.ID, 'usernameCompact'))).send_keys(S_INDEX_USER)
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(
+                (By.ID, 'usernameCompact'))).send_keys(S_INDEX_USER)
+    except TimeoutException:
+        raise ValueError("Couldn't login sporting index")
     # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
     driver.find_element_by_id('passwordCompact').send_keys(S_INDEX_PASS)
     driver.find_element_by_id('submitLogin').click()
