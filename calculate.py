@@ -3,7 +3,7 @@ from datetime import datetime
 from time import strptime
 import pandas as pd
 
-MIN_PERCENTAGE_BALANCE = 0
+MIN_PERCENTAGE_BALANCE = 0.2
 COMMISSION = 0.05
 RETURNS_CSV = 'returns/returns.csv'
 
