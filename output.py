@@ -6,7 +6,7 @@ from csv import DictWriter
 from betfair_api import get_betfair_balance, login_betfair
 from sporting_index import get_balance_sporting_index
 
-RETURNS_CSV = 'returns/returns.csv'
+RETURNS_CSV = 'returns.csv'
 
 
 def show_info(count, START_TIME):

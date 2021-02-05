@@ -99,7 +99,7 @@ def plot_bal_time_series_graph():
     expected_return.cumsum().plot()
 
     plt.gcf().autofmt_xdate()
-    plt.savefig('graphs/balance.png')
+    plt.savefig('balance.png')
 
 
 df = pd.read_csv(RETURNS_CSV,

@@ -5,7 +5,7 @@ import pandas as pd
 
 MIN_PERCENTAGE_BALANCE = 0.2
 COMMISSION = 0.05
-RETURNS_CSV = 'returns/returns.csv'
+RETURNS_CSV = 'returns.csv'
 
 price_increments = {
     2: 0.01,
