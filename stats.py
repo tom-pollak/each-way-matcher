@@ -4,7 +4,7 @@ import pandas as pd
 
 from calculate import custom_date_parser
 
-RETURNS_CSV = 'returns/returns.csv'
+RETURNS_CSV = 'returns.csv'
 
 
 def calc_unfinished_races(index=-1):
