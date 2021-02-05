@@ -56,7 +56,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
     except error.URLError as e:
         print(e.reason)
         print('No service available at ' + str(url))
-    raise ValueError("Couldn't get betfair balance")
+    raise ValueError('API request failed')
 
 
 def get_event(venue, race_time, headers):
@@ -75,14 +75,14 @@ def get_event(venue, race_time, headers):
 
     try:
         event_id = event_response['result'][0]['event']['id']
+        return event_id
     except (KeyError, IndexError):
         try:
             print('Error in getting event: %s' % event_response['error'])
         except KeyError:
             print('Unknown error getting event: %s' % event_response)
             print(venue)
-        return False
-    return event_id
+    return False
 
 
 def get_horse_id(horses, target_horse):
@@ -153,7 +153,7 @@ def get_horses(target_horse, event_id, race_time, headers):
         print("ERROR couldn't find horse selection_id")
         print(market_type[0]['runners'])
         print(target_horse)
-        return 0, 0, False
+        return 0, 0, False, target_horse
     return markets_ids, selection_id, True, target_horse
 
 
@@ -173,7 +173,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
     matched = False
     bet_made = False
     stake_matched = 0
-    matched_price = False
+    matched_price = 0
     bet_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
@@ -192,16 +192,16 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                       ['averagePriceMatched']), 2)
             if price - 1 != matched_price:
                 print('Odds have changed, original price: %s' % (price - 1))
+
         elif bet_res['result']['status'] == 'FAILURE':
-            print(bet_req)
-            print()
-            print(bet_res)
+            print('\tLay bet failed: %s' % bet_res['result'])
 
     except KeyError:
         try:
             print('\tError in bet response: %s' % bet_res['error'])
         except KeyError:
             print('\tUnknown error making bet: %s' % bet_res)
+            print()
             print(bet_req)
     return bet_made, matched_price, matched, stake_matched
 

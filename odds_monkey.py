@@ -244,6 +244,7 @@ def betfair_bet(driver, race):
         race['date_of_race'], race['venue'], race['horse_name'])
     if not got_race:
         return
+
     race['bookie_stake'] = bookie_stake
     race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
     if bet_made is None:
@@ -264,7 +265,7 @@ def betfair_bet(driver, race):
                 lay_place[4], lay_place[3], race['place_payout'])
             min_profit = min(win_profit, place_profit, lose_profit)
         else:
-            win_profit, place_profit, lose_profit, min_profit = 0
+            win_profit = place_profit = lose_profit = min_profit = 0
 
         output_lay_ew(race, betfair_balance, sporting_index_balance,
                       min_profit, *lay_win, *lay_place, win_profit,
