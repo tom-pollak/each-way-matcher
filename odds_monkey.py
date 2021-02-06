@@ -40,6 +40,10 @@ def find_races(driver, row=0, window=0):
     bookie_exchange = driver.find_element_by_xpath(
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[10]/a'
     ).get_attribute('href')
+    if 'sportingindex' not in bookie_exchange:
+        print('Sportingindex not in bookie_exchange, have you adjusted the filters?')
+        print(bookie_exchange)
+        sys.exit()
 
     rating = driver.find_element_by_xpath(
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[17]').text
