@@ -3,7 +3,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException, ElementNotInteractableException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException
 
 
 def change_to_decimal(driver):
@@ -68,7 +68,8 @@ def make_sporting_index_bet(driver, race):
         WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable(
                 (By.CLASS_NAME, 'placeBetBtn'))).click()
-    except (NoSuchElementException, StaleElementReferenceException):
+    except (NoSuchElementException, StaleElementReferenceException,
+            ElementClickInterceptedException):
         return False
     except TimeoutException:
         return False
