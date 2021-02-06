@@ -88,6 +88,7 @@ def make_sporting_index_bet(driver, race, retry=False):
 
     except (TimeoutException, StaleElementReferenceException):
         driver.refresh()
+        print("Couldn't click continue")
     return True
 
 
