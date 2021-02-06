@@ -59,9 +59,8 @@ def find_races(driver, row=0, window=0):
             (By.XPATH, '//*[@id="lblOutcomeName"]'))).text.title()
 
     if horse_name != horse_name_window:
-        print(
-            'ERROR horse_name not same: %s, %s' %
-            (horse_name, horse_name_window))
+        print('ERROR horse_name not same: %s, %s' %
+              (horse_name, horse_name_window))
         driver.switch_to.default_content()
         driver.find_element_by_class_name('rwCloseButton').click()
         return {}
@@ -187,7 +186,7 @@ def refresh_odds_monkey(driver, betfair=False):
             if betfair:
                 trigger_betfair_options(driver)
                 driver.switch_to.default_content()
-    raise ValueError('Timeout in refresh_odds_monkey')
+    raise ValueError("Couldn't refresh Oddsmonkey")
 
 
 def open_betfair_oddsmonkey(driver):

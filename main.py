@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 
 from odds_monkey import scrape
 
@@ -34,15 +34,14 @@ def login():
                 (By.ID, 'dnn_ctr433_Login_Login_DNN_txtUsername'
                  ))).send_keys(ODD_M_USER)
     except TimeoutException:
-        raise ValueError("Couldn't login Oddsmonkey")
+        raise ValueError("Couldn't login to Oddsmonkey")
     driver.find_element_by_id(
         'dnn_ctr433_Login_Login_DNN_txtPassword').send_keys(ODD_M_PASS)
     driver.find_element_by_id('dnn_ctr433_Login_Login_DNN_cmdLogin').click()
     sleep(2)
 
+    driver.get('https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx')
     try:
-        driver.get(
-            'https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx')
         WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable(
                 (By.XPATH,
@@ -50,6 +49,9 @@ def login():
                  ))).click()
     except TimeoutException:
         print('ERROR: Need Oddsmonkey premium membership (OM12FOR1)')
+        sys.exit()
+    except ElementClickInterceptedException:
+        print("Dismiss one time pop-up boxes and setup oddsmonkey")
         sys.exit()
 
     driver.execute_script(
@@ -63,7 +65,7 @@ def login():
             EC.visibility_of_element_located(
                 (By.ID, 'usernameCompact'))).send_keys(S_INDEX_USER)
     except TimeoutException:
-        raise ValueError("Couldn't login sporting index")
+        raise ValueError("Couldn't login to Sporting Index")
     # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
     driver.find_element_by_id('passwordCompact').send_keys(S_INDEX_PASS)
     driver.find_element_by_id('submitLogin').click()
