@@ -31,8 +31,8 @@ def show_info(count, START_TIME):
 
 def output_race(driver, race):
     balance = get_balance_sporting_index(driver)
-    print(
-        f"\nNo Lay bet made: {race['horse_name']} - {race['bookie_odds']}")
+    print(f"\nNo Lay bet made: {race['horse_name']} - {race['bookie_odds']}")
+    print(f"\t{race['date_of_race']} - {race['venue']}")
     print(f"\tLay win: {race['win_odds']} Lay place: {race['place_odds']}")
     try:
         print(
@@ -40,7 +40,6 @@ def output_race(driver, race):
         )
     except KeyError:
         print('Key Error in output_race')
-    print(f"\t{race['date_of_race']} - {race['venue']}")
     print(
         f"\tCurrent balance: £{format(balance, '.2f')}, stake: £{format(race['ew_stake'], '.2f')}\n"
     )
