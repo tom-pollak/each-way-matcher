@@ -59,9 +59,8 @@ def find_races(driver, row=0, window=0):
             (By.XPATH, '//*[@id="lblOutcomeName"]'))).text.title()
 
     if horse_name != horse_name_window:
-        print(
-            'ERROR horse_name not same: %s, %s %s %s' %
-            (horse_name, horse_name_window))
+        print('ERROR horse_name not same: %s, %s %s %s' %
+              (horse_name, horse_name_window))
         driver.switch_to.default_content()
         driver.find_element_by_class_name('rwCloseButton').click()
         return {}
