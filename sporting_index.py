@@ -47,7 +47,7 @@ def click_betslip(driver):
         ))).click()
 
 
-def make_sporting_index_bet(driver, race, retry=False):
+def make_sporting_index_bet(driver, race):
     for _ in range(3):
         try:
             WebDriverWait(driver, 60).until(
@@ -59,9 +59,6 @@ def make_sporting_index_bet(driver, race, retry=False):
                 ElementNotInteractableException):
             click_betslip(driver)
         except TimeoutException:
-            if not retry:
-                click_betslip(driver)
-                return make_sporting_index_bet(driver, race, retry=True)
             return False
     else:
         return False
@@ -72,23 +69,17 @@ def make_sporting_index_bet(driver, race, retry=False):
             EC.element_to_be_clickable(
                 (By.CLASS_NAME, 'placeBetBtn'))).click()
     except (NoSuchElementException, StaleElementReferenceException):
-        # driver.find_element_by_xpath(
-        #     "//li[@class='close']//wgt-spin-icon[@class='close-bet']").click()
         return False
     except TimeoutException:
-        if not retry:
-            click_betslip(driver)
-            return make_sporting_index_bet(driver, race, retry=True)
         return False
 
     try:
         WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
-
     except (TimeoutException, StaleElementReferenceException):
-        driver.refresh()
-        print("Couldn't click continue")
+        return False
+
     return True
 
 
@@ -151,12 +142,13 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
 
     if float(cur_odd_price) == float(race['bookie_odds']):
-        bet_made = make_sporting_index_bet(driver, race)
-        if not bet_made:
-            close_bet(driver)
-        driver.refresh()
-        sleep(5)
-    return race, bet_made
+        for _ in range(3):
+            bet_made = make_sporting_index_bet(driver, race)
+            if bet_made:
+                return race, bet_made
+            else:
+                close_bet(driver)
+    return race, False
 
 
 def setup_sporting_index(driver):
