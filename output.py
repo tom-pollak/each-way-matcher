@@ -31,8 +31,7 @@ def show_info(count, START_TIME):
 
 def output_race(driver, race):
     balance = get_balance_sporting_index(driver)
-    print(
-        f"\nNo Lay bet made: {race['horse_name']} - {race['bookie_odds']}")
+    print(f"\nNo Lay bet made: {race['horse_name']} - {race['bookie_odds']}")
     print(f"\tLay win: {race['win_odds']} Lay place: {race['place_odds']}")
     try:
         print(
