@@ -20,7 +20,7 @@ client-2048.pub/key [connected to the betfair api](https://docs.developer.betfai
 ## Install
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ### Running headless
@@ -31,6 +31,19 @@ sudo apt install xvfb chromium-browser -y
 
 Install the appropiate [chromedriver](https://chromedriver.chromium.org/downloads)
 at default program location (/usr/bin/chromedriver for linux)
+
+### Modify filters
+
+Go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
+
+- Each Way Rating: 95 to 200
+- SNR Rating, Normal Arb Rating, Back Odds: 0 to 200
+- Event Start Time: Now to 7 days
+- Sports: Horse Racing
+- Markets: Horse Racing - Winner
+- Bookmakers: Sporting Index only
+- Exchanges: All exchanges
+- Click save
 
 ## Run
 
