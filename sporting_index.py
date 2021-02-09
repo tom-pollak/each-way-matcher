@@ -147,8 +147,7 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
             bet_made = make_sporting_index_bet(driver, race)
             if bet_made:
                 return race, bet_made
-            else:
-                close_bet(driver)
+            close_bet(driver)
     return race, False
 
 
