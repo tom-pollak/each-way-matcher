@@ -1,5 +1,6 @@
 from datetime import datetime
 import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
 import pandas as pd
 
 from calculate import custom_date_parser
@@ -86,19 +87,25 @@ def output_profit(current_sporting_index_balance=False):
 
 
 def plot_bal_time_series_graph():
+    fig, ax = plt.subplots()
+    date_fmt = DateFormatter("%d/%m")
+    ax.xaxis.set_major_formatter(date_fmt)
+
     balance = df['balance'] + df['betfair_balance']
-    plt.plot(balance)
+    ax.plot(balance)
 
     for i in range(len(balance)):
         balance[i] += calc_unfinished_races(i)
 
-    plt.plot(balance)
+    ax.plot(balance)
 
     expected_return = df['expected_return'] + df['arbritrage_profit']
     expected_return[0] += STARTING_BALANCE
     expected_return.cumsum().plot()
 
-    plt.gcf().autofmt_xdate()
+    fig.autofmt_xdate()
+    plt.ylabel('Balance')
+    plt.xlabel('Date')
     plt.savefig('balance.png')
 
 
