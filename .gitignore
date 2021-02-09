@@ -4,5 +4,4 @@ backup.log
 Pipfile*
 *.pyc
 client-2048.*
-*.json
-pull_results.sh
+balance.png
