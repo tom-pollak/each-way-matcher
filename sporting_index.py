@@ -96,10 +96,7 @@ def get_sporting_index_page(driver, race):
     #     ))).click()
 
 
-def sporting_index_bet(driver, race, make_betfair_ew=False):
-    if make_betfair_ew:
-        race['ew_stake'] = race['bookie_stake']
-
+def sporting_index_bet(driver, race):
     def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
@@ -132,7 +129,6 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
                 click_betslip(driver)
                 close_bet(driver, retry=True)
 
-    bet_made = False
     get_sporting_index_page(driver, race)
     cur_odd_price = click_horse(driver, race['horse_name'])
     if cur_odd_price is None:
@@ -146,7 +142,7 @@ def sporting_index_bet(driver, race, make_betfair_ew=False):
         for _ in range(3):
             bet_made = make_sporting_index_bet(driver, race)
             if bet_made:
-                return race, bet_made
+                return race, True
             close_bet(driver)
     return race, False
 

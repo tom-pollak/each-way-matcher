@@ -69,8 +69,8 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
 
 def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
                      win_odds, place_stake, place_odds):
-    bookie_ratio = bookie_balance / bookie_stake
     liabiltity_ratio = 1
+    bookie_ratio = bookie_balance / bookie_stake
 
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
@@ -78,8 +78,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
 
     if total_liability > betfair_balance:
         liabiltity_ratio = betfair_balance / total_liability
-    if bookie_ratio < liabiltity_ratio:
-        liabiltity_ratio = bookie_ratio
+    liabiltity_ratio = min(liabiltity_ratio, bookie_ratio)
 
     # maximum possible stakes
     bookie_stake *= liabiltity_ratio
@@ -90,9 +89,9 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     lay_min_stake_proportion = 0
     bookie_min_stake_proportion = 0.1 / bookie_stake
 
-    # if max_win_liability >= 10 and max_place_liability >= 10:
-    #     lay_min_stake_proportion = 10 / min(max_win_liability,
-    #                                         max_place_liability)
+    if max_win_liability >= 10 and max_place_liability >= 10:
+        lay_min_stake_proportion = 10 / min(max_win_liability,
+                                            max_place_liability)
     if win_stake >= 2 and place_stake >= 2:
         stake_min_stake_proportion = 2 / min(win_stake, place_stake)
         if lay_min_stake_proportion != 0:  # Eligible for > 10 liability
@@ -103,7 +102,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
 
     if lay_min_stake_proportion == 0:  # Stake not above 2 or liability above 10
         print(
-            f'\tStakes too small: win stake - £{format(win_stake, ".2f")} place_stake - £{format(place_stake, ".2f")}'
+            f'Stakes are too small: win stake - £{format(win_stake, ".2f")} place_stake - £{format(place_stake, ".2f")}'
         )
         return False, 0, 0, 0
 
@@ -116,7 +115,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
         if min_balance_staked >= max_stake:
             min_stake_proportion = 1
         else:
-            min_stake_proportion = max_stake / min_balance_staked
+            min_stake_proportion = min_balance_staked / max_stake
 
     bookie_stake *= min_stake_proportion
     win_stake *= min_stake_proportion

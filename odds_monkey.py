@@ -250,20 +250,18 @@ def betfair_bet(driver, race):
     if not got_race:
         return
 
-    race['bookie_stake'] = bookie_stake
-    race, bet_made = sporting_index_bet(driver, race, make_betfair_ew=True)
+    race['ew_stake'] = bookie_stake
+    race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
-        return
-    if bet_made:
+    elif bet_made:
         lay_win, lay_place = lay_ew(market_ids, selection_id, win_stake,
                                     race['win_odds'], place_stake,
                                     race['place_odds'])
         betfair_balance = get_betfair_balance(headers)
         sporting_index_balance = get_balance_sporting_index(driver)
-        race['balance'] = sporting_index_balance
         if lay_win[4] and lay_place[4]:
             win_profit, place_profit, lose_profit = calculate_profit(
                 race['bookie_odds'], bookie_stake, lay_win[4], lay_win[3],
@@ -293,14 +291,16 @@ def evaluate_bet(driver, race):
         # print(f"\tStake is too small: £{race['ew_stake']}")
         return False
 
-    bet_made = False
+    _, _, _, race['horse_name'] = get_race(race['date_of_race'], race['venue'],
+                                           race['horse_name'])
+
     race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:  # horse not found
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
         return False
-    if bet_made:  # bet made
+    if bet_made:
         output_race(driver, race)
         update_csv_sporting_index(driver, race)
         return True
@@ -321,17 +321,11 @@ def start_sporting_index(driver):
                 ))).text.title()
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 0))
-                processed_horses.append(
-                    race['horse_name']
-                )  # has to be before get race because of if condition above
-
-                _, _, _, race['horse_name'] = get_race(race['date_of_race'],
-                                                       race['venue'],
-                                                       race['horse_name'])
-
+                processed_horses.append(race['horse_name'])
                 if check_repeat_bets(race['horse_name'], race['date_of_race'],
                                      race['venue']):
                     evaluate_bet(driver, race)
+
             driver.switch_to.window(driver.window_handles[0])
             driver.switch_to.default_content()
             sys.stdout.flush()
