@@ -87,13 +87,6 @@ def make_sporting_index_bet(driver, race):
 def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.get(race['bookie_exchange'])
-    # driver.get(
-    #     'https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar')
-    # WebDriverWait(driver, 60).until(
-    #     EC.presence_of_element_located((
-    #         By.XPATH,
-    #         f"//th[contains(text(), '{race['venue']}')]/../../../tbody/tr/td/span/a/strong[contains(text(), '{race['race_time']}')]/.."
-    #     ))).click()
 
 
 def sporting_index_bet(driver, race):
@@ -120,9 +113,7 @@ def sporting_index_bet(driver, race):
             WebDriverWait(driver, 60).until(
                 EC.element_to_be_clickable((
                     By.XPATH,
-                    # '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[5]/wgt-spin-icon'
                     '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]'
-                    # "//li[@class='close']//wgt-spin-icon[@class='close-bet']"
                 ))).click()
         except TimeoutException:
             if not retry:

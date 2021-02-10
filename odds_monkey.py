@@ -120,7 +120,6 @@ def find_races(driver, row=0, window=0):
 
 
 def hide_race(driver, row=0, window=0):
-    # print('Hiding bet')
     driver.switch_to.window(driver.window_handles[window])
     driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[55]//div//a'
@@ -177,7 +176,6 @@ def refresh_odds_monkey(driver, betfair=False):
                     By.XPATH,
                     '//*[@id="dnn_ctr1157_View_RadToolBar1_i11_lblRefreshText"]'
                 ))).click()
-            # driver.execute_script("InitiateAjaxRequest('refresh');")
             # wait until spinner disappeared
             WebDriverWait(driver, 60).until(
                 EC.invisibility_of_element_located((
@@ -220,9 +218,7 @@ def get_no_rows(driver):
 
 
 def betfair_bet(driver, race):
-    # print('Found arbitrage bet: %s' % race['horse_name'])
     if race['max_profit'] <= 0:
-        # print('\tMax profit < 0')
         return
 
     headers = login_betfair()
@@ -239,7 +235,6 @@ def betfair_bet(driver, race):
                                race['win_odds'], win_stake, race['place_odds'],
                                place_stake, race['place_payout'])
     if min(*profits) <= 0:
-        # print('\tProfits < £0')
         return
 
     minutes_until_race = (
@@ -283,7 +278,6 @@ def betfair_bet(driver, race):
 
 
 def evaluate_bet(driver, race):
-    # print('Found bet no lay: %s' % race['horse_name'])
     race['ew_stake'], race['expected_return'], race[
         'expected_value'] = kelly_criterion(race['bookie_odds'],
                                             race['win_odds'],
@@ -292,7 +286,6 @@ def evaluate_bet(driver, race):
                                             race['balance'])
 
     if race['ew_stake'] < 0.1:
-        # print(f"\tStake is too small: £{race['ew_stake']}")
         return False
 
     _, _, _, race['horse_name'] = get_race(race['date_of_race'], race['venue'],

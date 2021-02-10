@@ -238,11 +238,3 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
     return ((lay_win, win_matched, win_stake, win_stake_matched, win_odds),
             (lay_place, place_matched, place_stake, place_stake_matched,
              place_odds))
-
-
-# markets_ids, selection_id, got_horse = get_race('15 Jan 19:00 2021',
-#                                                 'Wetherby', 'Mont Segur')
-# print(markets_ids, selection_id)
-# horses = ['sdfaf', 'ufsdfhfjsda', "Libby's Horse"]
-# close_horse = difflib.get_close_matches('Libbys Horse', horses, n=1)
-# print(close_horse)

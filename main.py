@@ -66,7 +66,6 @@ def login():
                 (By.ID, 'usernameCompact'))).send_keys(S_INDEX_USER)
     except TimeoutException:
         raise ValueError("Couldn't login to Sporting Index")
-    # driver.find_element_by_id('usernameCompact').send_keys(S_INDEX_USER)
     driver.find_element_by_id('passwordCompact').send_keys(S_INDEX_PASS)
     driver.find_element_by_id('submitLogin').click()
     sleep(5)
@@ -88,8 +87,6 @@ while True:
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("start-maximized")
-        # chrome_options.add_argument("disable-infobars")
-        # chrome_options.add_argument("--headless")
         prefs = {"profile.default_content_setting_values.notifications": 2}
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(options=chrome_options)
@@ -100,9 +97,11 @@ while True:
         sys.stdout.flush()
         print('ERROR: %s\n' % e)
     except KeyboardInterrupt:
+        sys.stdout.flush()
         print('Exiting')
         sys.exit()
     except Exception as e:
+        sys.stdout.flush()
         print('Error occured: %s' % e)
         print(traceback.format_exc())
     finally:
