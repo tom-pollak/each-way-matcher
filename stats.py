@@ -92,20 +92,21 @@ def plot_bal_time_series_graph():
     ax.xaxis.set_major_formatter(date_fmt)
 
     balance = df['balance'] + df['betfair_balance']
-    ax.plot(balance)
+    ax.plot(balance, label='Withdrawable')
 
     for i in range(len(balance)):
         balance[i] += calc_unfinished_races(i)
 
-    ax.plot(balance)
+    ax.plot(balance, label='+ balance in bet')
 
     expected_return = df['expected_return'] + df['arbritrage_profit']
     expected_return[0] += STARTING_BALANCE
-    expected_return.cumsum().plot()
+    expected_return.cumsum().plot(label='Expected return')
 
     fig.autofmt_xdate()
-    plt.ylabel('Balance')
     plt.xlabel('Date')
+    plt.ylabel('Balance (£)')
+    plt.legend(loc="lower center")
     plt.savefig('balance.png')
 
 
