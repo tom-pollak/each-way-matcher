@@ -6,7 +6,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementClickInterceptedException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementClickInterceptedException, NoSuchFrameException
 
 from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
 from betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
@@ -59,7 +59,11 @@ def find_races(driver, row=0, window=0):
     ).click()
     sleep(2)
 
-    driver.switch_to.frame('RadWindow2')
+    try:
+        driver.switch_to.frame('RadWindow2')
+    except NoSuchFrameException:
+        raise ValueError("Couldn't switch to calculator window find_races")
+
     horse_name_window = WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located(
             (By.XPATH, '//*[@id="lblOutcomeName"]'))).text.title()
