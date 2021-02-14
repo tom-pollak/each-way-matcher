@@ -241,7 +241,7 @@ def betfair_bet(driver, race):
         datetime.strptime(race['date_of_race'], '%d %b %H:%M %Y') -
         datetime.now()).total_seconds() / 60
     if minutes_until_race <= 2:
-        print('\tRace too close to start time: %s' % minutes_until_race)
+        print('Race too close to start time: %s' % minutes_until_race)
         return
 
     market_ids, selection_id, got_race, race['horse_name'] = get_race(

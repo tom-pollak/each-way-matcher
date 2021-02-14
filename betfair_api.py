@@ -193,13 +193,13 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 print('Odds have changed, original price: %s' % (price - 1))
 
         elif bet_res['result']['status'] == 'FAILURE':
-            print('\tLay bet failed: %s' % bet_res['result'])
+            print('Lay bet failed: %s' % bet_res['result'])
 
     except KeyError:
         try:
-            print('\tError in bet response: %s' % bet_res['error'])
+            print('Error in bet response: %s' % bet_res['error'])
         except KeyError:
-            print('\tUnknown error making bet: %s' % bet_res)
+            print('Unknown error making bet: %s' % bet_res)
             print()
             print(bet_req)
     return bet_made, matched_price, matched, stake_matched
