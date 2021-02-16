@@ -163,6 +163,3 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
 
     lose_profit = win_stake + place_stake - bookie_stake * 2 - commision
     return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
-
-
-print(calculate_stakes(50.31, 66, 7, 2.61, 22, 17, 3.65))
