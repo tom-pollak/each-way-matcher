@@ -1,3 +1,4 @@
+from pathlib import Path
 import datetime
 import json
 import os
@@ -7,16 +8,21 @@ import requests
 from urllib import error, request
 from dotenv import load_dotenv
 
-from calculate import round_stake
+from .calculate import round_stake
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
 venue_names = {'Cagnes-Sur-Mer': 'Cagnes Sur Mer'}
 
-load_dotenv(dotenv_path='.env')
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + '/../')
+load_dotenv(os.path.join(BASEDIR, '.env'))
+
 APP_KEY = os.environ.get('APP_KEY')
 USERNAME = os.environ.get('BETFAIR_USR')
 PASSWORD = os.environ.get('BETFAIR_PASS')
+CERT = os.path.join(BASEDIR, 'client-2048.crt')
+KEY = os.path.join(BASEDIR, 'client-2048.key')
+
 if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception('betfair env vars not set')
 
@@ -30,7 +36,7 @@ def login_betfair():
     response = requests.post(
         'https://identitysso-cert.betfair.com/api/certlogin',
         data=payload,
-        cert=('client-2048.crt', 'client-2048.key'),
+        cert=(CERT, KEY),
         headers=login_headers)
     if response.status_code == 200:
         SESS_TOK = response.json()['sessionToken']

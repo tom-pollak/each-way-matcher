@@ -11,9 +11,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 
-from odds_monkey import scrape
+from .odds_monkey import scrape
 
-load_dotenv(dotenv_path='.env')
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + '/../')
+load_dotenv(os.path.join(BASEDIR, '.env'))
+
 ODD_M_USER = os.environ.get('ODD_M_USER')
 ODD_M_PASS = os.environ.get('ODD_M_PASS')
 S_INDEX_USER = os.environ.get('S_INDEX_USER')

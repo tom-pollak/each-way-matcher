@@ -1,12 +1,14 @@
 import sys
+import os
 from time import time
 from datetime import datetime
 from csv import DictWriter
 
-from betfair_api import get_betfair_balance, login_betfair
-from sporting_index import get_balance_sporting_index
+from .betfair_api import get_betfair_balance, login_betfair
+from .sporting_index import get_balance_sporting_index
 
-RETURNS_CSV = 'returns.csv'
+RETURNS_CSV = os.path.abspath(
+    os.path.dirname(__file__) + '/../stats/returns.csv')
 
 
 def show_info(count, START_TIME):
