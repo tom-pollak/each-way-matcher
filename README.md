@@ -5,6 +5,8 @@ places bets on
 Sporting Index.  
 Also lays arbitrage bets on Sporting Index and Betfair.
 
+![balance graph](stats/balance.png)
+
 ## Login variables
 
 ### Add to .env
@@ -21,6 +23,7 @@ client-2048.pub/key [connected to the betfair api](https://docs.developer.betfai
 
 ```bash
 pip3 install -r requirements.txt
+python3 -m matcher --setup
 ```
 
 ### Running headless
@@ -48,7 +51,7 @@ Go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatche
 ## Run
 
 ```bash
-python3 main.py
+python3 -m matcher --run
 ```
 
 or
