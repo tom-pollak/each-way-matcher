@@ -238,3 +238,7 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
     return ((lay_win, win_matched, win_stake, win_stake_matched, win_odds),
             (lay_place, place_matched, place_stake, place_stake_matched,
              place_odds))
+
+
+headers = login_betfair()
+# get_event('Cagnes-Sur-Mer', race_time, headers)
