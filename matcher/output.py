@@ -7,7 +7,7 @@ from csv import DictWriter
 from .betfair_api import get_betfair_balance, login_betfair
 from .sporting_index import get_balance_sporting_index
 
-BASEDIR = os.path.abspath(os.path.dirname(__file__))
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + '/../')
 RETURNS_CSV = os.path.join(BASEDIR, 'stats/returns.csv')
 
 
