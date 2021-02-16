@@ -1,12 +1,14 @@
 import sys
+import os
 from time import time
 from datetime import datetime
 from csv import DictWriter
 
-from betfair_api import get_betfair_balance, login_betfair
-from sporting_index import get_balance_sporting_index
+from .betfair_api import get_betfair_balance, login_betfair
+from .sporting_index import get_balance_sporting_index
 
-RETURNS_CSV = 'returns.csv'
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+RETURNS_CSV = os.path.join(BASEDIR, 'stats/returns.csv')
 
 
 def show_info(count, START_TIME):
@@ -127,3 +129,19 @@ def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
                                 fieldnames=csv_columns,
                                 extrasaction='ignore')
         csv_writer.writerow(race)
+
+
+def reset_csv():
+    now = datetime.now().strftime('%d-%m-%Y')
+    returns_header = 'date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout'
+    RETURNS_BAK = os.path.join(BASEDIR, 'stats/returns-%s.csv' % now)
+
+    create_new_returns = input(
+        'Create new return.csv? (Recommended for new user) [Y]/n ').lower()
+
+    if create_new_returns != 'n':
+        os.rename(RETURNS_CSV, RETURNS_BAK)
+        f = open(RETURNS_CSV, 'w')
+        f.write(returns_header)
+        f.close()
+        print('Created new csv.')

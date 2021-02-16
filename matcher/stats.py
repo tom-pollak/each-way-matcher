@@ -1,11 +1,10 @@
+import os
 from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 import pandas as pd
 
-from calculate import custom_date_parser
-
-RETURNS_CSV = 'returns.csv'
+from .calculate import custom_date_parser
 
 
 def calc_unfinished_races(index=-1):
@@ -107,8 +106,14 @@ def plot_bal_time_series_graph():
     plt.xlabel('Date')
     plt.ylabel('Balance (£)')
     plt.legend(loc="lower center")
-    plt.savefig('balance.png')
+    plt.savefig(BALANCE_PNG)
 
+
+RETURNS_CSV = os.path.abspath(
+    os.path.dirname(__file__) + '/../stats/returns.csv')
+
+BALANCE_PNG = os.path.abspath(
+    os.path.dirname(__file__) + '/../stats/balance.png')
 
 df = pd.read_csv(RETURNS_CSV,
                  header=0,
@@ -122,6 +127,4 @@ try:
         0] + calc_unfinished_races(0)
 except IndexError:
     print('No entrys to csv')
-else:
-    output_profit()
-    plot_bal_time_series_graph()
+    sys.exit()

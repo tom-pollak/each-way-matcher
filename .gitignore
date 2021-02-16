@@ -4,4 +4,3 @@ backup.log
 Pipfile*
 *.pyc
 client-2048.*
-balance.png

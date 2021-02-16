@@ -8,10 +8,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementClickInterceptedException, NoSuchFrameException
 
-from sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
-from betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
-from calculate import calculate_stakes, calculate_profit, kelly_criterion, check_repeat_bets
-from output import update_csv_sporting_index, update_csv_betfair, show_info, output_lay_ew, output_race
+from .sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
+from .betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
+from .calculate import calculate_stakes, calculate_profit, kelly_criterion, check_repeat_bets
+from .output import update_csv_sporting_index, update_csv_betfair, show_info, output_lay_ew, output_race
 
 REFRESH_TIME = 60
 
@@ -367,3 +367,6 @@ def scrape(driver):
         sys.stdout.flush()
         sleep(REFRESH_TIME)
         count += 1
+
+
+login_betfair(headers)
