@@ -367,6 +367,3 @@ def scrape(driver):
         sys.stdout.flush()
         sleep(REFRESH_TIME)
         count += 1
-
-
-login_betfair(headers)
