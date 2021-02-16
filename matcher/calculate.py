@@ -115,7 +115,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
                                                    bookie_balance)
     if min_balance_staked > min_stake:
         if min_balance_staked >= max_stake:
-            min_stake_proportion = 1
+            min_stake_proportion = max_stake / min_balance_staked
         else:
             min_stake_proportion = min_balance_staked / max_stake
 
@@ -128,6 +128,7 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
         print(
             f'win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}'
         )
+        print(min_stake_proportion)
 
         return False, 0, 0, 0
     return True, round(bookie_stake, 2), round(win_stake,
