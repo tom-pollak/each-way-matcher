@@ -1,3 +1,4 @@
+import os
 import math
 from datetime import datetime
 from time import strptime
@@ -5,7 +6,8 @@ import pandas as pd
 
 MIN_PERCENTAGE_BALANCE = 0.2
 COMMISSION = 0.05
-RETURNS_CSV = 'returns.csv'
+RETURNS_CSV = os.path.abspath(
+    os.path.dirname(__file__) + '/../stats/returns.csv')
 
 price_increments = {
     2: 0.01,
@@ -123,8 +125,9 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     if win_stake * (win_odds - 1) + place_stake * (
             place_odds - 1) > betfair_balance or bookie_stake > bookie_balance:
         print('Error in calculating arb stakes')
-        print(win_stake, win_odds, place_stake, place_odds, bookie_stake,
-              bookie_balance, betfair_balance)
+        print(
+            f'win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}'
+        )
 
         return False, 0, 0, 0
     return True, round(bookie_stake, 2), round(win_stake,
@@ -162,4 +165,3 @@ def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
 
 
 print(calculate_stakes(50.31, 66, 7, 2.61, 22, 17, 3.65))
-print(12 + 21 * 2.61 + 2.65 * 5.72)
