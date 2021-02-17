@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description='Run EW matcher or output stats')
 parser.add_argument('--run', help='Run the EW matcher', action='store_true')
@@ -15,3 +16,5 @@ if args.stats:
 if args.setup:
     from .output import reset_csv
     reset_csv()
+if len(sys.argv) == 1:
+    parser.print_help()
