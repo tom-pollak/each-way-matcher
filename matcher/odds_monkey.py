@@ -73,7 +73,7 @@ def find_races(driver, row=0, window=0):
         raise ValueError("Couldn't get calculator window")
 
     if horse_name != horse_name_window:
-        raise ValueError('ERROR horse_name not same: %s, %s' %
+        raise ValueError('horse_name not same: %s, %s' %
                          (horse_name, horse_name_window))
 
     win_odds = WebDriverWait(driver, 600).until(
