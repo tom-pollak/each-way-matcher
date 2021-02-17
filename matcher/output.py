@@ -133,7 +133,7 @@ def update_csv_betfair(race, sporting_index_balance, bookie_stake, win_stake,
 
 def reset_csv():
     now = datetime.now().strftime('%d-%m-%Y')
-    returns_header = 'date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout'
+    RETURNS_HEADER = 'date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,current_time,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout'
     RETURNS_BAK = os.path.join(BASEDIR, 'stats/returns-%s.csv' % now)
 
     create_new_returns = input(
@@ -141,7 +141,6 @@ def reset_csv():
 
     if create_new_returns != 'n':
         os.rename(RETURNS_CSV, RETURNS_BAK)
-        f = open(RETURNS_CSV, 'w')
-        f.write(returns_header)
-        f.close()
-        print('Created new csv.')
+        with open(RETURNS_CSV, 'w', newline='') as returns_csv:
+            returns_csv.write(RETURNS_HEADER)
+            print('Created new returns.csv')

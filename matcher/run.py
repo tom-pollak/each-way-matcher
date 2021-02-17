@@ -28,7 +28,7 @@ if not os.path.isfile('client-2048.crt') or not os.path.isfile(
     raise Exception('client-2048 certificates not found')
 
 
-def login():
+def login(driver):
     driver.get('https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f')
     try:
         WebDriverWait(driver, 60).until(
@@ -78,23 +78,23 @@ def login():
 def run_matcher():
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
     while True:
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument(
+            "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
+        )
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-setuid-sandbox")
+        chrome_options.add_argument("--remote-debugging-port=9222")  # this
+        chrome_options.add_argument("--disable-dev-shm-using")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("start-maximized")
+        prefs = {"profile.default_content_setting_values.notifications": 2}
+        chrome_options.add_experimental_option("prefs", prefs)
+        driver = webdriver.Chrome(options=chrome_options)
+        sys.stdout.flush()
         try:
-            chrome_options = webdriver.ChromeOptions()
-            chrome_options.add_argument(
-                "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
-            )
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-setuid-sandbox")
-            chrome_options.add_argument("--remote-debugging-port=9222")  # this
-            chrome_options.add_argument("--disable-dev-shm-using")
-            chrome_options.add_argument("--disable-extensions")
-            chrome_options.add_argument("--disable-gpu")
-            chrome_options.add_argument("start-maximized")
-            prefs = {"profile.default_content_setting_values.notifications": 2}
-            chrome_options.add_experimental_option("prefs", prefs)
-            driver = webdriver.Chrome(options=chrome_options)
-            sys.stdout.flush()
-            login()
+            login(driver)
             scrape(driver)
         except ValueError as e:
             sys.stdout.flush()
