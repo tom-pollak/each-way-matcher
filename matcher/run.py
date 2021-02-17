@@ -75,36 +75,37 @@ def login():
     sys.stdout.flush()
 
 
-print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
-while True:
-    try:
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument(
-            "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
-        )
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-setuid-sandbox")
-        chrome_options.add_argument("--remote-debugging-port=9222")  # this
-        chrome_options.add_argument("--disable-dev-shm-using")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("start-maximized")
-        prefs = {"profile.default_content_setting_values.notifications": 2}
-        chrome_options.add_experimental_option("prefs", prefs)
-        driver = webdriver.Chrome(options=chrome_options)
-        sys.stdout.flush()
-        login()
-        scrape(driver)
-    except ValueError as e:
-        sys.stdout.flush()
-        print('ERROR: %s\n' % e)
-    except KeyboardInterrupt:
-        sys.stdout.flush()
-        print('Exiting')
-        sys.exit()
-    except Exception as e:
-        sys.stdout.flush()
-        print('Error occured: %s' % e)
-        print(traceback.format_exc())
-    finally:
-        driver.quit()
+def run_matcher():
+    print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
+    while True:
+        try:
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument(
+                "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
+            )
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-setuid-sandbox")
+            chrome_options.add_argument("--remote-debugging-port=9222")  # this
+            chrome_options.add_argument("--disable-dev-shm-using")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("start-maximized")
+            prefs = {"profile.default_content_setting_values.notifications": 2}
+            chrome_options.add_experimental_option("prefs", prefs)
+            driver = webdriver.Chrome(options=chrome_options)
+            sys.stdout.flush()
+            login()
+            scrape(driver)
+        except ValueError as e:
+            sys.stdout.flush()
+            print('ERROR: %s\n' % e)
+        except KeyboardInterrupt:
+            sys.stdout.flush()
+            print('Exiting')
+            sys.exit()
+        except Exception as e:
+            sys.stdout.flush()
+            print('Error occured: %s' % e)
+            print(traceback.format_exc())
+        finally:
+            driver.quit()
