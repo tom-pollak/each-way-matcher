@@ -20,12 +20,6 @@ ODD_M_USER = os.environ.get('ODD_M_USER')
 ODD_M_PASS = os.environ.get('ODD_M_PASS')
 S_INDEX_USER = os.environ.get('S_INDEX_USER')
 S_INDEX_PASS = os.environ.get('S_INDEX_PASS')
-if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
-    raise Exception('sporting index or oddsmonkey env variables not set')
-
-if not os.path.isfile('client-2048.crt') or not os.path.isfile(
-        'client-2048.key'):
-    raise Exception('client-2048 certificates not found')
 
 
 def login(driver):
@@ -76,6 +70,13 @@ def login(driver):
 
 
 def run_matcher():
+    if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
+        raise Exception('SportingIndex or Oddsmonkey env variables not set')
+
+    if not os.path.isfile('client-2048.crt') or not os.path.isfile(
+            'client-2048.key'):
+        raise Exception('client-2048 certificates not found')
+
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
     while True:
         chrome_options = webdriver.ChromeOptions()

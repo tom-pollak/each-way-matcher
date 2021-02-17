@@ -98,7 +98,7 @@ def plot_bal_time_series_graph():
     for i in range(len(balance)):
         balance[i] += calc_unfinished_races(i)
 
-    ax.plot(balance, label='+ balance in bet')
+    ax.plot(balance, label='+ balance in bets')
 
     expected_return = df['expected_return'] + df['arbritrage_profit']
     expected_return[0] += STARTING_BALANCE
