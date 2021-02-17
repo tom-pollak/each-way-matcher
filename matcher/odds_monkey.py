@@ -6,7 +6,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementClickInterceptedException, NoSuchFrameException, NoSuchWindowException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementClickInterceptedException, NoSuchFrameException, NoSuchWindowException, ElementNotInteractableException
 
 from .sporting_index import setup_sporting_index, sporting_index_bet, refresh_sporting_index, get_balance_sporting_index
 from .betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
@@ -41,9 +41,7 @@ def find_races(driver, row=0, window=0):
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[10]/a'
     ).get_attribute('href')
     if 'sportingindex' not in bookie_exchange:
-        print(
-            'Sportingindex not in bookie_exchange, have you adjusted the filters?'
-        )
+        print('Bookie is not SportingIndex, have you adjusted the filters?')
         print(bookie_exchange)
         sys.exit()
 
@@ -54,11 +52,14 @@ def find_races(driver, row=0, window=0):
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[20]'
     ).text.split('£')[1]
 
-    driver.find_element_by_xpath(
-        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl{"{:02d}".format(2 * row + 4)}_calcButton"]'
-    ).click()
-    sleep(2)
+    try:
+        driver.find_element_by_xpath(
+            f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl{"{:02d}".format(2 * row + 4)}_calcButton"]'
+        ).click()
+    except ElementNotInteractableException:
+        raise ValueError("Couldn't click calculator button")
 
+    sleep(2)
     try:
         driver.switch_to.frame('RadWindow2')
     except NoSuchFrameException:
@@ -72,11 +73,8 @@ def find_races(driver, row=0, window=0):
         raise ValueError("Couldn't get calculator window")
 
     if horse_name != horse_name_window:
-        print('ERROR horse_name not same: %s, %s' %
-              (horse_name, horse_name_window))
-        driver.switch_to.default_content()
-        driver.find_element_by_class_name('rwCloseButton').click()
-        return {}
+        raise ValueError('ERROR horse_name not same: %s, %s' %
+                         (horse_name, horse_name_window))
 
     win_odds = WebDriverWait(driver, 600).until(
         EC.visibility_of_element_located(
