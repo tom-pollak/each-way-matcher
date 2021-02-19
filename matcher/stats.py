@@ -109,6 +109,7 @@ def plot_bal_time_series_graph():
     plt.ylabel('Balance (£)')
     plt.legend(loc="lower center")
     plt.savefig(BALANCE_PNG)
+    print('Generated graph at: %s' % BALANCE_PNG)
 
 
 RETURNS_CSV = os.path.abspath(

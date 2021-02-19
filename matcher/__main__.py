@@ -5,7 +5,7 @@ from .run import run_matcher
 from .stats import output_profit, plot_bal_time_series_graph
 from .output import reset_csv
 
-parser = argparse.ArgumentParser(description='Run EW matcher or output stats',
+parser = argparse.ArgumentParser(description='Automated Each Way Matcher',
                                  prog='python3 -m matcher')
 parser.add_argument('-r',
                     '--run',
@@ -16,8 +16,16 @@ parser.add_argument('-g',
                     '--graph',
                     help='Generate graph',
                     action='store_true')
-parser.add_argument('--setup', help='Reset csv', action='store_true')
+parser.add_argument('--setup',
+                    help='Reset csv and generate backup',
+                    action='store_true')
 args = parser.parse_args()
+
+if len(sys.argv) == 1:
+    parser.print_help()
+
+if args.setup:
+    reset_csv()
 
 if args.run:
     run_matcher()
@@ -27,9 +35,3 @@ if args.stats:
 
 if args.graph:
     plot_bal_time_series_graph()
-
-if args.setup:
-    reset_csv()
-
-if len(sys.argv) == 1:
-    parser.print_help()
