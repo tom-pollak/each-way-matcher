@@ -11,9 +11,10 @@ parser.add_argument('-r',
                     '--run',
                     help='Run the EW matcher',
                     action='store_true')
-parser.add_argument('-s',
-                    '--stats',
-                    help='Display stats and generate graph',
+parser.add_argument('-s', '--stats', help='Display stats', action='store_true')
+parser.add_argument('-g',
+                    '--graph',
+                    help='Generate graph',
                     action='store_true')
 parser.add_argument('--setup', help='Reset csv', action='store_true')
 args = parser.parse_args()
@@ -23,6 +24,8 @@ if args.run:
 
 if args.stats:
     output_profit()
+
+if args.graph:
     plot_bal_time_series_graph()
 
 if args.setup:
