@@ -124,6 +124,8 @@ def get_horses(target_horse, event_id, race_time, headers):
 
     try:
         market_type = markets_response['result']
+        if len(market_type) < 2:
+            raise ValueError('No market_type returned')
     except KeyError:
         try:
             print('Error in getting market: %s' % markets_response['error'])
@@ -137,9 +139,9 @@ def get_horses(target_horse, event_id, race_time, headers):
     market_type_index = 0
     changed_index = False
     for i, market in enumerate(market_type):
-        if market['marketName'] == 'Each Way':
-            markets_ids['Each Way'] = market['marketId']
-        elif market['marketName'] == 'To Be Placed':
+        # if market['marketName'] == 'Each Way':
+        #     markets_ids['Each Way'] = market['marketId']
+        if market['marketName'] == 'To Be Placed':
             markets_ids['Place'] = market['marketId']
             market_type_index = i
             changed_index = True
@@ -150,6 +152,7 @@ def get_horses(target_horse, event_id, race_time, headers):
         print(market_type)
         print()
         print(markets_response)
+        return 0, 0, False, target_horse
 
     selection_id, target_horse = get_horse_id(market_type[market_type_index],
                                               target_horse)

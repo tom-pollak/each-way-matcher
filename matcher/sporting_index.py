@@ -69,9 +69,7 @@ def make_sporting_index_bet(driver, race):
             EC.element_to_be_clickable(
                 (By.CLASS_NAME, 'placeBetBtn'))).click()
     except (NoSuchElementException, StaleElementReferenceException,
-            ElementClickInterceptedException):
-        return False
-    except TimeoutException:
+            ElementClickInterceptedException, TimeoutException):
         return False
 
     try:
@@ -79,7 +77,7 @@ def make_sporting_index_bet(driver, race):
             EC.element_to_be_clickable(
                 (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
     except (TimeoutException, StaleElementReferenceException):
-        return False
+        return True
 
     return True
 

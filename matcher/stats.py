@@ -88,7 +88,8 @@ def output_profit(current_sporting_index_balance=False):
 
 
 def plot_bal_time_series_graph():
-    fig, ax = plt.subplots()
+    fig = plt.figure()
+    ax = plt.axes()
     date_fmt = DateFormatter("%d/%m")
     ax.xaxis.set_major_formatter(date_fmt)
 
@@ -105,9 +106,9 @@ def plot_bal_time_series_graph():
     expected_return.cumsum().plot(label='Expected return')
 
     fig.autofmt_xdate()
-    plt.xlabel('Date')
-    plt.ylabel('Balance (£)')
-    plt.legend(loc="lower center")
+    fig.xlabel('Date')
+    fig.ylabel('Balance (£)')
+    fig.legend(loc="lower center")
     plt.savefig(BALANCE_PNG)
     print('Generated graph at: %s' % BALANCE_PNG)
 

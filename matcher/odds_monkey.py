@@ -186,8 +186,6 @@ def refresh_odds_monkey(driver, betfair=False):
             return
 
         except (TimeoutException, ElementClickInterceptedException) as e:
-            if i == 4:
-                print(e)
             driver.refresh()
             WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located(

@@ -44,7 +44,7 @@ def login(driver):
                  '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a'
                  ))).click()
     except TimeoutException:
-        print('ERROR: Need Oddsmonkey premium membership (OM12FOR1)')
+        print('Need Oddsmonkey premium membership (OM12FOR1)')
         sys.exit()
     except ElementClickInterceptedException:
         print("Dismiss one time pop-up boxes and setup oddsmonkey")
@@ -71,7 +71,8 @@ def login(driver):
 
 def run_matcher():
     if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
-        raise Exception('SportingIndex or Oddsmonkey env variables not set')
+        raise Exception(
+            'ERROR: SportingIndex or Oddsmonkey env variables not set')
 
     if not os.path.isfile('client-2048.crt') or not os.path.isfile(
             'client-2048.key'):
