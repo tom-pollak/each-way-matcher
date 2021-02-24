@@ -88,8 +88,7 @@ def output_profit(current_sporting_index_balance=False):
 
 
 def plot_bal_time_series_graph():
-    fig = plt.figure()
-    ax = plt.axes()
+    fig, ax = plt.subplots()
     date_fmt = DateFormatter("%d/%m")
     ax.xaxis.set_major_formatter(date_fmt)
 

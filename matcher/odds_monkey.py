@@ -164,11 +164,14 @@ def refresh_odds_monkey(driver, betfair=False):
         driver.switch_to.default_content()
         try:
             action = ActionChains(driver)
-            element = WebDriverWait(driver, 60).until(
-                EC.visibility_of_element_located((
-                    By.XPATH,
-                    '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
-                )))
+            try:
+                element = WebDriverWait(driver, 60).until(
+                    EC.visibility_of_element_located((
+                        By.XPATH,
+                        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[2]'
+                    )))
+            except TimeoutException:
+                raise ValueError('Timout in refresh odds monkey')
             action.move_to_element(element)
             action.perform()
 
