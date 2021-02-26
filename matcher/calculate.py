@@ -4,7 +4,7 @@ from datetime import datetime
 from time import strptime
 import pandas as pd
 
-MIN_PERCENTAGE_BALANCE = 0.2
+MIN_PERCENTAGE_BALANCE = 0.25
 COMMISSION = 0.05
 RETURNS_CSV = os.path.abspath(
     os.path.dirname(__file__) + '/../stats/returns.csv')
