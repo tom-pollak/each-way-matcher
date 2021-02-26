@@ -6,6 +6,7 @@ import requests
 
 from urllib import error, request
 from dotenv import load_dotenv
+from requests.exceptions import ConnectionError
 
 from .calculate import round_stake
 
@@ -32,18 +33,22 @@ def login_betfair():
         'X-Application': APP_KEY,
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    response = requests.post(
-        'https://identitysso-cert.betfair.com/api/certlogin',
-        data=payload,
-        cert=(CERT, KEY),
-        headers=login_headers)
-    if response.status_code == 200:
-        SESS_TOK = response.json()['sessionToken']
-        return {
-            'X-Application': APP_KEY,
-            'X-Authentication': SESS_TOK,
-            'content-type': 'application/json'
-        }
+    try:
+        response = requests.post(
+            'https://identitysso-cert.betfair.com/api/certlogin',
+            data=payload,
+            cert=(CERT, KEY),
+            headers=login_headers)
+
+        if response.status_code == 200:
+            SESS_TOK = response.json()['sessionToken']
+            return {
+                'X-Application': APP_KEY,
+                'X-Authentication': SESS_TOK,
+                'content-type': 'application/json'
+            }
+    except ConnectionError:
+        pass
     raise Exception("Can't login")
 
 
