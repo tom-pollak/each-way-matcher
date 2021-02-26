@@ -39,17 +39,18 @@ def login_betfair():
             data=payload,
             cert=(CERT, KEY),
             headers=login_headers)
+    except ConnectionError as e:
+        raise ValueError("Can't login: %s" % e)
 
-        if response.status_code == 200:
-            SESS_TOK = response.json()['sessionToken']
-            return {
-                'X-Application': APP_KEY,
-                'X-Authentication': SESS_TOK,
-                'content-type': 'application/json'
-            }
-    except ConnectionError:
-        pass
-    raise Exception("Can't login")
+    if response.status_code == 200:
+        SESS_TOK = response.json()['sessionToken']
+        return {
+            'X-Application': APP_KEY,
+            'X-Authentication': SESS_TOK,
+            'content-type': 'application/json'
+        }
+
+    raise ValueError("Can't login")
 
 
 def call_api(jsonrpc_req, headers, url=betting_url):
