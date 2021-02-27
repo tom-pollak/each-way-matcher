@@ -28,12 +28,14 @@ def show_info(count, START_TIME):
     if datetime.now().hour >= 18:
         print('\nFinished matching today')
         print('---------------------------------------------')
-        sys.exit()
+        raise KeyboardInterrupt()
 
 
 def output_race(driver, race):
     balance = get_balance_sporting_index(driver)
-    print(f"\nNo Lay bet made: {race['horse_name']} - {race['bookie_odds']}")
+    print(
+        f"\nNo Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}"
+    )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(f"\tLay win: {race['win_odds']} Lay place: {race['place_odds']}")
     try:
@@ -53,7 +55,7 @@ def output_lay_ew(race, betfair_balance, sporting_index_balance, profit,
                   place_matched, place_odds, win_profit, place_profit,
                   lose_profit):
     print(
-        f"\nArb bet made: {race['horse_name']} - profit: £{format(profit, '.2f')}"
+        f"\nArb bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
     )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(

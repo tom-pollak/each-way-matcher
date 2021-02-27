@@ -103,8 +103,7 @@ def run_matcher():
             print('ERROR: %s\n' % e)
         except KeyboardInterrupt:
             sys.stdout.flush()
-            print('Exiting')
-            sys.exit()
+            break
         except Exception as e:
             sys.stdout.flush()
             print('Error occured: %s' % e)
