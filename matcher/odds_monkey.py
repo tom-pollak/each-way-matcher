@@ -160,7 +160,7 @@ def trigger_betfair_options(driver):
 
 
 def refresh_odds_monkey(driver, betfair=False):
-    for i in range(5):
+    for _ in range(5):
         driver.switch_to.default_content()
         try:
             action = ActionChains(driver)
@@ -188,7 +188,7 @@ def refresh_odds_monkey(driver, betfair=False):
                 )))
             return
 
-        except (TimeoutException, ElementClickInterceptedException) as e:
+        except (TimeoutException, ElementClickInterceptedException):
             driver.refresh()
             WebDriverWait(driver, 60).until(
                 EC.visibility_of_element_located(
