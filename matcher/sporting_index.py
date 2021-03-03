@@ -3,7 +3,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException
+from selenium.common.exceptions import WebDriverException, TimeoutException, StaleElementReferenceException, NoSuchElementException, ElementNotInteractableException
 
 
 def change_to_decimal(driver):
@@ -48,38 +48,40 @@ def click_betslip(driver):
 
 
 def make_sporting_index_bet(driver, race):
-    for _ in range(3):
-        try:
-            WebDriverWait(driver, 60).until(
-                EC.element_to_be_clickable(
-                    (By.CLASS_NAME,
-                     'ng-pristine'))).send_keys(str(race['ew_stake']))
-            break
-        except (StaleElementReferenceException,
-                ElementNotInteractableException):
-            click_betslip(driver)
-        except TimeoutException:
-            return False
-    else:
-        return False
-
     try:
+        for _ in range(3):
+            try:
+                WebDriverWait(driver, 60).until(
+                    EC.element_to_be_clickable(
+                        (By.CLASS_NAME,
+                         'ng-pristine'))).send_keys(str(race['ew_stake']))
+                break
+            except (StaleElementReferenceException,
+                    ElementNotInteractableException):
+                click_betslip(driver)
+        else:
+            return False
+
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
         WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable(
                 (By.CLASS_NAME, 'placeBetBtn'))).click()
-    except (NoSuchElementException, StaleElementReferenceException,
-            ElementClickInterceptedException, TimeoutException):
-        return False
 
-    try:
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//button[contains(text(), 'Continue')]"))).click()
-    except (TimeoutException, StaleElementReferenceException):
+        try:
+            WebDriverWait(driver, 60).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH,
+                     "//button[contains(text(), 'Continue')]"))).click()
+
+        # debug exception: remove later
+        except (TimeoutException, StaleElementReferenceException):
+            print('TimeoutException exception on make_sporting_index_bet: %s' %
+                  race['horse_name'])
+            return False
         return True
 
-    return True
+    except WebDriverException:
+        return False
 
 
 def get_sporting_index_page(driver, race):
