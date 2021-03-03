@@ -2,8 +2,6 @@ import os
 import sys
 from datetime import datetime
 
-import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter
 import pandas as pd
 
 from .calculate import custom_date_parser
@@ -88,6 +86,9 @@ def output_profit(current_sporting_index_balance=False):
 
 
 def plot_bal_time_series_graph():
+    import matplotlib.pyplot as plt
+    from matplotlib.dates import DateFormatter
+
     fig, ax = plt.subplots()
     date_fmt = DateFormatter("%d/%m")
     ax.xaxis.set_major_formatter(date_fmt)
