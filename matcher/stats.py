@@ -108,7 +108,7 @@ def plot_bal_time_series_graph():
     fig.autofmt_xdate()
     ax.set_xlabel('Date')
     ax.set_ylabel('Balance (£)')
-    ax.legend(loc="lower left")
+    ax.legend(loc="best")
     plt.savefig(BALANCE_PNG)
     print('Generated graph at: %s' % BALANCE_PNG)
 
