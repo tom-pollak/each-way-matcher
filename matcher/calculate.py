@@ -6,8 +6,7 @@ import pandas as pd
 
 MIN_PERCENTAGE_BALANCE = 0.25
 COMMISSION = 0.05
-RETURNS_CSV = os.path.abspath(
-    os.path.dirname(__file__) + '/../stats/returns.csv')
+RETURNS_CSV = os.path.abspath(os.path.dirname(__file__) + "/../stats/returns.csv")
 
 price_increments = {
     2: 0.01,
@@ -19,31 +18,36 @@ price_increments = {
     30: 1,
     50: 2,
     100: 5,
-    1000: 10
+    1000: 10,
 }
 
 
 def custom_date_parser(x):
-    if '/' not in x:
-        return datetime(*(strptime(x, '%d %b %H:%M %Y')[0:6]))
-    return datetime(*(strptime(x, '%d/%m/%Y %H:%M:%S')[0:6]))
+    if "/" not in x:
+        return datetime(*(strptime(x, "%d %b %H:%M %Y")[0:6]))
+    return datetime(*(strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
 
 
 def check_repeat_bets(horse_name, date_of_race, venue):
     date_of_race = custom_date_parser(date_of_race)
-    df = pd.read_csv(RETURNS_CSV,
-                     header=0,
-                     parse_dates=[7, 0],
-                     index_col=7,
-                     date_parser=custom_date_parser,
-                     squeeze=True)
-    mask = (df['horse_name']
-            == horse_name) & (df['date_of_race'] == date_of_race) & (
-                df['venue'] == venue) & (df['is_lay'] == False)
+    df = pd.read_csv(
+        RETURNS_CSV,
+        header=0,
+        parse_dates=[7, 0],
+        index_col=7,
+        date_parser=custom_date_parser,
+        squeeze=True,
+    )
+    mask = (
+        (df["horse_name"] == horse_name)
+        & (df["date_of_race"] == date_of_race)
+        & (df["venue"] == venue)
+        & (df["is_lay"] == False)
+    )
     if len(df.loc[mask]) == 0:
         return True
     if len(df.loc[mask]) > 1:
-        print('ERROR more than one race matched')
+        print("ERROR more than one race matched")
         print(df.loc[mask])
     return False
 
@@ -61,16 +65,22 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
     C = p * m + q * n - (1 - p - q)  # Expected profit on 0.5 unit EW bet
 
     try:
-        stake_proportion = (B + math.sqrt(B**2 + 4 * A * C)) / (4 * A)
+        stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
     except ZeroDivisionError:  # if the profit from place is 0 then 0 division
-        return 0, 0, '0%'
+        return 0, 0, "0%"
     ew_stake = stake_proportion * balance
-    return round(ew_stake, 2), round(C * ew_stake * 2,
-                                     2), str(round(C * 200, 2)) + '%'
+    return round(ew_stake, 2), round(C * ew_stake * 2, 2), str(round(C * 200, 2)) + "%"
 
 
-def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
-                     win_odds, place_stake, place_odds):
+def calculate_stakes(
+    bookie_balance,
+    betfair_balance,
+    bookie_stake,
+    win_stake,
+    win_odds,
+    place_stake,
+    place_odds,
+):
     liabiltity_ratio = 1
     bookie_ratio = bookie_balance / bookie_stake
 
@@ -92,13 +102,13 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     bookie_min_stake_proportion = 0.1 / bookie_stake
 
     if max_win_liability >= 10 and max_place_liability >= 10:
-        lay_min_stake_proportion = 10 / min(max_win_liability,
-                                            max_place_liability)
+        lay_min_stake_proportion = 10 / min(max_win_liability, max_place_liability)
     if win_stake >= 2 and place_stake >= 2:
         stake_min_stake_proportion = 2 / min(win_stake, place_stake)
         if lay_min_stake_proportion != 0:  # Eligible for > 10 liability
-            lay_min_stake_proportion = min(lay_min_stake_proportion,
-                                           stake_min_stake_proportion)
+            lay_min_stake_proportion = min(
+                lay_min_stake_proportion, stake_min_stake_proportion
+            )
         else:
             lay_min_stake_proportion = stake_min_stake_proportion
 
@@ -108,11 +118,9 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
         )
         return False, 0, 0, 0
 
-    min_stake_proportion = max(bookie_min_stake_proportion,
-                               lay_min_stake_proportion)
+    min_stake_proportion = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = min_stake_proportion * max_stake
-    min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance +
-                                                   bookie_balance)
+    min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > min_stake:
         if min_balance_staked >= max_stake:
             min_stake_proportion = max_stake / min_balance_staked
@@ -122,25 +130,26 @@ def calculate_stakes(bookie_balance, betfair_balance, bookie_stake, win_stake,
     bookie_stake *= min_stake_proportion
     win_stake *= min_stake_proportion
     place_stake *= min_stake_proportion
-    if win_stake * (win_odds - 1) + place_stake * (
-            place_odds - 1) > betfair_balance or bookie_stake > bookie_balance:
-        print('Error in calculating arb stakes')
+    if (
+        win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance
+        or bookie_stake > bookie_balance
+    ):
+        print("Error in calculating arb stakes")
         print(
-            f'win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}'
+            f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
         )
         print(min_stake_proportion)
 
         return False, 0, 0, 0
-    return True, round(bookie_stake, 2), round(win_stake,
-                                               2), round(place_stake, 2)
+    return True, round(bookie_stake, 2), round(win_stake, 2), round(place_stake, 2)
 
 
 def round_stake(odd):
     for price in price_increments:
         if odd < price:
             return round(
-                round(odd / price_increments[price]) * price_increments[price],
-                2)
+                round(odd / price_increments[price]) * price_increments[price], 2
+            )
 
 
 def get_next_odd_increment(odd):
@@ -150,15 +159,23 @@ def get_next_odd_increment(odd):
 
 
 # N.B bookie_stake is half actual stake
-def calculate_profit(bookie_odds, bookie_stake, win_odds, win_stake,
-                     place_odds, place_stake, place_payout):
+def calculate_profit(
+    bookie_odds,
+    bookie_stake,
+    win_odds,
+    win_stake,
+    place_odds,
+    place_stake,
+    place_payout,
+):
     commision = (win_stake + place_stake) * COMMISSION
     place_profit = bookie_stake * (bookie_odds - 1) / place_payout
     win_profit = bookie_odds * bookie_stake - bookie_stake + place_profit
     place_profit -= bookie_stake
 
-    win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds -
-                                                              1) + commision
+    win_profit -= (
+        win_stake * (win_odds - 1) + place_stake * (place_odds - 1) + commision
+    )
     place_profit += win_stake - place_stake * (place_odds - 1) - commision
 
     lose_profit = win_stake + place_stake - bookie_stake * 2 - commision
