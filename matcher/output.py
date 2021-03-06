@@ -12,7 +12,7 @@ RETURNS_CSV = os.path.join(BASEDIR, "stats/returns.csv")
 
 def show_info(count, START_TIME):
     def convert_time(time_secs):
-        hours = int(time_secs // 60 ** 2)
+        hours = int(time_secs // 60**2)
         mins = int(time_secs // 60 - hours * 60)
         secs = round(time_secs - (hours * 60 * 60) - (mins * 60))
         return f"{hours:02}:{mins:02}:{secs:02}"
@@ -20,7 +20,9 @@ def show_info(count, START_TIME):
     diff = time() - START_TIME
     time_alive = convert_time(diff)
 
-    print(f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}")
+    print(
+        f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}"
+    )
     print(f"Refreshes: {count}")
     if datetime.now().hour >= 18:
         print("\nFinished matching today")
@@ -78,7 +80,8 @@ def output_lay_ew(
     )
 
     if not win_is_matched:
-        print(f"\tLay win matched size: £{format(win_matched, '.2f')} ", end="")
+        print(f"\tLay win matched size: £{format(win_matched, '.2f')} ",
+              end="")
     if not place_is_matched:
         print(f"\tLay place matched size: £{format(place_matched, '.2f')}")
     if not win_matched and place_matched:
@@ -124,9 +127,9 @@ def update_csv_sporting_index(driver, race):
         "place_payout",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
-        csv_writer = DictWriter(
-            returns_csv, fieldnames=csv_columns, extrasaction="ignore"
-        )
+        csv_writer = DictWriter(returns_csv,
+                                fieldnames=csv_columns,
+                                extrasaction="ignore")
         csv_writer.writerow(race)
 
 
@@ -179,9 +182,9 @@ def update_csv_betfair(
         "place_payout",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
-        csv_writer = DictWriter(
-            returns_csv, fieldnames=csv_columns, extrasaction="ignore"
-        )
+        csv_writer = DictWriter(returns_csv,
+                                fieldnames=csv_columns,
+                                extrasaction="ignore")
         csv_writer.writerow(race)
 
 
@@ -191,8 +194,7 @@ def reset_csv():
     RETURNS_BAK = os.path.join(BASEDIR, "stats/returns-%s.csv" % now)
 
     create_new_returns = input(
-        "Create new return.csv? (Recommended for new user) [Y]/n "
-    ).lower()
+        "Create new return.csv? (Recommended for new user) [Y]/n ").lower()
 
     if create_new_returns != "n":
         os.rename(RETURNS_CSV, RETURNS_BAK)

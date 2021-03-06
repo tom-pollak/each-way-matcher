@@ -14,22 +14,20 @@ from selenium.common.exceptions import (
 
 def change_to_decimal(driver):
     WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable((By.XPATH, '//a[@class="btn-my-account"]'))
-    ).click()
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable((By.ID, "decimalBtn"))
-    ).click()
+        EC.element_to_be_clickable(
+            (By.XPATH, '//a[@class="btn-my-account"]'))).click()
+    WebDriverWait(driver,
+                  60).until(EC.element_to_be_clickable(
+                      (By.ID, "decimalBtn"))).click()
 
 
 def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
     for _ in range(10):
         try:
-            balance = (
-                WebDriverWait(driver, 15)
-                .until(EC.visibility_of_element_located((By.CLASS_NAME, "btn-balance")))
-                .text
-            )
+            balance = (WebDriverWait(driver, 15).until(
+                EC.visibility_of_element_located(
+                    (By.CLASS_NAME, "btn-balance"))).text)
             balance = balance.replace(" ", "")
             balance = balance.replace("▸", "")
             balance = balance.replace("£", "")
@@ -49,13 +47,10 @@ def refresh_sporting_index(driver):
 def click_betslip(driver):
     driver.refresh()
     WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable(
-            (
-                By.XPATH,
-                "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a",
-            )
-        )
-    ).click()
+        EC.element_to_be_clickable((
+            By.XPATH,
+            "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a",
+        ))).click()
 
 
 def make_sporting_index_bet(driver, race):
@@ -63,32 +58,31 @@ def make_sporting_index_bet(driver, race):
         for _ in range(3):
             try:
                 WebDriverWait(driver, 60).until(
-                    EC.element_to_be_clickable((By.CLASS_NAME, "ng-pristine"))
-                ).send_keys(str(race["ew_stake"]))
+                    EC.element_to_be_clickable(
+                        (By.CLASS_NAME,
+                         "ng-pristine"))).send_keys(str(race["ew_stake"]))
                 break
-            except (StaleElementReferenceException, ElementNotInteractableException):
+            except (StaleElementReferenceException,
+                    ElementNotInteractableException):
                 click_betslip(driver)
         else:
             return False
 
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
         WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
-        ).click()
+            EC.element_to_be_clickable(
+                (By.CLASS_NAME, "placeBetBtn"))).click()
 
         try:
             WebDriverWait(driver, 60).until(
                 EC.element_to_be_clickable(
-                    (By.XPATH, "//button[contains(text(), 'Continue')]")
-                )
-            ).click()
+                    (By.XPATH,
+                     "//button[contains(text(), 'Continue')]"))).click()
 
         # debug exception: remove later
         except (TimeoutException, StaleElementReferenceException):
-            print(
-                "TimeoutException exception on make_sporting_index_bet: %s"
-                % race["horse_name"]
-            )
+            print("TimeoutException exception on make_sporting_index_bet: %s" %
+                  race["horse_name"])
             return False
         return True
 
@@ -107,8 +101,8 @@ def sporting_index_bet(driver, race):
         for _ in range(5):
             try:
                 horse_button = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, horse_name_xpath))
-                )
+                    EC.presence_of_element_located(
+                        (By.XPATH, horse_name_xpath)))
                 cur_odd_price = horse_button.text
                 if cur_odd_price not in ["", "SUSP"]:
                     horse_button.click()
@@ -123,13 +117,10 @@ def sporting_index_bet(driver, race):
     def close_bet(driver, retry=False):
         try:
             WebDriverWait(driver, 60).until(
-                EC.element_to_be_clickable(
-                    (
-                        By.XPATH,
-                        '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
-                    )
-                )
-            ).click()
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
+                ))).click()
         except TimeoutException:
             if not retry:
                 click_betslip(driver)
@@ -154,4 +145,5 @@ def sporting_index_bet(driver, race):
 
 
 def setup_sporting_index(driver):
-    driver.get("https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar")
+    driver.get(
+        "https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar")

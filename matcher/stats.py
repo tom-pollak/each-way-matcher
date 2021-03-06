@@ -10,9 +10,8 @@ from .calculate import custom_date_parser
 def calc_unfinished_races(index=-1):
     races_liability = {}
     in_bet_balance = 0
-    mask = (df["date_of_race"] > df.index.values[index]) & (
-        df.index <= df.index.values[index]
-    )
+    mask = (df["date_of_race"] >
+            df.index.values[index]) & (df.index <= df.index.values[index])
     races = df.loc[mask]
     for _, row in races.iterrows():
         stake = row["ew_stake"] * 2
@@ -38,9 +37,8 @@ def calc_unfinished_races(index=-1):
 def output_profit(current_sporting_index_balance=False):
     def get_today_starting_balance():
         try:
-            today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[
-                0
-            ]
+            today_first_bet = df.loc[datetime.now().strftime(
+                "%Y-%m-%d")].index.values[0]
         except KeyError:
             return None
         count = 0
@@ -50,10 +48,9 @@ def output_profit(current_sporting_index_balance=False):
             count += 1
 
         return (
-            df.loc[datetime.now().strftime("%Y-%m-%d")]["balance"].values[0]
-            + df.loc[datetime.now().strftime("%Y-%m-%d")]["betfair_balance"].values[0]
-            + calc_unfinished_races(count)
-        )
+            df.loc[datetime.now().strftime("%Y-%m-%d")]["balance"].values[0] +
+            df.loc[datetime.now().strftime("%Y-%m-%d")]
+            ["betfair_balance"].values[0] + calc_unfinished_races(count))
 
     today_starting_balance = get_today_starting_balance()
 
@@ -61,9 +58,8 @@ def output_profit(current_sporting_index_balance=False):
         current_sporting_index_balance = df["balance"].values[-1]
     current_betfair_balance = df["betfair_balance"].values[-1]
     in_bet_balance = calc_unfinished_races()
-    current_balance = (
-        current_sporting_index_balance + current_betfair_balance + in_bet_balance
-    )
+    current_balance = (current_sporting_index_balance +
+                       current_betfair_balance + in_bet_balance)
 
     total_profit = round(current_balance - STARTING_BALANCE, 2)
     if not today_starting_balance:
@@ -73,16 +69,20 @@ def output_profit(current_sporting_index_balance=False):
     if total_profit == 0:
         total_percentage_profit = 0
     else:
-        total_percentage_profit = round((total_profit / STARTING_BALANCE) * 100, 2)
+        total_percentage_profit = round(
+            (total_profit / STARTING_BALANCE) * 100, 2)
 
     if profit_today == 0:
         today_percentage_profit = 0
     else:
         today_percentage_profit = round(
-            (profit_today / today_starting_balance) * 100, 2
-        )
-    print(f'Total profit: £{format(total_profit, ".2f")} ({total_percentage_profit}%)')
-    print(f'Profit today: £{format(profit_today, ".2f")} ({today_percentage_profit}%)')
+            (profit_today / today_starting_balance) * 100, 2)
+    print(
+        f'Total profit: £{format(total_profit, ".2f")} ({total_percentage_profit}%)'
+    )
+    print(
+        f'Profit today: £{format(profit_today, ".2f")} ({today_percentage_profit}%)'
+    )
     print(
         f"Sporting index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance} Balance in bets: £{in_bet_balance}"
     )
@@ -116,9 +116,11 @@ def plot_bal_time_series_graph():
     print("Generated graph at: %s" % BALANCE_PNG)
 
 
-RETURNS_CSV = os.path.abspath(os.path.dirname(__file__) + "/../stats/returns.csv")
+RETURNS_CSV = os.path.abspath(
+    os.path.dirname(__file__) + "/../stats/returns.csv")
 
-BALANCE_PNG = os.path.abspath(os.path.dirname(__file__) + "/../stats/balance.png")
+BALANCE_PNG = os.path.abspath(
+    os.path.dirname(__file__) + "/../stats/balance.png")
 
 df = pd.read_csv(
     RETURNS_CSV,
@@ -130,11 +132,9 @@ df = pd.read_csv(
 )
 
 try:
-    STARTING_BALANCE = (
-        df["balance"].values[0]
-        + df["betfair_balance"].values[0]
-        + calc_unfinished_races(0)
-    )
+    STARTING_BALANCE = (df["balance"].values[0] +
+                        df["betfair_balance"].values[0] +
+                        calc_unfinished_races(0))
 except IndexError:
     print("No entrys to csv")
     sys.exit()

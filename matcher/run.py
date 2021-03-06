@@ -30,27 +30,22 @@ def login(driver):
     try:
         WebDriverWait(driver, 60).until(
             EC.visibility_of_element_located(
-                (By.ID, "dnn_ctr433_Login_Login_DNN_txtUsername")
-            )
-        ).send_keys(ODD_M_USER)
+                (By.ID, "dnn_ctr433_Login_Login_DNN_txtUsername"
+                 ))).send_keys(ODD_M_USER)
     except TimeoutException:
         raise ValueError("Couldn't login to Oddsmonkey")
-    driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(
-        ODD_M_PASS
-    )
+    driver.find_element_by_id(
+        "dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(ODD_M_PASS)
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
     sleep(2)
 
     driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
     try:
         WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a',
-                )
-            )
-        ).click()
+            EC.element_to_be_clickable((
+                By.XPATH,
+                '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a',
+            ))).click()
     except TimeoutException:
         print("Need Oddsmonkey premium membership (OM12FOR1)")
         sys.exit()
@@ -66,8 +61,8 @@ def login(driver):
     driver.switch_to.window(driver.window_handles[1])
     try:
         WebDriverWait(driver, 60).until(
-            EC.visibility_of_element_located((By.ID, "usernameCompact"))
-        ).send_keys(S_INDEX_USER)
+            EC.visibility_of_element_located(
+                (By.ID, "usernameCompact"))).send_keys(S_INDEX_USER)
     except TimeoutException:
         raise ValueError("Couldn't login to Sporting Index")
     driver.find_element_by_id("passwordCompact").send_keys(S_INDEX_PASS)
@@ -79,9 +74,11 @@ def login(driver):
 
 def run_matcher():
     if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
-        raise Exception("ERROR: SportingIndex or Oddsmonkey env variables not set")
+        raise Exception(
+            "ERROR: SportingIndex or Oddsmonkey env variables not set")
 
-    if not os.path.isfile("client-2048.crt") or not os.path.isfile("client-2048.key"):
+    if not os.path.isfile("client-2048.crt") or not os.path.isfile(
+            "client-2048.key"):
         raise Exception("client-2048 certificates not found")
 
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
