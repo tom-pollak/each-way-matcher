@@ -131,8 +131,10 @@ def calculate_stakes(
     win_stake *= min_stake_proportion
     place_stake *= min_stake_proportion
     if (
-        win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance
-        or bookie_stake > bookie_balance
+        (win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance)
+        or (bookie_stake > bookie_balance)
+        or (win_stake < 2 and win_stake * win_odds < 10)
+        or (place_stake < 2 and place_stake * place_odds < 10)
     ):
         print("Error in calculating arb stakes")
         print(
