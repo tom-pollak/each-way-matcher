@@ -152,12 +152,14 @@ def round_stake(odd):
             return round(
                 round(odd / price_increments[price]) * price_increments[price], 2
             )
+    return odd
 
 
 def get_next_odd_increment(odd):
     for price in price_increments:
         if odd < price:
             return round(odd + price_increments[price], 2)
+    return None
 
 
 # N.B bookie_stake is half actual stake

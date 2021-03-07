@@ -99,7 +99,7 @@ def plot_bal_time_series_graph():
     balance = df["balance"] + df["betfair_balance"]
     ax.plot(balance, label="Withdrawable")
 
-    for i in range(len(balance)):
+    for i, _ in enumerate(balance):
         balance[i] += calc_unfinished_races(i)
 
     ax.plot(balance, label="+ balance in bets")

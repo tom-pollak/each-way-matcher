@@ -117,6 +117,7 @@ def get_horse_id(horses, target_horse):
     for horse in horses["runners"]:
         if horse["runnerName"] == close_horse:
             return horse["selectionId"], horse["runnerName"]
+    return None
 
 
 def get_horses(target_horse, event_id, race_time, headers):
