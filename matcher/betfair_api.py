@@ -76,13 +76,11 @@ def get_event(venue, race_time, headers):
     race_time_after = race_time_after.strftime("%Y-%m-%dT%H:%M:%SZ")
     venue = venue_names.get(venue, venue)
 
-    event_req = (
-        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listEvents", \
+    event_req = ('{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listEvents", \
         "params": {"filter": {"eventTypeIds": ["7"], "marketTypeCodes": ["WIN"], \
         "marketStartTime": {"from": "%s", "to": "%s"}, "venues":["%s"]}, \
-        "sort":"FIRST_TO_START","maxResults":"1"}}'
-        % (race_time, race_time_after, venue)
-    )
+        "sort":"FIRST_TO_START","maxResults":"1"}}' %
+                 (race_time, race_time_after, venue))
     event_response = call_api(event_req, headers)
 
     try:
@@ -129,9 +127,8 @@ def get_horses(target_horse, event_id, race_time, headers):
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
         "params": {"filter":{"eventIds": ["%s"], "marketStartTime": {"from": "%s", "to": "%s"}}, \
         "maxResults": "10", "sort":"FIRST_TO_START", \
-        "marketProjection": ["RUNNER_DESCRIPTION"]}}'
-        % (event_id, race_time, race_time_after)
-    )
+        "marketProjection": ["RUNNER_DESCRIPTION"]}}' %
+        (event_id, race_time, race_time_after))
     markets_response = call_api(markets_req, headers)
 
     try:
@@ -166,9 +163,8 @@ def get_horses(target_horse, event_id, race_time, headers):
         print(markets_response)
         return 0, 0, False, target_horse
 
-    selection_id, target_horse = get_horse_id(
-        market_type[market_type_index], target_horse
-    )
+    selection_id, target_horse = get_horse_id(market_type[market_type_index],
+                                              target_horse)
     if selection_id is None:
         print("ERROR couldn't find horse selection_id")
         print(market_type[0]["runners"])
@@ -194,24 +190,22 @@ def lay_bets(market_id, selection_id, price, stake, headers):
     bet_made = False
     stake_matched = 0
     matched_price = 0
-    bet_req = (
-        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
+    bet_req = ('{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
-        "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}'
-        % (market_id, selection_id, round(stake, 2), price)
-    )
+        "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}' %
+               (market_id, selection_id, round(stake, 2), price))
     bet_res = call_api(bet_req, headers)
     try:
         if bet_res["result"]["status"] == "SUCCESS":
             bet_made = True
-            stake_matched = bet_res["result"]["instructionReports"][0]["sizeMatched"]
+            stake_matched = bet_res["result"]["instructionReports"][0][
+                "sizeMatched"]
             if stake_matched == stake:
                 matched = True
             matched_price = round(
-                float(
-                    bet_res["result"]["instructionReports"][0]["averagePriceMatched"]
-                ),
+                float(bet_res["result"]["instructionReports"][0]
+                      ["averagePriceMatched"]),
                 2,
             )
             if price - 1 != matched_price:
@@ -246,16 +240,16 @@ def get_race(race_time, venue, horse):
         return 0, 0, False, horse
 
     markets_ids, selection_id, got_horse, horse = get_horses(
-        horse, event_id, race_time, headers
-    )
+        horse, event_id, race_time, headers)
     return markets_ids, selection_id, got_horse, horse
 
 
-def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
+def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake,
+           place_odds):
     headers = login_betfair()
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
-        markets_ids["Win"], selection_id, round_stake(win_odds + 1), win_stake, headers
-    )
+        markets_ids["Win"], selection_id, round_stake(win_odds + 1), win_stake,
+        headers)
 
     lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
         markets_ids["Place"],
@@ -266,7 +260,8 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
     )
     return (
         (lay_win, win_matched, win_stake, win_stake_matched, win_odds),
-        (lay_place, place_matched, place_stake, place_stake_matched, place_odds),
+        (lay_place, place_matched, place_stake, place_stake_matched,
+         place_odds),
     )
 
 
