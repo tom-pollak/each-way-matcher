@@ -152,8 +152,6 @@ def get_horses(target_horse, event_id, race_time, headers):
     market_type_index = 0
     changed_index = False
     for i, market in enumerate(market_type):
-        # if market['marketName'] == 'Each Way':
-        #     markets_ids['Each Way'] = market['marketId']
         if market["marketName"] == "To Be Placed":
             markets_ids["Place"] = market["marketId"]
             market_type_index = i
