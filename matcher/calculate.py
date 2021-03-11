@@ -96,6 +96,9 @@ def calculate_stakes(
     bookie_stake *= liabiltity_ratio
     win_stake *= liabiltity_ratio
     place_stake *= liabiltity_ratio
+
+    max_win_liability = (win_odds - 1) * win_stake
+    max_place_liability = (place_odds - 1) * place_stake
     max_stake = bookie_stake * 2 + win_stake + place_stake
 
     lay_min_stake_proportion = 0
@@ -118,18 +121,16 @@ def calculate_stakes(
         )
         return False, 0, 0, 0
 
-    min_stake_proportion = max(bookie_min_stake_proportion, lay_min_stake_proportion)
-    min_stake = min_stake_proportion * max_stake
+    stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
+    min_stake = stake_proporiton * max_stake
     min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
-    if min_balance_staked > min_stake:
-        if min_balance_staked >= max_stake:
-            min_stake_proportion = max_stake / min_balance_staked
-        else:
-            min_stake_proportion = min_balance_staked / max_stake
+    print(min_stake, max_stake, min_balance_staked)
+    if max_stake > min_balance_staked > min_stake:
+        stake_proporiton = min_balance_staked / max_stake
 
-    bookie_stake *= min_stake_proportion
-    win_stake *= min_stake_proportion
-    place_stake *= min_stake_proportion
+    bookie_stake = round(bookie_stake * stake_proporiton, 2)
+    win_stake = round(win_stake * stake_proporiton, 2)
+    place_stake = round(place_stake * stake_proporiton, 2)
     if (
         (win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance)
         or (bookie_stake > bookie_balance)
@@ -140,7 +141,6 @@ def calculate_stakes(
         print(
             f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
         )
-        print(min_stake_proportion)
 
         return False, 0, 0, 0
     return True, round(bookie_stake, 2), round(win_stake, 2), round(place_stake, 2)
