@@ -17,7 +17,7 @@ Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
 
 ### Create certificates
 
-client-2048.pub/key [connected to the betfair api](https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount)
+client-2048.crt/key [connected to the betfair api](https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount)
 
 ## Install
 
