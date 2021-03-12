@@ -124,7 +124,6 @@ def calculate_stakes(
     stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = stake_proporiton * max_stake
     min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
-    print(min_stake, max_stake, min_balance_staked)
     if max_stake > min_balance_staked > min_stake:
         stake_proporiton = min_balance_staked / max_stake
 

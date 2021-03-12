@@ -1,7 +1,6 @@
 import os
 import sys
 from datetime import datetime
-
 import pandas as pd
 
 from .calculate import custom_date_parser
@@ -20,6 +19,7 @@ def calc_unfinished_races(index=-1):
             liability = row["win_stake"] * (row["win_odds"] - 1)
             lia_key = "%s %s" % (row["venue"], row["date_of_race"])
             if lia_key in races_liability:
+                print("key in races_liability %s" % lia_key)
                 if liability > races_liability[lia_key]:
                     liability -= races_liability[lia_key]
                 else:
