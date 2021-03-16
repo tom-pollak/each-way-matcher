@@ -76,20 +76,11 @@ def make_sporting_index_bet(driver, race):
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
 
-        try:
-            WebDriverWait(driver, 60).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, "//button[contains(text(), 'Continue')]")
-                )
-            ).click()
-
-        # debug exception: remove later
-        except (TimeoutException, StaleElementReferenceException):
-            # print(
-            #     "TimeoutException exception on make_sporting_index_bet: %s"
-            #     % race["horse_name"]
-            # )
-            return False
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[contains(text(), 'Continue')]")
+            )
+        ).click()
         return True
 
     except WebDriverException:

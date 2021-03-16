@@ -4,34 +4,17 @@ from datetime import datetime
 import pandas as pd
 
 from .calculate import custom_date_parser
+from .betfair_api import get_betfair_balance_in_bets
 
 
 def calc_unfinished_races(index=-1):
-    races_liability = {}
-    in_bet_balance = 0
+    in_bet_balance = get_betfair_balance_in_bets()
     mask = (df["date_of_race"] > df.index.values[index]) & (
         df.index <= df.index.values[index]
     )
     races = df.loc[mask]
     for _, row in races.iterrows():
-        stake = row["ew_stake"] * 2
-        if row["is_lay"]:
-            liability = row["win_stake"] * (row["win_odds"] - 1)
-            lia_key = "%s %s" % (row["venue"], row["date_of_race"])
-            if lia_key in races_liability:
-                print("key in races_liability %s" % lia_key)
-                if liability > races_liability[lia_key]:
-                    liability -= races_liability[lia_key]
-                else:
-                    liability = 0
-                races_liability[lia_key] += liability
-            else:
-                races_liability[lia_key] = liability
-
-            liability += row["place_stake"] * (row["place_odds"] - 1)
-        else:
-            liability = 0
-        in_bet_balance += stake + liability
+        in_bet_balance += row["ew_stake"] * 2
     return round(in_bet_balance, 2)
 
 

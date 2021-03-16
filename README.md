@@ -9,15 +9,16 @@ Also lays arbitrage bets on Sporting Index and Betfair.
 
 ## Login variables
 
+### Create certificates + APP_KEY
+
+- client-2048.crt/key [connected to the betfair api](https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount)
+- [APP_KEY](https://support.developer.betfair.com/hc/en-us/articles/115003864651-How-do-I-get-started-)
+
 ### Add to .env
 
 Sporting index: S_INDEX_USER S_INDEX_PASS  
 Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS  
 Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
-
-### Create certificates
-
-client-2048.crt/key [connected to the betfair api](https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount)
 
 ## Install
 
