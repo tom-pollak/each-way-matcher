@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 
 from .calculate import custom_date_parser
-from .betfair_api import get_betfair_balance_in_bets 
+from .betfair_api import get_betfair_balance_in_bets
 
 
 def calc_unfinished_races(index=-1):

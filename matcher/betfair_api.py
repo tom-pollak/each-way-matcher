@@ -69,17 +69,17 @@ def call_api(jsonrpc_req, headers, url=betting_url):
         print("No service available at " + str(url))
     raise ValueError("API request failed")
 
+
 def get_betfair_balance_in_bets():
     headers = login_betfair()
     balance_in_bets = 0
-    order_req = ('{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders"}')
+    order_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders"}'
     res = call_api(order_req, headers)
-    for race in res['result']['currentOrders']:
-        odds = race['priceSize']['price']
-        stake = race['priceSize']['size']
+    for race in res["result"]["currentOrders"]:
+        odds = race["priceSize"]["price"]
+        stake = race["priceSize"]["size"]
         balance_in_bets += stake * (odds - 1)
     return balance_in_bets
-
 
 
 def get_event(venue, race_time, headers):
