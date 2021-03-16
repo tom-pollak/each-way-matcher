@@ -4,40 +4,31 @@ from datetime import datetime
 import pandas as pd
 
 from .calculate import custom_date_parser
-from .betfair_api import get_betfair_balance_in_bets
 
 
 def calc_unfinished_races(index=-1):
-    in_bet_balance = get_betfair_balance_in_bets()
-    mask = (df["date_of_race"] > df.index.values[index]) & (
-        df.index <= df.index.values[index]
+    return df.iloc[index].balance_in_betfair
+
+
+def get_today_starting_balance():
+    try:
+        today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[0]
+    except KeyError:
+        return None
+    count = 0
+    for index, _ in df.iterrows():
+        if today_first_bet == index:
+            break
+        count += 1
+
+    return (
+        df.loc[datetime.now().strftime("%Y-%m-%d")]["balance"].values[0]
+        + df.loc[datetime.now().strftime("%Y-%m-%d")]["betfair_balance"].values[0]
+        + calc_unfinished_races(count)
     )
-    races = df.loc[mask]
-    for _, row in races.iterrows():
-        in_bet_balance += row["ew_stake"] * 2
-    return round(in_bet_balance, 2)
 
 
-def output_profit(current_sporting_index_balance=False):
-    def get_today_starting_balance():
-        try:
-            today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[
-                0
-            ]
-        except KeyError:
-            return None
-        count = 0
-        for index, _ in df.iterrows():
-            if today_first_bet == index:
-                break
-            count += 1
-
-        return (
-            df.loc[datetime.now().strftime("%Y-%m-%d")]["balance"].values[0]
-            + df.loc[datetime.now().strftime("%Y-%m-%d")]["betfair_balance"].values[0]
-            + calc_unfinished_races(count)
-        )
-
+def calculate_returns(current_sporting_index_balance=False):
     today_starting_balance = get_today_starting_balance()
 
     if not current_sporting_index_balance:
@@ -53,6 +44,7 @@ def output_profit(current_sporting_index_balance=False):
         profit_today = 0
     else:
         profit_today = round(current_balance - today_starting_balance, 2)
+
     if total_profit == 0:
         total_percentage_profit = 0
     else:
@@ -64,8 +56,20 @@ def output_profit(current_sporting_index_balance=False):
         today_percentage_profit = round(
             (profit_today / today_starting_balance) * 100, 2
         )
-    print(f'Total profit: £{format(total_profit, ".2f")} ({total_percentage_profit}%)')
-    print(f'Profit today: £{format(profit_today, ".2f")} ({today_percentage_profit}%)')
+    total_profit = format(total_profit, ".2f")
+    profit_today = format(profit_today, ".2f")
+    return total_profit, profit_today, total_percentage_profit, today_percentage_profit
+
+
+def output_profit():
+    (
+        total_profit,
+        profit_today,
+        total_percentage_profit,
+        today_percentage_profit,
+    ) = calculate_returns()
+    print(f"Total profit: £{total_profit} ({total_percentage_profit}%)")
+    print(f"Profit today: £{profit_today} ({today_percentage_profit}%)")
     print(
         f"Sporting index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance} Balance in bets: £{in_bet_balance}"
     )
@@ -95,6 +99,16 @@ def plot_bal_time_series_graph():
     ax.set_xlabel("Date")
     ax.set_ylabel("Balance (£)")
     ax.legend(loc="best")
+
+    (
+        total_profit,
+        profit_today,
+        total_percentage_profit,
+        today_percentage_profit,
+    ) = calculate_returns()
+    profit_string = f"Total profit: £{total_profit} ({total_percentage_profit}% \nProfit today: £{profit_today} ({today_percentage_profit}%)"
+    plt.annotate(profit_string, xy=(0.05, 0.95), xycoords="axes fraction")
+
     plt.savefig(BALANCE_PNG)
     print("Generated graph at: %s" % BALANCE_PNG)
 
