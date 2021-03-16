@@ -82,14 +82,6 @@ def make_sporting_index_bet(driver, race):
                     (By.XPATH, "//button[contains(text(), 'Continue')]")
                 )
             ).click()
-
-        # debug exception: remove later
-        except (TimeoutException, StaleElementReferenceException):
-            # print(
-            #     "TimeoutException exception on make_sporting_index_bet: %s"
-            #     % race["horse_name"]
-            # )
-            return False
         return True
 
     except WebDriverException:

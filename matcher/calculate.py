@@ -116,9 +116,6 @@ def calculate_stakes(
             lay_min_stake_proportion = stake_min_stake_proportion
 
     if lay_min_stake_proportion == 0:  # Stake not above 2 or liability above 10
-        # print(
-        #     f'Stakes are too small: win stake - £{format(win_stake, ".2f")} place_stake - £{format(place_stake, ".2f")}'
-        # )
         return False, 0, 0, 0
 
     stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
