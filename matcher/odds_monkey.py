@@ -103,7 +103,7 @@ def find_races(driver, row=0, window=0):
             )
             .text.title()
         )
-    except NoSuchWindowException:
+    except (TimeoutException, NoSuchWindowException):
         raise ValueError("Couldn't get calculator window")
 
     if horse_name != horse_name_window:

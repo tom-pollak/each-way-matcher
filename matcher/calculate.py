@@ -82,7 +82,7 @@ def calculate_stakes(
     place_odds,
 ):
     liabiltity_ratio = 1
-    bookie_ratio = bookie_balance / bookie_stake
+    bookie_ratio = bookie_balance / (bookie_stake * 2)
 
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
@@ -116,9 +116,9 @@ def calculate_stakes(
             lay_min_stake_proportion = stake_min_stake_proportion
 
     if lay_min_stake_proportion == 0:  # Stake not above 2 or liability above 10
-        print(
-            f'Stakes are too small: win stake - £{format(win_stake, ".2f")} place_stake - £{format(place_stake, ".2f")}'
-        )
+        # print(
+        #     f'Stakes are too small: win stake - £{format(win_stake, ".2f")} place_stake - £{format(place_stake, ".2f")}'
+        # )
         return False, 0, 0, 0
 
     stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
@@ -132,9 +132,9 @@ def calculate_stakes(
     place_stake = round(place_stake * stake_proporiton, 2)
     if (
         (win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance)
-        or (bookie_stake > bookie_balance)
-        or (win_stake < 2 and win_stake * win_odds < 10)
-        or (place_stake < 2 and place_stake * place_odds < 10)
+        or (bookie_stake * 2 > bookie_balance)
+        or (win_stake < 2 and win_stake * (win_odds - 1) < 10)
+        or (place_stake < 2 and place_stake * (place_odds - 1) < 10)
     ):
         print("Error in calculating arb stakes")
         print(
@@ -142,7 +142,7 @@ def calculate_stakes(
         )
 
         return False, 0, 0, 0
-    return True, round(bookie_stake, 2), round(win_stake, 2), round(place_stake, 2)
+    return True, bookie_stake, win_stake, place_stake
 
 
 def round_stake(odd):

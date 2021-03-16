@@ -85,10 +85,10 @@ def make_sporting_index_bet(driver, race):
 
         # debug exception: remove later
         except (TimeoutException, StaleElementReferenceException):
-            print(
-                "TimeoutException exception on make_sporting_index_bet: %s"
-                % race["horse_name"]
-            )
+            # print(
+            #     "TimeoutException exception on make_sporting_index_bet: %s"
+            #     % race["horse_name"]
+            # )
             return False
         return True
 
