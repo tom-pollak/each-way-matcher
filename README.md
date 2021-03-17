@@ -67,5 +67,5 @@ logs output **(recommended)**
 You can view the help menu with
 
 ```bash
-python -m matcher -h
+python3 -m matcher -h
 ```
