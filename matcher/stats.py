@@ -126,7 +126,6 @@ def plot_bal_time_series_graph():
 
 
 RETURNS_CSV = os.path.abspath(os.path.dirname(__file__) + "/../stats/returns.csv")
-
 BALANCE_PNG = os.path.abspath(os.path.dirname(__file__) + "/../stats/balance.png")
 
 df = pd.read_csv(
