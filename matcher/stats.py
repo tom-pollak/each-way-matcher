@@ -87,7 +87,6 @@ def output_profit():
 def plot_bal_time_series_graph():
     import matplotlib.pyplot as plt
     from matplotlib.dates import DateFormatter
-    from matplotlib.offsetbox import AnchoredText
 
     fig, ax = plt.subplots()
     date_fmt = DateFormatter("%d/%m")
