@@ -198,13 +198,13 @@ def reset_csv():
     RETURNS_BAK = os.path.join(BASEDIR, "stats/returns-%s.csv" % now)
     create_new_returns = "y"
 
-    if os.path.isfile(RETURNS_BAK):
+    if os.path.isfile(RETURNS_CSV):
         create_new_returns = input(
             "Create new return.csv? (Recommended for new user) [Y]/n "
         ).lower()
 
-    if create_new_returns != "n" or not os.path.isfile(RETURNS_BAK):
-        if create_new_returns != "n":
+    if create_new_returns != "n":
+        if os.path.isfile(RETURNS_CSV):
             os.rename(RETURNS_CSV, RETURNS_BAK)
         with open(RETURNS_CSV, "w", newline="") as returns_csv:
             returns_csv.write(RETURNS_HEADER)
