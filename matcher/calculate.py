@@ -124,9 +124,9 @@ def calculate_stakes(
     if max_stake > min_balance_staked > min_stake:
         stake_proporiton = min_balance_staked / max_stake
 
-    bookie_stake = round(bookie_stake * stake_proporiton, 2)
-    win_stake = round(win_stake * stake_proporiton, 2)
-    place_stake = round(place_stake * stake_proporiton, 2)
+    bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
+    win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
+    place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
     if (
         (win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance)
         or (bookie_stake * 2 > bookie_balance)
