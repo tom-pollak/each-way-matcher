@@ -60,3 +60,9 @@ or
 - Run with run.sh - uses xvfb to run selenium headless on a virtual screen and
 logs output **(recommended)**
   - Can be run as a cron job or manually with ```./run.sh &``` in a tmux window
+
+You can view the help menu with
+
+```bash
+python -m matcher -h
+```
