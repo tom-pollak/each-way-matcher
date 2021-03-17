@@ -23,6 +23,8 @@ price_increments = {
 
 
 def custom_date_parser(x):
+    if isinstance(x, float):
+        print(x)
     if "/" not in x:
         return datetime(*(strptime(x, "%d %b %H:%M %Y")[0:6]))
     return datetime(*(strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
