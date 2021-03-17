@@ -196,6 +196,7 @@ def reset_csv():
     now = datetime.now().strftime("%d-%m-%Y")
     RETURNS_HEADER = "date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout,balance_in_betfair,current_time"
     RETURNS_BAK = os.path.join(BASEDIR, "stats/returns-%s.csv" % now)
+    create_new_returns = "y"
 
     if os.path.isfile(RETURNS_BAK):
         create_new_returns = input(
