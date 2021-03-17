@@ -7,7 +7,14 @@ from .calculate import custom_date_parser
 
 
 def calc_unfinished_races(index=-1):
-    return df.iloc[index].balance_in_betfair
+    in_bet_balance = 0
+    mask = (df["date_of_race"] >= df.index.values[index]) & (
+        df.index <= df.index.values[index]
+    )
+    races = df.loc[mask]
+    for _, row in races.iterrows():
+        in_bet_balance += row["ew_stake"] * 2
+    return in_bet_balance + df.iloc[index].balance_in_betfair
 
 
 def get_today_starting_balance():
@@ -28,11 +35,10 @@ def get_today_starting_balance():
     )
 
 
-def calculate_returns(current_sporting_index_balance=False):
+def calculate_returns():
     today_starting_balance = get_today_starting_balance()
 
-    if not current_sporting_index_balance:
-        current_sporting_index_balance = df["balance"].values[-1]
+    current_sporting_index_balance = df["balance"].values[-1]
     current_betfair_balance = df["betfair_balance"].values[-1]
     in_bet_balance = calc_unfinished_races()
     current_balance = (
@@ -68,6 +74,9 @@ def output_profit():
         total_percentage_profit,
         today_percentage_profit,
     ) = calculate_returns()
+    current_sporting_index_balance = df["balance"].values[-1]
+    current_betfair_balance = df["betfair_balance"].values[-1]
+    in_bet_balance = calc_unfinished_races()
     print(f"Total profit: £{total_profit} ({total_percentage_profit}%)")
     print(f"Profit today: £{profit_today} ({today_percentage_profit}%)")
     print(
@@ -78,6 +87,7 @@ def output_profit():
 def plot_bal_time_series_graph():
     import matplotlib.pyplot as plt
     from matplotlib.dates import DateFormatter
+    from matplotlib.offsetbox import AnchoredText
 
     fig, ax = plt.subplots()
     date_fmt = DateFormatter("%d/%m")
@@ -106,8 +116,10 @@ def plot_bal_time_series_graph():
         total_percentage_profit,
         today_percentage_profit,
     ) = calculate_returns()
-    profit_string = f"Total profit: £{total_profit} ({total_percentage_profit}% \nProfit today: £{profit_today} ({today_percentage_profit}%)"
-    plt.annotate(profit_string, xy=(0.05, 0.95), xycoords="axes fraction")
+    profit_string = f"Total profit: £{total_profit} ({total_percentage_profit}%) \nProfit today: £{profit_today} ({today_percentage_profit}%)"
+    # at = AnchoredText(profit_string, frameon=True, loc="lower right")
+    # ax.add_artist(at)
+    plt.gcf().text(0.6, 0.9, profit_string)
 
     plt.savefig(BALANCE_PNG)
     print("Generated graph at: %s" % BALANCE_PNG)
@@ -120,8 +132,8 @@ BALANCE_PNG = os.path.abspath(os.path.dirname(__file__) + "/../stats/balance.png
 df = pd.read_csv(
     RETURNS_CSV,
     header=0,
-    parse_dates=[7, 0],
-    index_col=7,
+    parse_dates=[21, 0],
+    index_col=21,
     date_parser=custom_date_parser,
     squeeze=True,
 )
