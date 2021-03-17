@@ -4,8 +4,8 @@ from datetime import datetime
 from time import strptime
 import pandas as pd
 
-MIN_PERCENTAGE_BALANCE = 0.25
-COMMISSION = 0.025
+MIN_PERCENTAGE_BALANCE = 0.4
+COMMISSION = 0.02
 RETURNS_CSV = os.path.abspath(os.path.dirname(__file__) + "/../stats/returns.csv")
 
 price_increments = {
