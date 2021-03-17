@@ -122,6 +122,7 @@ def update_csv_sporting_index(driver, race):
         "lay_matched",
         "arbritrage_profit",
         "place_payout",
+        "balance_in_betfair",
         "current_time",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
@@ -178,6 +179,7 @@ def update_csv_betfair(
         "lay_matched",
         "arbritrage_profit",
         "place_payout",
+        "balance_in_betfair",
         "current_time",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
