@@ -1,5 +1,4 @@
 import os
-import sys
 from time import time
 from datetime import datetime
 from csv import DictWriter
