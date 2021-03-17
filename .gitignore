@@ -4,4 +4,4 @@ backup.log
 Pipfile*
 *.pyc
 client-2048.*
-stats/**
+stats/
