@@ -118,7 +118,7 @@ def plot_bal_time_series_graph():
     profit_string = f"Total profit: £{total_profit} ({total_percentage_profit}%) \nProfit today: £{profit_today} ({today_percentage_profit}%)"
     # at = AnchoredText(profit_string, frameon=True, loc="lower right")
     # ax.add_artist(at)
-    plt.gcf().text(0.6, 0.9, profit_string)
+    plt.gcf().text(0.55, 0.92, profit_string)
 
     plt.savefig(BALANCE_PNG)
     print("Generated graph at: %s" % BALANCE_PNG)
