@@ -14,7 +14,7 @@ def calc_unfinished_races(index=-1):
     races = df.loc[mask]
     for _, row in races.iterrows():
         in_bet_balance += row["ew_stake"] * 2
-    return in_bet_balance + df.iloc[index].balance_in_betfair
+    return format(in_bet_balance + df.iloc[index].balance_in_betfair, ".2f")
 
 
 def get_today_starting_balance():
