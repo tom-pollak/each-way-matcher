@@ -10,6 +10,5 @@ xvfb-run -a python3 -m matcher --run --stats | tee -a debug.log backup.log > /de
 git pull -q
 python3 -m matcher --graph > /dev/null
 
-git commit -q -a -m "update returns" && git push -q
 cd stats
 git commit -q -a -m "update returns" && git push -q
