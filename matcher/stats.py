@@ -14,7 +14,7 @@ def calc_unfinished_races(index=-1):
     races = df.loc[mask]
     for _, row in races.iterrows():
         in_bet_balance += row["ew_stake"] * 2
-    return format(in_bet_balance + df.iloc[index].balance_in_betfair, ".2f")
+    return round(in_bet_balance + df.iloc[index].balance_in_betfair, 2)
 
 
 def get_today_starting_balance():
@@ -76,7 +76,7 @@ def output_profit():
     ) = calculate_returns()
     current_sporting_index_balance = df["balance"].values[-1]
     current_betfair_balance = df["betfair_balance"].values[-1]
-    in_bet_balance = calc_unfinished_races()
+    in_bet_balance = format(calc_unfinished_races(), ".2f")
     print(f"Total profit: £{total_profit} ({total_percentage_profit}%)")
     print(f"Profit today: £{profit_today} ({today_percentage_profit}%)")
     print(
