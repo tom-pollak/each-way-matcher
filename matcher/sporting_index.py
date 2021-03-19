@@ -111,20 +111,25 @@ def sporting_index_bet(driver, race):
                 return None
         return False
 
-    def close_bet(driver, retry=False):
-        try:
-            WebDriverWait(driver, 60).until(
-                EC.element_to_be_clickable(
-                    (
-                        By.XPATH,
-                        '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
+    def close_bet(driver):
+        for _ in range(5):
+            try:
+                WebDriverWait(driver, 60).until(
+                    EC.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
+                        )
                     )
-                )
-            ).click()
-        except TimeoutException:
-            if not retry:
-                click_betslip(driver)
-                close_bet(driver, retry=True)
+                ).click()
+                return
+            except TimeoutException:
+                try:
+                    click_betslip(driver)
+                    close_bet(driver)
+                except TimeoutException:
+                    pass
+        raise ValueError("Couldn't close bet")
 
     get_sporting_index_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
