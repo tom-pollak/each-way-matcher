@@ -9,9 +9,6 @@ Also lays arbitrage bets on Sporting Index and Betfair.
 
 ## Install
 
-- Fork the repo
-- Change the graph link in README.md to point to your own repo
-
 ```bash
 pip3 install -r requirements.txt
 python3 -m matcher --setup
