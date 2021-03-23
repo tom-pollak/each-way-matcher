@@ -6,6 +6,7 @@ import requests
 
 from urllib import error, request
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
 from requests.exceptions import ConnectionError
 
 from .calculate import round_stake
@@ -282,6 +283,18 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
         (lay_win, win_matched, win_stake, win_stake_matched, win_odds),
         (lay_place, place_matched, place_stake, place_stake_matched, place_odds),
     )
+
+
+def get_betfair_page(driver, venue, race_time):
+    headers = login_betfair()
+    event_id = get_event(venue, race_time, headers)
+    driver.get(
+        "https://www.betfair.com/exchange/plus/horse-racing/market/%s" % event_id
+    )
+
+
+def get_betfair_odds(driver):
+    page_source = driver.page_source
 
 
 # print(get_betfair_balance_in_bets())
