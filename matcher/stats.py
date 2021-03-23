@@ -5,6 +5,12 @@ import pandas as pd
 
 from .calculate import custom_date_parser
 
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
+load_dotenv(os.path.join(BASEDIR, ".env"))
+
+RETURNS_CSV = os.environ.get("RETURNS_CSV")
+BALANCE_PNG = os.path.join(BASEDIR, "stats/balance.png")
+
 
 def calc_unfinished_races(index=-1):
     in_bet_balance = 0
@@ -123,9 +129,6 @@ def plot_bal_time_series_graph():
     plt.savefig(BALANCE_PNG)
     print("Generated graph at: %s" % BALANCE_PNG)
 
-
-RETURNS_CSV = os.path.abspath(os.path.dirname(__file__) + "/../stats/returns.csv")
-BALANCE_PNG = os.path.abspath(os.path.dirname(__file__) + "/../stats/balance.png")
 
 df = pd.read_csv(
     RETURNS_CSV,

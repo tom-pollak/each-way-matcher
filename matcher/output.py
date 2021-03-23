@@ -1,4 +1,5 @@
 import os
+import shutil
 from time import time
 from datetime import datetime
 from csv import DictWriter
@@ -7,7 +8,8 @@ from .betfair_api import get_betfair_balance, login_betfair, get_betfair_balance
 from .sporting_index import get_balance_sporting_index
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
-RETURNS_CSV = os.path.join(BASEDIR, "stats/returns.csv")
+load_dotenv(os.path.join(BASEDIR, ".env"))
+RETURNS_CSV = os.environ.get("RETURNS_CSV")
 
 
 def show_info(count, START_TIME):
@@ -192,6 +194,7 @@ def update_csv_betfair(
 def reset_csv():
     if not os.path.isdir("stats"):
         os.mkdir("stats")
+    shutil.copyfile(".env..env.template", ".env")
     now = datetime.now().strftime("%d-%m-%Y")
     RETURNS_HEADER = "date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout,balance_in_betfair,current_time"
     RETURNS_BAK = os.path.join(BASEDIR, "stats/returns-%s.csv" % now)

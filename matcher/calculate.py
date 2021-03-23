@@ -4,9 +4,12 @@ from datetime import datetime
 from time import strptime
 import pandas as pd
 
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
+load_dotenv(os.path.join(BASEDIR, ".env"))
+
 MIN_PERCENTAGE_BALANCE = 0.4
-COMMISSION = 0.02
-RETURNS_CSV = os.path.abspath(os.path.dirname(__file__) + "/../stats/returns.csv")
+RETURNS_CSV = os.environ.get("RETURNS_CSV")
+COMMISSION = os.environ.get("COMMISSION")
 
 price_increments = {
     2: 0.01,
