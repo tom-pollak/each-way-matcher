@@ -76,9 +76,10 @@ def get_betfair_balance_in_bets():
     order_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders"}'
     res = call_api(order_req, headers)
     for race in res["result"]["currentOrders"]:
-        odds = race["priceSize"]["price"]
-        stake = race["priceSize"]["size"]
-        balance_in_bets += stake * (odds - 1)
+        # odds = race["priceSize"]["price"]
+        # stake = race["priceSize"]["size"]
+        # balance_in_bets += stake * (odds - 1)
+        balance_in_bets += race["bspLiability"]
     return balance_in_bets
 
 
@@ -283,3 +284,4 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
 
 # print(get_betfair_balance_in_bets(headers))
 # get_event('Cagnes-Sur-Mer', race_time, headers)
+# print(get_betfair_balance_in_bets())
