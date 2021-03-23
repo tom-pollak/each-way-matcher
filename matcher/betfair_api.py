@@ -78,8 +78,8 @@ def get_betfair_balance_in_bets():
     for race in res["result"]["currentOrders"]:
         odds = race["averagePriceMatched"]
         stake = race["sizeMatched"]
-        stake_remaining = race['sizeRemaining']
-        original_odds = race['priceSize']['price']
+        stake_remaining = race["sizeRemaining"]
+        original_odds = race["priceSize"]["price"]
 
         balance_in_bets += stake * (odds - 1) + stake_remaining * (original_odds - 1)
     return balance_in_bets
