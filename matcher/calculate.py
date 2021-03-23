@@ -10,7 +10,7 @@ load_dotenv(os.path.join(BASEDIR, ".env"))
 
 MIN_PERCENTAGE_BALANCE = 0.4
 RETURNS_CSV = os.environ.get("RETURNS_CSV")
-COMMISSION = os.environ.get("COMMISSION")
+COMMISSION = float(os.environ.get("COMMISSION"))
 
 price_increments = {
     2: 0.01,
