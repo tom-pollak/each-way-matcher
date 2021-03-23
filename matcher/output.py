@@ -2,6 +2,7 @@ import os
 import shutil
 from time import time
 from datetime import datetime
+from dotenv import load_dotenv
 from csv import DictWriter
 
 from .betfair_api import get_betfair_balance, login_betfair, get_betfair_balance_in_bets
