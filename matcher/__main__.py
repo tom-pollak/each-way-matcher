@@ -1,7 +1,8 @@
 import argparse
 import sys
 
-from .run import run_matcher, run_extra_place
+from .run import run_matcher
+from .extra_places import run_extra_place
 from .stats import output_profit, plot_bal_time_series_graph
 from .output import reset_csv
 

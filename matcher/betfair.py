@@ -136,7 +136,7 @@ def get_horse_id(horses, target_horse):
     return None
 
 
-def get_horses(target_horse, event_id, race_time, headers):
+def get_horses(event_id, race_time, headers):
     markets_ids = {}
     race_time_after = race_time + datetime.timedelta(0, 60)
     race_time = race_time.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -162,7 +162,7 @@ def get_horses(target_horse, event_id, race_time, headers):
         except KeyError:
             print("Unknown error getting market: %s" % markets_response)
             print(event_id, race_time)
-        return 0, 0, False, target_horse
+        return None
 
     total_matched = 0
     market_type_index = 0
@@ -179,17 +179,18 @@ def get_horses(target_horse, event_id, race_time, headers):
         print(market_type)
         print()
         print(markets_response)
-        return 0, 0, False, target_horse
+        return None
+    return markets_ids, market_type[market_type_index]
 
-    selection_id, target_horse = get_horse_id(
-        market_type[market_type_index], target_horse
-    )
+
+def get_horse_id(horses, target_horse):
+    selection_id, target_horse = get_horse_id(horses, target_horse)
     if selection_id is None:
         print("ERROR couldn't find horse selection_id")
         print(market_type[0]["runners"])
         print(target_horse)
         return 0, 0, False, target_horse
-    return markets_ids, selection_id, True, target_horse
+    return selection_id, True, target_horse
 
 
 def cancel_unmatched_bets(headers):
@@ -260,9 +261,8 @@ def get_race(race_time, venue, horse):
     if not event_id:
         return 0, 0, False, horse
 
-    markets_ids, selection_id, got_horse, horse = get_horses(
-        horse, event_id, race_time, headers
-    )
+    markets_ids, horses = get_horses(event_id, race_time, headers)
+    selection_id, got_horse, target_horse = get_horse_id(horses, horse)
     return markets_ids, selection_id, got_horse, horse
 
 
