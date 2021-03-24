@@ -70,70 +70,107 @@ def get_extra_place_races():
 def create_race_df(races):
     headers = login_betfair()
     data = []
-    for race in races:
+    indexes = []
+    for i, race in enumerate(races):
         hour, min = race["time"].split(":")
         time = datetime.datetime.combine(
             datetime.date.today(), datetime.time(int(hour), int(min))
         )
         event_id = get_event(race["venue"], time, headers)
+        if not event_id:
+            continue
         try:
             market_ids, _ = get_horses(event_id, time, headers)
             win_market_id = market_ids["Win"]
             place_market_id = market_ids["Place"]
         except ValueError:
             continue
-        for bookie in race["bookies"]:
-            bookie_data = [
-                race["venue"],
-                time,
-                bookie,
-                race["place_payout"],
-                race["places_paid"],
-                race["bookies"][bookie]["min_runners"],
+        indexes.append((race["venue"], time))
+        data.append(
+            [
                 event_id,
                 win_market_id,
                 place_market_id,
+                race["place_payout"],
+                race["places_paid"],
+                i,
             ]
-            data.append(bookie_data)
-
+        )
     race_df = pd.DataFrame(
         data,
         columns=[
-            "venue",
-            "time",
-            "bookie",
-            "place_payout",
-            "places_paid",
-            "min_runners",
             "event_id",
             "win_market_id",
             "place_market_id",
+            "place_payout",
+            "places_paid",
+            "races_index",
         ],
+        index=indexes,
     )
+    # for bookie in race["bookies"]:
+    #     bookie_data = [
+    #         race["venue"],
+    #         time,
+    #         bookie,
+    #         race["place_payout"],
+    #         race["places_paid"],
+    #         race["bookies"][bookie]["min_runners"],
+    #         event_id,
+    #         win_market_id,
+    #         place_market_id,
+    #     ]
+    #     data.append(bookie_data)
 
-    race_df = pd.pivot(
-        race_df,
-        values=["place_payout", "places_paid", "min_runners", "event_id"],
-        index=["venue", "time"],
-        columns="bookie",
-    )
-    race_df = race_df.swaplevel(axis=1)
-    race_df.sort_index(level=0, axis=1, inplace=True)
+    # race_df = pd.DataFrame(
+    #     data,
+    #     columns=[
+    #         "venue",
+    #         "time",
+    #         "bookie",
+    #         "place_payout",
+    #         "places_paid",
+    #         "min_runners",
+    #         "event_id",
+    #         "win_market_id",
+    #         "place_market_id",
+    #     ],
+    # )
+
+    # race_df = pd.pivot(
+    #     race_df,
+    #     values=["place_payout", "places_paid", "min_runners", "event_id"],
+    #     index=["venue", "time"],
+    #     columns="bookie",
+    # )
+    # race_df = race_df.swaplevel(axis=1)
+    # race_df.sort_index(level=0, axis=1, inplace=True)
+
     return race_df
 
 
-def create_odds_df(race_df):
+def create_odds_df(race_df, races):
     odds = {}
-    for key in race_df.index.values:
-        race = race_df.loc[key].dropna(how="any")
-        bookies = race.index.levels[0]
-        event_id = race.loc[:, "event_id"][0]
-        try:
-            print(get_horses(event_id, key[1], headers))
-        except:
-            pass
-        columns = ["back_odds", "lay_odds", "back_liability", "lay_liability"]
-        # odds[key] = df
+    for race in race_df.iterrows():
+        horses = []
+        horse_ids = []
+        key = race[0]
+        for horse in get_horses(race[1].event_id, key[1], headers)[1]["runners"]:
+            horses.append(horse["runnerName"])
+            horse_ids.append(horse["selectionId"])
+        races_key = race[1]["races_index"]
+        indexes = races[races_key]["bookies"]
+        data = [
+            "back_odds",
+            "lay_odds",
+            "back_liability",
+            "lay_liability",
+            "horse_id",
+        ]
+        columns = pd.MultiIndex.from_product([horses, data], names=["horses", "data"])
+        df = pd.DataFrame(index=indexes, columns=columns)
+        print(df.xs("horse_id", level=1, drop_level=False, axis=1))
+        odds[key] = df
     return odds
 
 
@@ -143,4 +180,4 @@ headers = login_betfair()
 def run_extra_place():
     races = get_extra_place_races()
     race_df = create_race_df(races)
-    odds = create_odds_df(race_df)
+    odds = create_odds_df(race_df, races)
