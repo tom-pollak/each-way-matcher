@@ -4,7 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def get_page(driver, venue, time):
+def get_william_hill_page(driver, venue, time, tab):
     driver.switch_to.window(driver.window_handles[tab])
     driver.get(
         "https://sports.williamhill.com/betting/en-gb/horse-racing/meetings/all/today"
@@ -26,7 +26,3 @@ def get_page(driver, venue, time):
             ):
                 if race_time_button.text == time.strftime("%H:%M"):
                     race_time_button.click()
-
-
-time = datetime.datetime(2021, 3, 25, 21, 28)
-get_page("Golden Gate", time)
