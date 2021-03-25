@@ -1,9 +1,16 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+from .run import setup_selenium
+
+driver = setup_selenium()
+
+
 def get_odds(market_id):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
-    }
-    res = requests.get(
+    driver.get(
         "https://www.betfair.com/exchange/plus/horse-racing/market/%s" % market_id,
-        headers=headers,
     )
-    print(res)
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    table = soup.find_all("table", class_="mv-runner-list")
+    print(res.text)

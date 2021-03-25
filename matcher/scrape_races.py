@@ -2,7 +2,6 @@ import requests
 import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
-import numpy as np
 
 from .betfair_api import login_betfair, get_event, get_horses
 

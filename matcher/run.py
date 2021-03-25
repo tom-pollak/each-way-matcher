@@ -25,6 +25,31 @@ S_INDEX_USER = os.environ.get("S_INDEX_USER")
 S_INDEX_PASS = os.environ.get("S_INDEX_PASS")
 
 
+def check_vars():
+    if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
+        raise Exception("ERROR: SportingIndex or Oddsmonkey env variables not set")
+
+    if not os.path.isfile("client-2048.crt") or not os.path.isfile("client-2048.key"):
+        raise Exception("client-2048 certificates not found")
+
+
+def setup_selenium():
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument(
+        "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
+    )
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-setuid-sandbox")
+    chrome_options.add_argument("--remote-debugging-port=9222")  # this
+    chrome_options.add_argument("--disable-dev-shm-using")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("start-maximized")
+    prefs = {"profile.default_content_setting_values.notifications": 2}
+    chrome_options.add_experimental_option("prefs", prefs)
+    return webdriver.Chrome(options=chrome_options)
+
+
 def login(driver):
     driver.get("https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f")
     try:
@@ -78,28 +103,10 @@ def login(driver):
 
 
 def run_matcher():
-    if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
-        raise Exception("ERROR: SportingIndex or Oddsmonkey env variables not set")
-
-    if not os.path.isfile("client-2048.crt") or not os.path.isfile("client-2048.key"):
-        raise Exception("client-2048 certificates not found")
-
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
+    check_vars()
     while True:
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument(
-            "user-agent=Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36"
-        )
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-setuid-sandbox")
-        chrome_options.add_argument("--remote-debugging-port=9222")  # this
-        chrome_options.add_argument("--disable-dev-shm-using")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("start-maximized")
-        prefs = {"profile.default_content_setting_values.notifications": 2}
-        chrome_options.add_experimental_option("prefs", prefs)
-        driver = webdriver.Chrome(options=chrome_options)
+        driver = setup_selenium()
         sys.stdout.flush()
         try:
             login(driver)
