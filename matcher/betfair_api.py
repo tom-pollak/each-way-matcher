@@ -285,18 +285,6 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
     )
 
 
-def get_betfair_page(driver, venue, race_time):
-    headers = login_betfair()
-    event_id = get_event(venue, race_time, headers)
-    driver.get(
-        "https://www.betfair.com/exchange/plus/horse-racing/market/%s" % event_id
-    )
-
-
-def get_betfair_odds(driver):
-    page_source = driver.page_source
-
-
 # print(get_betfair_balance_in_bets())
 # get_event('Cagnes-Sur-Mer', race_time, headers)
 # print(get_betfair_balance_in_bets())

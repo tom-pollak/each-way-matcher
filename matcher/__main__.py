@@ -2,7 +2,7 @@ import argparse
 import sys
 
 from .run import run_matcher
-from .extra_places import run_extra_place
+from .extra_places import run_extra_places
 from .stats import output_profit, plot_bal_time_series_graph
 from .output import reset_csv
 
@@ -33,7 +33,7 @@ elif args.run:
     run_matcher()
 
 elif args.extra:
-    run_extra_place()
+    run_extra_places()
 
 if args.stats:
     output_profit()

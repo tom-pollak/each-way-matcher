@@ -21,7 +21,7 @@ from .sporting_index import (
     refresh_sporting_index,
     get_balance_sporting_index,
 )
-from .betfair import lay_ew, get_betfair_balance, login_betfair, get_race
+from .betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
 from .calculate import (
     calculate_stakes,
     calculate_profit,
