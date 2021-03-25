@@ -108,8 +108,7 @@ def get_event(venue, race_time, headers):
         try:
             print("Error in getting event: %s" % event_response["error"])
         except KeyError:
-            print("Unknown error getting event: %s" % event_response)
-            print(venue)
+            pass
     return False
 
 
