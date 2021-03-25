@@ -114,6 +114,7 @@ def create_race_df(races):
 
 
 def create_odds_df(races_df, races):
+    headers = login_betfair()
     horses = []
     horse_ids = {}
     bookies = set()
@@ -178,9 +179,6 @@ def create_min_runners_df(races_df, odds_df, races):
         min_runners_df.loc[index] = pd.Series(bookies)
     races_df.drop(columns=["races_index"], inplace=True)
     return min_runners_df
-
-
-headers = login_betfair()
 
 
 def generate_df():
