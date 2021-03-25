@@ -158,7 +158,10 @@ def create_odds_df(races_df, races):
 
 
 def create_min_runners_df(races_df, odds_df, races):
-    indexes = pd.MultiIndex.from_tuples(races_df.index.values)
+    try:
+        indexes = pd.MultiIndex.from_tuples(races_df.index.values)
+    except TypeError:
+        return None
     bookies = set(odds_df.columns.get_level_values("bookies"))
     min_runners_df = pd.DataFrame(index=indexes, columns=bookies)
 

@@ -130,22 +130,22 @@ def plot_bal_time_series_graph():
     plt.savefig(BALANCE_PNG)
     print("Generated graph at: %s" % BALANCE_PNG)
 
-
-df = pd.read_csv(
-    RETURNS_CSV,
-    header=0,
-    parse_dates=[21, 0],
-    index_col=21,
-    date_parser=custom_date_parser,
-    squeeze=True,
-)
-
 try:
-    STARTING_BALANCE = (
-        df["balance"].values[0]
-        + df["betfair_balance"].values[0]
-        + calc_unfinished_races(0)
+    df = pd.read_csv(
+        RETURNS_CSV,
+        header=0,
+        parse_dates=[21, 0],
+        index_col=21,
+        date_parser=custom_date_parser,
+        squeeze=True,
     )
-except IndexError:
-    print("No entrys to csv")
-    sys.exit()
+    try:
+        STARTING_BALANCE = (
+            df["balance"].values[0]
+            + df["betfair_balance"].values[0]
+            + calc_unfinished_races(0)
+        )
+    except IndexError:
+        print("No entrys to csv")
+except:
+    print("No return.csv found!")
