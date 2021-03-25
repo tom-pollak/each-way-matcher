@@ -9,7 +9,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 
 
-def get_site(driver, market_id):
+def get_site(driver, market_id, tab=0):
+    driver.switch_to.window(driver.window_handles[tab])
     driver.get(
         "https://www.betfair.com/exchange/plus/horse-racing/market/%s" % str(market_id),
     )

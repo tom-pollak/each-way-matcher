@@ -130,10 +130,7 @@ def plot_bal_time_series_graph():
     plt.savefig(BALANCE_PNG)
     print("Generated graph at: %s" % BALANCE_PNG)
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 try:
     df = pd.read_csv(
         RETURNS_CSV,
@@ -151,10 +148,5 @@ try:
         )
     except IndexError:
         print("No entrys to csv")
-<<<<<<< HEAD
-except:
-    print("No return.csv found!")
-=======
 except FileNotFoundError:
     print("No returns.csv found!")
->>>>>>> main

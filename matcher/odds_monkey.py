@@ -22,6 +22,7 @@ from .sporting_index import (
     get_balance_sporting_index,
 )
 from .betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
+from .betfair_scrape import get_site, scrape_odds
 from .calculate import (
     calculate_stakes,
     calculate_profit,
@@ -270,6 +271,7 @@ def open_betfair_oddsmonkey(driver):
     )
     driver.switch_to.window(driver.window_handles[2])
     trigger_betfair_options(driver)
+    driver.execute_script("""window.open("https://google.com","_blank");""")
 
 
 def get_no_rows(driver):
@@ -329,6 +331,22 @@ def betfair_bet(driver, race):
         return
 
     race["ew_stake"] = bookie_stake
+    get_site(driver, market_ids["Win"], tab=3)
+    win_horse_odds = scrape_odds(driver, tab=3)
+    get_site(driver, market_ids["Place"], tab=3)
+    place_horse_odds = scrape_odds(driver, tab=3)
+    if (
+        win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
+        and place_horse_odds[race["horse_name"]]["lay_odds_1"] > race["place_odds"]
+    ):
+        print(
+            f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
+        )
+        print(
+            f"\t{race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
+        )
+        return
+
     race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:
         print(
