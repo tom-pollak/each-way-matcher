@@ -27,23 +27,23 @@ def scrape_odds(driver, tab):
     table = soup.find_all("table", class_="mv-runner-list")[1]
     runners = table.find_all("tr", class_="runner-line")
     for runner in runners:
-        horses[name] = {}
         name = runner.find("h3", class_="runner-name").contents[0]
+        horses[name] = {}
         back_odds_buttons = runner.find_all("td", class_="back-cell")[::-1]
         lay_odds_buttons = runner.find_all("td", class_="lay-cell")
         for i, (back_button, lay_button) in enumerate(
             zip(back_odds_buttons, lay_odds_buttons)
         ):
-            back_price = float(back_button.find("span", class_="bet-button-price").text)
-            lay_price = float(lay_button.find("span", class_="bet-button-price").text)
-            back_liability = float(
+            back_odds = float(back_button.find("span", class_="bet-button-price").text)
+            lay_odds = float(lay_button.find("span", class_="bet-button-price").text)
+            back_availiable = float(
                 back_button.find("span", class_="bet-button-size").text.replace("£", "")
             )
-            lay_liability = float(
+            lay_avaliable = float(
                 lay_button.find("span", class_="bet-button-size").text.replace("£", "")
             )
-            horses[name]["back_odds_%s" % i] = back_odds
-            horses[name]["lay_odds_%s" % i] = lay_odds
-            horses[name]["back_liability_%s" % i] = back_liability
-            horses[name]["lay_liability_%s" % i] = lay_liability
+            horses[name]["back_odds_%s" % str(i + 1)] = back_odds
+            horses[name]["lay_odds_%s" % str(i + 1)] = lay_odds
+            horses[name]["back_avaliable_%s" % str(i + 1)] = back_availiable
+            horses[name]["lay_avaliable_%s" % str(i + 1)] = lay_avaliable
     return horses
