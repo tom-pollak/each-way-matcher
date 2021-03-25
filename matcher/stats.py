@@ -131,14 +131,17 @@ def plot_bal_time_series_graph():
     print("Generated graph at: %s" % BALANCE_PNG)
 
 
-df = pd.read_csv(
-    RETURNS_CSV,
-    header=0,
-    parse_dates=[21, 0],
-    index_col=21,
-    date_parser=custom_date_parser,
-    squeeze=True,
-)
+try:
+    df = pd.read_csv(
+        RETURNS_CSV,
+        header=0,
+        parse_dates=[21, 0],
+        index_col=21,
+        date_parser=custom_date_parser,
+        squeeze=True,
+    )
+except FileNotFoundError:
+    print("No returns.csv found!")
 
 try:
     STARTING_BALANCE = (
