@@ -100,12 +100,12 @@ def plot_bal_time_series_graph():
     ax.xaxis.set_major_formatter(date_fmt)
 
     balance = df["balance"] + df["betfair_balance"]
-    ax.plot(balance, label="Withdrawable")
+    # ax.plot(balance, label="Withdrawable")
 
     for i, _ in enumerate(balance):
         balance[i] += calc_unfinished_races(i)
 
-    ax.plot(balance, label="+ balance in bets")
+    ax.plot(balance, label="profit")
 
     expected_return = df["expected_return"] + df["arbritrage_profit"]
     expected_return[0] += STARTING_BALANCE
