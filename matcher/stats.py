@@ -100,16 +100,16 @@ def plot_bal_time_series_graph():
     ax.xaxis.set_major_formatter(date_fmt)
 
     balance = df["balance"] + df["betfair_balance"]
-    ax.plot(balance, label="Withdrawable")
+    # ax.plot(balance, label="Withdrawable")
 
     for i, _ in enumerate(balance):
         balance[i] += calc_unfinished_races(i)
 
-    ax.plot(balance, label="+ balance in bets")
+    ax.plot(balance, "g", label="Profit")
 
     expected_return = df["expected_return"] + df["arbritrage_profit"]
     expected_return[0] += STARTING_BALANCE
-    expected_return.cumsum().plot(label="Minimum expected return")
+    expected_return.cumsum().plot(color="r", label="Minimum expected return")
 
     fig.autofmt_xdate()
     ax.set_xlabel("Date")
@@ -130,6 +130,10 @@ def plot_bal_time_series_graph():
     plt.savefig(BALANCE_PNG)
     print("Generated graph at: %s" % BALANCE_PNG)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 try:
     df = pd.read_csv(
         RETURNS_CSV,
@@ -147,5 +151,10 @@ try:
         )
     except IndexError:
         print("No entrys to csv")
+<<<<<<< HEAD
 except:
     print("No return.csv found!")
+=======
+except FileNotFoundError:
+    print("No returns.csv found!")
+>>>>>>> main
