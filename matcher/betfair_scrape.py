@@ -4,10 +4,9 @@ import pandas as pd
 
 from .run import setup_selenium
 
-driver = setup_selenium()
-
 
 def get_odds(market_id):
+    driver = setup_selenium()
     driver.get(
         "https://www.betfair.com/exchange/plus/horse-racing/market/%s" % market_id,
     )
