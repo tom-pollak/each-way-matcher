@@ -148,6 +148,5 @@ try:
         )
     except IndexError:
         print("No entrys to csv")
-        sys.exit()
 except FileNotFoundError:
     print("No returns.csv found!")
