@@ -132,7 +132,9 @@ def get_horse_id(horses, target_horse):
     for horse in horses["runners"]:
         if horse["runnerName"] == close_horse:
             return horse["selectionId"], horse["runnerName"]
-    return None
+
+    print("ERROR couldn't find horse selection_id")
+    return None, target_horse
 
 
 def get_horses(event_id, race_time, headers):
@@ -178,18 +180,8 @@ def get_horses(event_id, race_time, headers):
         print(market_type)
         print()
         print(markets_response)
-        return None
+        return None, None
     return markets_ids, market_type[market_type_index]
-
-
-def get_horse_id(horses, target_horse):
-    selection_id, target_horse = get_horse_id(horses, target_horse)
-    if selection_id is None:
-        print("ERROR couldn't find horse selection_id")
-        print(market_type[0]["runners"])
-        print(target_horse)
-        return 0, 0, False, target_horse
-    return selection_id, True, target_horse
 
 
 def cancel_unmatched_bets(headers):
