@@ -346,6 +346,8 @@ def betfair_bet(driver, race):
             f"\t{race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
         )
         return
+    print(f"Found win odds at {win_horse_odds[race['horse_name']]['lay_odds_1'] }")
+    print(f"Found place odds at {place_horse_odds[race['horse_name']]['lay_odds_1'] }")
 
     race, bet_made = sporting_index_bet(driver, race)
     if bet_made is None:
