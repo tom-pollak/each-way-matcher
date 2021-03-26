@@ -8,20 +8,26 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 
+def setup_betfair_scrape(driver, tab=0):
+    driver.switch_to.window(driver.window_handles[tab])
+    driver.get(
+        "https://www.betfair.com/exchange/plus/horse-racing/",
+    )
+    time.sleep(0.53)
+    WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
+    ).click()
+    driver.switch_to.default_content()
 
 def get_site(driver, market_id, tab=0):
     driver.switch_to.window(driver.window_handles[tab])
     driver.get(
         "https://www.betfair.com/exchange/plus/horse-racing/market/%s" % str(market_id),
     )
-    time.sleep(0.53)
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
-    ).click()
-    driver.switch_to.default_content()
-
+    WebDriverWait(driver, 30).until(EC.visibility_of_element_located, ((By.XPATH, '//*[@id="main-wrapper"]/div/div[2]/div/ui-view/div/div/div[1]/div[3]/div/div[1]/div/bf-main-market/bf-main-marketview/div/div[2]/bf-marketview-runners-list[2]/div/div/div/table/tbody/tr[1]/td[4]/button/div/span[1]')))
 
 def scrape_odds(driver, tab):
+    time.sleep(3)
     driver.switch_to.window(driver.window_handles[tab])
     horses = {}
     soup = BeautifulSoup(driver.page_source, "html.parser")

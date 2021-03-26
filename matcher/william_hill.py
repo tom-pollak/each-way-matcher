@@ -2,6 +2,7 @@ import datetime
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 def get_william_hill_page(driver, venue, time, tab):
@@ -13,16 +14,20 @@ def get_william_hill_page(driver, venue, time, tab):
         EC.visibility_of_element_located(
             (
                 By.XPATH,
-                '//*[@id="header-root"]/div/div/div/div[1]/div/div/div[1]/a/span/svg',
+                '//*[@id="meetings-app"]/div[5]',
             )
         )
     )
     venues = driver.find_elements_by_class_name("component-race-row")
-    for race_venue in venues:
-        print(venue.find_element_by_class_name("race-row-header"))
-        if race_venue.find_element_by_class_name("title").text == venue:
+    for race_venue in venues: 
+        race_venue_name = race_venue.find_element_by_class_name("title").text.split(' (')[0]
+        if race_venue_name == venue:
+            print('found venue')
             for race_time_button in race_venue.find_elements_by_class_name(
-                "non-route component-race-button"
+                "component-race-button"
             ):
-                if race_time_button.text == time.strftime("%H:%M"):
-                    race_time_button.click()
+                try:
+                    if race_time_button.text == time.strftime("%H:%M"):
+                        race_time_button.click()
+                except StaleElementReferenceException:
+                    pass
