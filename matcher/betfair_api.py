@@ -163,7 +163,7 @@ def get_horses(event_id, race_time, headers):
         except KeyError:
             print("Unknown error getting market: %s" % markets_response)
             print(event_id, race_time)
-        return None
+        return None, None
 
     total_matched = 0
     market_type_index = 0
@@ -253,7 +253,11 @@ def get_race(race_time, venue, horse):
         return 0, 0, False, horse
 
     markets_ids, horses = get_horses(event_id, race_time, headers)
-    selection_id, got_horse, target_horse = get_horse_id(horses, horse)
+    selection_id, target_horse = get_horse_id(horses, horse)
+    if selection_id is None:
+        got_horse = False
+    else:
+        got_horse = True
     return markets_ids, selection_id, got_horse, horse
 
 
