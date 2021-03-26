@@ -12,9 +12,7 @@ def update_odds_df(odds_df, horses, win_place):
     for horse in horses:
         try:
             for data in horses[horse]:
-                mask = [
-                    idx[:, :, horse], idx["Betfair Exchange %s" % win_place, data]
-                ]
+                mask = [idx[:, :, horse], idx["Betfair Exchange %s" % win_place, data]]
                 series_data = pd.Series([[]])
                 if odds_df.loc[mask[0], mask[1]].isnull().values.any():
                     odds_df.at[mask[0], mask[1]] = [1, 2, 3]
@@ -38,7 +36,9 @@ def run_extra_places():
         # update_odds_df(odds_df, horses, "Place")
         break
     idx = pd.IndexSlice
-    first_horse = odds_df.loc[idx[:, :, 'Never Mistabeat'], idx["Betfair Exchange Win", :]]
+    first_horse = odds_df.loc[
+        idx[:, :, "Never Mistabeat"], idx["Betfair Exchange Win", :]
+    ]
     print(first_horse)
 
     # time = datetime.datetime(2021, 3, 25, 23, 26)
