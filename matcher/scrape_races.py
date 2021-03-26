@@ -139,7 +139,7 @@ def create_odds_df(races_df, races):
     df_betfair = pd.DataFrame(
         columns=pd.MultiIndex.from_product(
             [
-                ["Betfair Exchange"],
+                ["Betfair Exchange Win", "Betfair Exchange Place"],
                 [
                     "horse_id",
                     "back_odds_1",
