@@ -5,7 +5,7 @@ places bets on
 Sporting Index.  
 Also lays arbitrage bets on Sporting Index and Betfair.
 
-![balance graph](each-way-matcher/tree/stats/balance.png)
+![balance graph](each-way-matcher/blob/stats/balance.png)
 
 ## Install
 
