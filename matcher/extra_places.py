@@ -12,20 +12,17 @@ def update_odds_df(odds_df, horses, win_place):
     for horse in horses:
         try:
             for data in horses[horse]:
-                data_loc = odds_df.loc[
+                mask = [
                     idx[:, :, horse], idx["Betfair Exchange %s" % win_place, data]
                 ]
-                if data_loc.isnull().values.any():
-                    data_loc = np.array([horses[horse][data]])
+                series_data = pd.Series([[]])
+                if odds_df.loc[mask[0], mask[1]].isnull().values.any():
+                    odds_df.at[mask[0], mask[1]] = [1, 2, 3]
                 else:
-                    print(data_loc)
-                    data_loc = np.append(
-                        data_loc,
-                        [horses[horse][data]],
-                    )
+                    odds_df.at[mask[0], mask[1]].append(series_data)
+                print(odds_df.loc[mask[0], mask[1]])
         except KeyError:
             continue
-    return odds_df
 
 
 def run_extra_places():
@@ -38,10 +35,10 @@ def run_extra_places():
         update_odds_df(odds_df, horses, "Win")
         # get_site(driver, race.place_market_id, tab=0)
         # horses = scrape_odds(driver, 0)
-        # odds_df = update_odds_df(odds_df, horses, "Place")
+        # update_odds_df(odds_df, horses, "Place")
         break
-
-    first_horse = odds_df.loc[idx[:, :, horses[0]], idx["Betfair Exchange Win", data]]
+    idx = pd.IndexSlice
+    first_horse = odds_df.loc[idx[:, :, 'Never Mistabeat'], idx["Betfair Exchange Win", :]]
     print(first_horse)
 
     # time = datetime.datetime(2021, 3, 25, 23, 26)
