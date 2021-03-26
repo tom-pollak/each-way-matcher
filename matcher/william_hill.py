@@ -19,10 +19,12 @@ def get_william_hill_page(driver, venue, time, tab):
         )
     )
     venues = driver.find_elements_by_class_name("component-race-row")
-    for race_venue in venues: 
-        race_venue_name = race_venue.find_element_by_class_name("title").text.split(' (')[0]
+    for race_venue in venues:
+        race_venue_name = race_venue.find_element_by_class_name("title").text.split(
+            " ("
+        )[0]
         if race_venue_name == venue:
-            print('found venue')
+            print("found venue")
             for race_time_button in race_venue.find_elements_by_class_name(
                 "component-race-button"
             ):
