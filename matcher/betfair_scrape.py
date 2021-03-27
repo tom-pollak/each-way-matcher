@@ -34,7 +34,7 @@ def get_site(driver, market_id, tab):
     )
 
 
-def scrape_odds(driver, tab):
+def scrape_odds_betfair(driver, tab):
     time.sleep(3)
     driver.switch_to.window(driver.window_handles[tab])
     horses = {}

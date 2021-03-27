@@ -32,3 +32,17 @@ def get_william_hill_page(driver, venue, time, tab):
                         race_time_button.click()
                 except StaleElementReferenceException:
                     pass
+
+
+def scrape_odds_william_hill(driver, tab):
+    driver.switch_to.window(driver.window_handles[tab])
+    table = WebDriverWait(driver, 60).until(
+        EC.visibility_of_element_located(
+            (
+                By.XPATH,
+                '//*[@id="racing-meetings"]/div/div/div[3]/div[6]/div[2]/div[2]/div[2]/table/tbody',
+            )
+        )
+    )
+    rows = table.find_elements_by_css_selector("tr[role='row']")
+    print(rows)

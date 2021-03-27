@@ -78,9 +78,11 @@ def login(driver):
         ).click()
     except TimeoutException:
         print("Need Oddsmonkey premium membership (OM12FOR1)")
+        sys.stdout.flush()
         sys.exit()
     except ElementClickInterceptedException:
         print("Dismiss one time pop-up boxes and setup oddsmonkey")
+        sys.stdout.flush()
         sys.exit()
 
     driver.execute_script(
@@ -122,4 +124,5 @@ def run_matcher():
             print("Error occured: %s" % e)
             print(traceback.format_exc())
         finally:
+            sys.stdout.flush()
             driver.quit()
