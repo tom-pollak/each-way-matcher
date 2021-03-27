@@ -1,5 +1,6 @@
 import datetime
 import pandas as pd
+import time
 from .run import setup_selenium
 from .scrape_races import generate_df
 from .betfair_scrape import setup_betfair_scrape, get_site, scrape_odds_betfair
@@ -45,8 +46,11 @@ def create_tab_id(bookies_df, venue, time, site):
     tab += 1
 
 
+def get_odds(driver, odds_df, bookies_df):
+    pass
+
+
 def run_extra_places():
-    # {'Global Esteem': {'back_odds': 9.0}}
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
     driver = setup_selenium()
     setup_betfair_scrape(driver, tab=0)

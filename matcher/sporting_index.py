@@ -23,6 +23,7 @@ def change_to_decimal(driver):
 
 def get_balance_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
+    driver.refresh()
     for _ in range(10):
         try:
             balance = (
