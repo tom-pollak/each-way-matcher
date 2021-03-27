@@ -35,17 +35,12 @@ def scrape_odds_william_hill(driver, tab):
     horses = {}
     driver.switch_to.window(driver.window_handles[tab])
     table = WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located(
-            (
-                By.CSS_SELECTOR,
-                'tbody[role="rowgroup"]'
-            )
-        )
+        EC.visibility_of_element_located((By.CSS_SELECTOR, 'tbody[role="rowgroup"]'))
     )
     rows = table.find_elements_by_css_selector("tr[role='row']")
     for row in rows:
-        name = row.find_element_by_class_name('selection__title').text
-        odds = row.find_element_by_class_name('sp-betbutton').text.split('/')
+        name = row.find_element_by_class_name("selection__title").text
+        odds = row.find_element_by_class_name("sp-betbutton").text.split("/")
         odds = float(odds[0]) / float(odds[1]) + 1
-        horses[name] = {'back_odds': odds}
+        horses[name] = {"back_odds": odds}
     return horses
