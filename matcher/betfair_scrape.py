@@ -1,12 +1,9 @@
-import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
 
 
 def setup_betfair_scrape(driver, tab):
