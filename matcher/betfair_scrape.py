@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 
 
-def setup_betfair_scrape(driver, tab=0):
+def setup_betfair_scrape(driver, tab):
     driver.switch_to.window(driver.window_handles[tab])
     driver.get(
         "https://www.betfair.com/exchange/plus/horse-racing/",
