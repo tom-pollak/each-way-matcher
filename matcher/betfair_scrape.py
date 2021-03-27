@@ -49,19 +49,26 @@ def scrape_odds(driver, tab):
         horses[name] = {}
         back_odds_buttons = runner.find_all("td", class_="back-cell")[::-1]
         lay_odds_buttons = runner.find_all("td", class_="lay-cell")
-        for i, (back_button, lay_button) in enumerate(
-            zip(back_odds_buttons, lay_odds_buttons)
-        ):
-            back_odds = float(back_button.find("span", class_="bet-button-price").text)
-            lay_odds = float(lay_button.find("span", class_="bet-button-price").text)
-            back_availiable = float(
-                back_button.find("span", class_="bet-button-size").text.replace("£", "")
-            )
-            lay_avaliable = float(
-                lay_button.find("span", class_="bet-button-size").text.replace("£", "")
-            )
-            horses[name]["back_odds_%s" % str(i + 1)] = back_odds
-            horses[name]["lay_odds_%s" % str(i + 1)] = lay_odds
-            horses[name]["back_avaliable_%s" % str(i + 1)] = back_availiable
-            horses[name]["lay_avaliable_%s" % str(i + 1)] = lay_avaliable
+        for i in range(3):
+            try:
+                back_odd_button = back_odds_buttons[i]
+                back_odds = float(back_odd_button.find("span", class_="bet-button-price").text)
+                back_availiable = float(
+                    back_odd_button.find("span", class_="bet-button-size").text.replace("£", "")
+                )
+                horses[name]["back_odds_%s" % str(i + 1)] = back_odds
+                horses[name]["back_avaliable_%s" % str(i + 1)] = back_availiable
+            except IndexError:
+                pass
+
+            try:
+                lay_odd_button = lay_odds_buttons[i]
+                lay_odds = float(lay_odd_button.find("span", class_="bet-button-price").text)
+                lay_avaliable = float(
+                    lay_odd_button.find("span", class_="bet-button-size").text.replace("£", "")
+                )
+                horses[name]["lay_odds_%s" % str(i + 1)] = lay_odds
+                horses[name]["lay_avaliable_%s" % str(i + 1)] = lay_avaliable
+            except IndexError:
+                pass
     return horses

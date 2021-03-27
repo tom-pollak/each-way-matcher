@@ -169,17 +169,22 @@ def create_odds_df(races_df, races):
     return odds_df, horse_id_df
 
 
-def create_min_runners_df(races_df, odds_df, races):
+def create_bookies_df(races_df, odds_df, races):
+    idx = pd.IndexSlice
     try:
         indexes = pd.MultiIndex.from_tuples(races_df.index.values)
     except TypeError:
         return None
     bookies = set(odds_df.columns.get_level_values("bookies"))
-    min_runners_df = pd.DataFrame(index=indexes, columns=bookies)
+    columns = pd.MultiIndex.from_product([bookies, ['horse_id', 'tab_id']], names=('bookies', 'data'))
+    min_runners_df = pd.DataFrame(index=indexes, columns=columns)
 
     for index in indexes:
+
         min_runners = races[races_df.loc[index].races_index]["bookies"]
-        min_runners_df.loc[index, :] = pd.Series(min_runners)
+        min_runners_index = pd.MultiIndex.from_product([min_runners.keys(), ['horse_id']], names=['bookies', 'data'])
+        min_runners = pd.Series(min_runners.values(), index=min_runners_index)
+        min_runners_df.loc[index, idx[:, 'horse_id']] = min_runners
     races_df.drop(columns=["races_index"], inplace=True)
     return min_runners_df
 
@@ -188,5 +193,5 @@ def generate_df():
     races = get_extra_place_races()
     races_df = create_race_df(races)
     odds_df, horse_id_df = create_odds_df(races_df, races)
-    min_runners_df = create_min_runners_df(races_df, odds_df, races)
+    min_runners_df = create_bookies_df(races_df, odds_df, races)
     return races_df, odds_df, min_runners_df, horse_id_df
