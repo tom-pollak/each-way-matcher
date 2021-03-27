@@ -155,6 +155,7 @@ def get_horses(event_id, race_time, headers):
     try:
         market_type = markets_response["result"]
         if len(market_type) < 2:
+            print(market_type)
             raise ValueError("No market_type returned")
     except KeyError:
         try:
