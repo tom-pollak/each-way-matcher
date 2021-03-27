@@ -122,10 +122,6 @@ def create_odds_df(races_df, races):
         bookies.update(i)
     indexes = []
 
-    data = [
-        "back_odds",
-    ]
-
     for race in races_df.iterrows():
         key = race[0]
         try:
@@ -137,7 +133,7 @@ def create_odds_df(races_df, races):
 
     indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
     columns = pd.MultiIndex.from_product(
-        [bookies, data, []], names=["bookies", "data", "current_time"]
+            [bookies, ["back_odds"]], names=["bookies", "data"]
     )
     odds_df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
@@ -158,7 +154,6 @@ def create_odds_df(races_df, races):
                     "lay_avaliable_2",
                     "lay_avaliable_3",
                 ],
-                [],
             ],
         ),
         index=odds_df.index,
@@ -179,11 +174,11 @@ def create_min_runners_df(races_df, odds_df, races):
         return None
     bookies = set(odds_df.columns.get_level_values("bookies"))
     min_runners_df = pd.DataFrame(index=indexes, columns=bookies)
+    print(odds_df)
 
     for index in indexes:
         min_runners = races[races_df.loc[index].races_index]["bookies"]
-        min_runners_df.loc[index] = pd.Series(min_runners)
-        print(min_runners_df.loc[index])
+        min_runners_df.loc[index, :] = pd.Series(min_runners)
     races_df.drop(columns=["races_index"], inplace=True)
     print(min_runners_df)
     return min_runners_df
