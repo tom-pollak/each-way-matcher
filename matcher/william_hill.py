@@ -23,26 +23,29 @@ def get_william_hill_page(driver, venue, time, tab):
             " ("
         )[0]
         if race_venue_name == venue:
-            print("found venue")
             for race_time_button in race_venue.find_elements_by_class_name(
                 "component-race-button"
             ):
-                try:
-                    if race_time_button.text == time.strftime("%H:%M"):
-                        race_time_button.click()
-                except StaleElementReferenceException:
-                    pass
+                if race_time_button.text == time.strftime("%H:%M"):
+                    race_time_button.click()
+                    return
 
 
 def scrape_odds_william_hill(driver, tab):
+    horses = {}
     driver.switch_to.window(driver.window_handles[tab])
-    table = WebDriverWait(driver, 60).until(
+    table = WebDriverWait(driver, 15).until(
         EC.visibility_of_element_located(
             (
-                By.XPATH,
-                '//*[@id="racing-meetings"]/div/div/div[3]/div[6]/div[2]/div[2]/div[2]/table/tbody',
+                By.CSS_SELECTOR,
+                'tbody[role="rowgroup"]'
             )
         )
     )
     rows = table.find_elements_by_css_selector("tr[role='row']")
-    print(rows)
+    for row in rows:
+        name = row.find_element_by_class_name('selection__title').text
+        odds = row.find_element_by_class_name('sp-betbutton').text.split('/')
+        odds = float(odds[0]) / float(odds[1]) + 1
+        horses[name] = {'back_odds': odds}
+    return horses
