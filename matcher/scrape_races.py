@@ -124,7 +124,6 @@ def create_odds_df(races_df, races):
 
     data = [
         "back_odds",
-        "horse_id",
     ]
 
     for race in races_df.iterrows():
@@ -134,14 +133,15 @@ def create_odds_df(races_df, races):
             horse_ids[horse["runnerName"]] = horse["selectionId"]
 
     indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
-    columns = pd.MultiIndex.from_product([bookies, data], names=["bookies", "data"])
+    columns = pd.MultiIndex.from_product(
+        [bookies, data, []], names=["bookies", "data", "current_time"]
+    )
     df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
         columns=pd.MultiIndex.from_product(
             [
                 ["Betfair Exchange Win", "Betfair Exchange Place"],
                 [
-                    "horse_id",
                     "back_odds_1",
                     "back_odds_2",
                     "back_odds_3",
@@ -155,14 +155,19 @@ def create_odds_df(races_df, races):
                     "lay_avaliable_2",
                     "lay_avaliable_3",
                 ],
+                [],
             ],
         ),
         index=df.index,
     )
     df = df.join(df_betfair)
     idx = pd.IndexSlice
-    for i, _ in df.xs("horse_id", level=1, drop_level=False, axis=1).iterrows():
-        df.loc[i, idx[:, "horse_id"]] = horse_ids[i[2]]
+    df_horse_id = pd.DataFrame(index=indexes, columns=["horse_id"])
+    for i, id in df_horse_id.iterrows():
+        print(i, id)
+
+    # for i, _ in df_horse_id.xs("horse_id", level=1, drop_level=False, axis=1).iterrows():
+    #     df.loc[i, idx[:, "horse_id", :]] = horse_ids[i[2]]
     return df
 
 
