@@ -126,14 +126,16 @@ def create_odds_df(races_df, races):
         key = race[0]
         try:
             for horse in get_horses(race[1].event_id, key[1], headers)[1]["runners"]:
-                indexes.append((key[0], key[1], horse["runnerName"]))
+                indexes.append((key[0], key[1], horse["runnerName"], []))
                 horse_ids[horse["runnerName"]] = horse["selectionId"]
         except ValueError:
             continue
 
-    indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
+    indexes = pd.MultiIndex.from_tuples(
+        indexes, names=["venue", "time", "horse", "current_time"]
+    )
     columns = pd.MultiIndex.from_product(
-            [bookies, ["back_odds"]], names=["bookies", "data"]
+        [bookies, ["back_odds"]], names=["bookies", "data"]
     )
     odds_df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
@@ -174,7 +176,6 @@ def create_min_runners_df(races_df, odds_df, races):
         return None
     bookies = set(odds_df.columns.get_level_values("bookies"))
     min_runners_df = pd.DataFrame(index=indexes, columns=bookies)
-    print(odds_df)
 
     for index in indexes:
         min_runners = races[races_df.loc[index].races_index]["bookies"]
@@ -188,5 +189,6 @@ def generate_df():
     races = get_extra_place_races()
     races_df = create_race_df(races)
     odds_df, horse_id_df = create_odds_df(races_df, races)
+    print(odds_df)
     min_runners_df = create_min_runners_df(races_df, odds_df, races)
     return races_df, odds_df, min_runners_df, horse_id_df
