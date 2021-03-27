@@ -7,32 +7,30 @@ from .betfair_scrape import setup_betfair_scrape, get_site, scrape_odds
 from .william_hill import get_william_hill_page
 
 
-def update_odds_df(odds_df, horses, win_place):
+def update_odds_df(odds_df, horses, bookie):
     idx = pd.IndexSlice
     current_time = datetime.datetime.now()
     for horse in horses:
+        data = horses[horse]
+        values = pd.Series(horses[horse]).values
+        venue, time, _, _ = odds_df.query('horse == @horse').index.values[0]
+        odds_df.loc[idx[venue, time, horse, current_time], idx[bookie, data]] = values
         try:
-            data = horses[horse]
-            values = list(horses[horse].values())
-            mask = [
-                idx[:, :, horse, current_time],
-                idx["Betfair Exchange %s" % win_place, data],
-            ]
-            odds_df.loc[mask[0], mask[1]] = values
-            print(odds_df.loc[mask[0], mask[1]])
+            odds_df.drop((venue, time, horse, pd.NaT), inplace=True)
         except KeyError:
-            continue
+            pass
 
 
 def run_extra_places():
+    # {'Global Esteem': {'back_odds_1': 9.0}}
     races_df, odds_df, min_runners_df, horse_id_df = generate_df()
     driver = setup_selenium()
     setup_betfair_scrape(driver, tab=0)
     for (venue, time), race in races_df.iterrows():
         get_site(driver, race.win_market_id, tab=0)
-        horses = scrape_odds(driver, 0)
-        update_odds_df(odds_df, horses, "Win")
+        horses = scrape_odds(driver, tab=0)
+        update_odds_df(odds_df, horses, "Betfair Exchange Win")
         # get_site(driver, race.place_market_id, tab=0)
         # horses = scrape_odds(driver, 0)
-        # update_odds_df(odds_df, horses, "Place")
-        # break
+        # update_odds_df(odds_df, horses, "Betfair Exchange Win")
+        break

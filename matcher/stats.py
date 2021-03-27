@@ -147,6 +147,6 @@ try:
             + calc_unfinished_races(0)
         )
     except IndexError:
-        print("No entrys to csv")
+        pass
 except FileNotFoundError:
     print("No returns.csv found!")
