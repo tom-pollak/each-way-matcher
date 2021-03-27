@@ -1,6 +1,5 @@
 import datetime
 import pandas as pd
-import numpy as np
 from .run import setup_selenium
 from .scrape_races import generate_df
 from .betfair_scrape import setup_betfair_scrape, get_site, scrape_odds

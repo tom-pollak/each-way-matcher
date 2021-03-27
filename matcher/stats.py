@@ -1,5 +1,4 @@
 import os
-import sys
 from datetime import datetime
 from dotenv import load_dotenv
 import pandas as pd

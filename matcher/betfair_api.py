@@ -6,7 +6,6 @@ import requests
 
 from urllib import error, request
 from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 from requests.exceptions import ConnectionError
 
 from .calculate import round_stake
