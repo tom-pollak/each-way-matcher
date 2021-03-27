@@ -182,8 +182,8 @@ def create_min_runners_df(races_df, odds_df, races):
 
     for index in indexes:
         min_runners = races[races_df.loc[index].races_index]["bookies"]
-        print(min_runners)
         min_runners_df.loc[index] = pd.Series(min_runners)
+        print(min_runners_df.loc[index])
     races_df.drop(columns=["races_index"], inplace=True)
     print(min_runners_df)
     return min_runners_df
