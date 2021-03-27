@@ -1,6 +1,5 @@
 date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout,balance_in_betfair,current_time
 26 Mar 14:15 2021,New Heights,17.0,Lingfield,0.38,44.64,107.65,18.88%,0.07,18.96,23.88,17.5,3.45,302.73,2.99,False,0,0,0,5.0,0,26/03/2021 13:47:56
-26 Mar 14:15 2021,New Heights,17.0,Lingfield,2.12,43.88,106.33,0,0,2.0,2.6,0.0,3.7,259.71,1.71,True,0.0,2.6,0,5.0,43.02,26/03/2021 13:50:34
 26 Mar 13:55 2021,Paros,3.5,Musselburgh,0.56,39.64,101.66,5.4%,0.03,44.57,53.98,3.75,1.45,259.71,1.58,False,0,0,0,4.0,43.02,26/03/2021 13:54:33
 26 Mar 16:55 2021,Book Of Verse,21.0,Dundalk,0.12,41.39,102.54,8.7%,0.01,15.51,16.92,21.0,4.6,307.24,0.79,False,0,0,0,5.0,0,26/03/2021 14:56:22
 27 Mar 17:45 2021,Top Of The Bill,11.0,Newbury,0.18,41.15,101.52,6.11%,0.01,7.49,10.12,12.5,2.54,307.24,0.26,False,0,0,0,5.0,0,27/03/2021 10:22:23
