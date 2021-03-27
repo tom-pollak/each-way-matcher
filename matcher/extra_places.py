@@ -13,7 +13,7 @@ def update_odds_df(odds_df, horses, bookie):
     for horse in horses:
         data = horses[horse]
         values = pd.Series(horses[horse]).values
-        venue, time, _, _ = odds_df.query('horse == @horse').index.values[0]
+        venue, time, _, _ = odds_df.query("horse == @horse").index.values[0]
         odds_df.loc[idx[venue, time, horse, current_time], idx[bookie, data]] = values
         try:
             odds_df.drop((venue, time, horse, pd.NaT), inplace=True)
