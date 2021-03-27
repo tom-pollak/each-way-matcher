@@ -115,7 +115,6 @@ def create_race_df(races):
 
 def create_odds_df(races_df, races):
     headers = login_betfair()
-    horses = []
     horse_ids = {}
     bookies = set()
     for i in [x["bookies"].keys() for x in races]:
@@ -163,7 +162,7 @@ def create_odds_df(races_df, races):
     odds_df = odds_df.join(df_betfair)
 
     horse_id_df = pd.DataFrame(index=indexes, columns=["horse_id"])
-    for i, id in horse_id_df.iterrows():
+    for i, _ in horse_id_df.iterrows():
         horse_id_df.loc[i] = horse_ids[i[2]]
 
     return odds_df, horse_id_df

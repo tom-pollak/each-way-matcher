@@ -258,7 +258,7 @@ def get_race(race_time, venue, horse):
         got_horse = False
     else:
         got_horse = True
-    return markets_ids, selection_id, got_horse, horse
+    return markets_ids, selection_id, got_horse, target_horse
 
 
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):

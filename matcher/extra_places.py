@@ -33,7 +33,7 @@ def run_extra_places():
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
     driver = setup_selenium()
     setup_betfair_scrape(driver, tab=0)
-    for (venue, time), race in races_df.iterrows():
+    for _, race in races_df.iterrows():
         get_site(driver, race.win_market_id, tab=0)
         horses = scrape_odds(driver, tab=0)
         update_odds_df(odds_df, horses, "Betfair Exchange Win")
