@@ -12,11 +12,15 @@ def update_odds_df(odds_df, horses, bookie):
     current_time = datetime.datetime.now()
     for horse in horses:
         data = horses[horse]
-        values_index = pd.MultiIndex.from_product([[bookie], data.keys()], names=['bookies', 'data'])
+        values_index = pd.MultiIndex.from_product(
+            [[bookie], data.keys()], names=["bookies", "data"]
+        )
         values = pd.Series(horses[horse].values(), index=values_index)
         try:
-            venue, time, _, _ = odds_df.query('horse == @horse').index.values[0]
-            odds_df.loc[idx[venue, time, horse, current_time], idx[bookie, data]] = values
+            venue, time, _, _ = odds_df.query("horse == @horse").index.values[0]
+            odds_df.loc[
+                idx[venue, time, horse, current_time], idx[bookie, data]
+            ] = values
         except IndexError:
             pass
         try:
@@ -35,6 +39,6 @@ def run_extra_places():
         horses = scrape_odds(driver, tab=0)
         update_odds_df(odds_df, horses, "Betfair Exchange Win")
         break
-        #get_site(driver, race.place_market_id, tab=0)
-        #horses = scrape_odds(driver, 0)
-        #update_odds_df(odds_df, horses, "Betfair Exchange Place")
+        # get_site(driver, race.place_market_id, tab=0)
+        # horses = scrape_odds(driver, 0)
+        # update_odds_df(odds_df, horses, "Betfair Exchange Place")
