@@ -25,10 +25,6 @@ def update_odds_df(odds_df, horses, win_place):
 
 def run_extra_places():
     races_df, odds_df, min_runners_df, horse_id_df = generate_df()
-    print(races_df)
-    print(odds_df)
-    print(min_runners_df)
-    print(horse_id_df)
     # driver = setup_selenium()
     # setup_betfair_scrape(driver, tab=0)
     # for (venue, time), race in races_df.iterrows():
