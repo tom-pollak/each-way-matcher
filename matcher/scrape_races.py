@@ -158,9 +158,9 @@ def create_odds_df(races_df, races):
                 [],
             ],
         ),
-        index=df.index,
+        index=odds_df.index,
     )
-    odds_df = df.join(df_betfair)
+    odds_df = odds_df.join(df_betfair)
 
     horse_id_df = pd.DataFrame(index=indexes, columns=["horse_id"])
     for i, id in horse_id_df.iterrows():
