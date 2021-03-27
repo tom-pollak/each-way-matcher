@@ -72,9 +72,9 @@ def create_race_df(races):
     data = []
     indexes = []
     for i, race in enumerate(races):
-        hour, min = race["time"].split(":")
+        hour, mins = race["time"].split(":")
         time = datetime.datetime.combine(
-            datetime.date.today(), datetime.time(int(hour), int(min))
+            datetime.date.today(), datetime.time(int(hour), int(mins))
         )
         event_id = get_event(race["venue"], time, headers)
         if not event_id:
