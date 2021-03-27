@@ -136,7 +136,7 @@ def create_odds_df(races_df, races):
     columns = pd.MultiIndex.from_product(
         [bookies, data, []], names=["bookies", "data", "current_time"]
     )
-    df = pd.DataFrame(index=indexes, columns=columns)
+    odds_df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
         columns=pd.MultiIndex.from_product(
             [
@@ -160,15 +160,13 @@ def create_odds_df(races_df, races):
         ),
         index=df.index,
     )
-    df = df.join(df_betfair)
-    idx = pd.IndexSlice
-    df_horse_id = pd.DataFrame(index=indexes, columns=["horse_id"])
-    for i, id in df_horse_id.iterrows():
-        print(i, id)
+    odds_df = df.join(df_betfair)
 
-    # for i, _ in df_horse_id.xs("horse_id", level=1, drop_level=False, axis=1).iterrows():
-    #     df.loc[i, idx[:, "horse_id", :]] = horse_ids[i[2]]
-    return df
+    horse_id_df = pd.DataFrame(index=indexes, columns=["horse_id"])
+    for i, id in horse_id_df.iterrows():
+        horse_id_df.loc[i] = horse_ids[i[2]]
+
+    return odds_df, horse_id_df
 
 
 def create_min_runners_df(races_df, odds_df, races):
@@ -189,6 +187,6 @@ def create_min_runners_df(races_df, odds_df, races):
 def generate_df():
     races = get_extra_place_races()
     races_df = create_race_df(races)
-    odds_df = create_odds_df(races_df, races)
+    odds_df, horse_id_df = create_odds_df(races_df, races)
     min_runners_df = create_min_runners_df(races_df, odds_df, races)
-    return races_df, odds_df, min_runners_df
+    return races_df, odds_df, min_runners_df, horse_id_df
