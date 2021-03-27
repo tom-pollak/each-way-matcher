@@ -128,9 +128,12 @@ def create_odds_df(races_df, races):
 
     for race in races_df.iterrows():
         key = race[0]
-        for horse in get_horses(race[1].event_id, key[1], headers)[1]["runners"]:
-            indexes.append((key[0], key[1], horse["runnerName"]))
-            horse_ids[horse["runnerName"]] = horse["selectionId"]
+        try:
+            for horse in get_horses(race[1].event_id, key[1], headers)[1]["runners"]:
+                indexes.append((key[0], key[1], horse["runnerName"]))
+                horse_ids[horse["runnerName"]] = horse["selectionId"]
+        except ValueError:
+            continue
 
     indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
     columns = pd.MultiIndex.from_product(
