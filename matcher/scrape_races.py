@@ -133,7 +133,7 @@ def create_odds_df(races_df, races):
 
     indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
     columns = pd.MultiIndex.from_product(
-            [bookies, ["back_odds"]], names=["bookies", "data"]
+        [bookies, ["back_odds"]], names=["bookies", "data"]
     )
     odds_df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
