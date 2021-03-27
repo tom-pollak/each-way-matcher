@@ -52,9 +52,13 @@ def scrape_odds(driver, tab):
         for i in range(3):
             try:
                 back_odd_button = back_odds_buttons[i]
-                back_odds = float(back_odd_button.find("span", class_="bet-button-price").text)
+                back_odds = float(
+                    back_odd_button.find("span", class_="bet-button-price").text
+                )
                 back_availiable = float(
-                    back_odd_button.find("span", class_="bet-button-size").text.replace("£", "")
+                    back_odd_button.find("span", class_="bet-button-size").text.replace(
+                        "£", ""
+                    )
                 )
                 horses[name]["back_odds_%s" % str(i + 1)] = back_odds
                 horses[name]["back_avaliable_%s" % str(i + 1)] = back_availiable
@@ -63,9 +67,13 @@ def scrape_odds(driver, tab):
 
             try:
                 lay_odd_button = lay_odds_buttons[i]
-                lay_odds = float(lay_odd_button.find("span", class_="bet-button-price").text)
+                lay_odds = float(
+                    lay_odd_button.find("span", class_="bet-button-price").text
+                )
                 lay_avaliable = float(
-                    lay_odd_button.find("span", class_="bet-button-size").text.replace("£", "")
+                    lay_odd_button.find("span", class_="bet-button-size").text.replace(
+                        "£", ""
+                    )
                 )
                 horses[name]["lay_odds_%s" % str(i + 1)] = lay_odds
                 horses[name]["lay_avaliable_%s" % str(i + 1)] = lay_avaliable
