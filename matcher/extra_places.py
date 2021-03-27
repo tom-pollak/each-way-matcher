@@ -9,29 +9,30 @@ from .william_hill import get_william_hill_page
 
 def update_odds_df(odds_df, horses, win_place):
     idx = pd.IndexSlice
+    current_time = datetime.datetime.now()
     for horse in horses:
         try:
-            for data in horses[horse]:
-                mask = [idx[:, :, horse], idx["Betfair Exchange %s" % win_place, data]]
-                series_data = pd.Series([[]])
-                if odds_df.loc[mask[0], mask[1]].isnull().values.any():
-                    odds_df.at[mask[0], mask[1]] = [1, 2, 3]
-                else:
-                    odds_df.at[mask[0], mask[1]].append(series_data)
-                print(odds_df.loc[mask[0], mask[1]])
+            data = horses[horse]
+            values = list(horses[horse].values())
+            mask = [
+                idx[:, :, horse, current_time],
+                idx["Betfair Exchange %s" % win_place, data],
+            ]
+            odds_df.loc[mask[0], mask[1]] = values
+            print(odds_df.loc[mask[0], mask[1]])
         except KeyError:
             continue
 
 
 def run_extra_places():
     races_df, odds_df, min_runners_df, horse_id_df = generate_df()
-    # driver = setup_selenium()
-    # setup_betfair_scrape(driver, tab=0)
-    # for (venue, time), race in races_df.iterrows():
-    #     get_site(driver, race.win_market_id, tab=0)
-    #     horses = scrape_odds(driver, 0)
-    #     update_odds_df(odds_df, horses, "Win")
-    #     get_site(driver, race.place_market_id, tab=0)
-    #     horses = scrape_odds(driver, 0)
-    #     update_odds_df(odds_df, horses, "Place")
-    #     break
+    driver = setup_selenium()
+    setup_betfair_scrape(driver, tab=0)
+    for (venue, time), race in races_df.iterrows():
+        get_site(driver, race.win_market_id, tab=0)
+        horses = scrape_odds(driver, 0)
+        update_odds_df(odds_df, horses, "Win")
+        # get_site(driver, race.place_market_id, tab=0)
+        # horses = scrape_odds(driver, 0)
+        # update_odds_df(odds_df, horses, "Place")
+        # break
