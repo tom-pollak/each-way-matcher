@@ -2,7 +2,7 @@ import datetime
 import pandas as pd
 from .run import setup_selenium
 from .scrape_races import generate_df
-from .betfair_scrape import setup_betfair_scrape, get_site, scrape_odds_betfair
+from .scrape_betfair import setup_scrape_betfair, get_site, scrape_odds_betfair
 from .william_hill import get_william_hill_page, scrape_odds_william_hill
 
 
@@ -53,7 +53,7 @@ def run_extra_places():
     tab = 0
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
     driver = setup_selenium()
-    setup_betfair_scrape(driver, tab=0)
+    setup_scrape_betfair(driver, tab=0)
     for index, race in (
         races_df.sort_values("time", ascending=True).sort_index(level=1).iterrows()
     ):

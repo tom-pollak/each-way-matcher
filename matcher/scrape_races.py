@@ -76,7 +76,7 @@ def create_race_df(races):
         time = datetime.datetime.combine(
             datetime.date.today(), datetime.time(int(hour), int(mins))
         )
-        event_id = get_event(race["venue"], time, headers)
+        event_id = get_event(race["venue"], headers)
         if not event_id:
             continue
         try:

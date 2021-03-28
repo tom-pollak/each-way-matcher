@@ -127,7 +127,6 @@ def sporting_index_bet(driver, race):
             except TimeoutException:
                 try:
                     click_betslip(driver)
-                    close_bet(driver)
                 except TimeoutException:
                     pass
         raise ValueError("Couldn't close bet")

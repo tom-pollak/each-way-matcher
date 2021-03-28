@@ -85,7 +85,7 @@ def get_betfair_balance_in_bets():
     return balance_in_bets
 
 
-def get_event(venue, race_time, headers):
+def get_event(venue, headers):
     race_time_after = race_time + datetime.timedelta(0, 60)
     race_time = race_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     race_time_after = race_time_after.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -93,10 +93,8 @@ def get_event(venue, race_time, headers):
 
     event_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listEvents", \
-        "params": {"filter": {"eventTypeIds": ["7"], "marketTypeCodes": ["WIN"], \
-        "marketStartTime": {"from": "%s", "to": "%s"}, "venues":["%s"]}, \
-        "sort":"FIRST_TO_START","maxResults":"1"}}'
-        % (race_time, race_time_after, venue)
+        "params": {"filter": {"eventTypeIds": ["7"], "venues":["%s"]}}}'
+        % (venue)
     )
     event_response = call_api(event_req, headers)
 
@@ -248,7 +246,7 @@ def get_betfair_balance(headers):
 def get_race(race_time, venue, horse):
     headers = login_betfair()
     race_time = datetime.datetime.strptime(race_time, "%d %b %H:%M %Y")
-    event_id = get_event(venue, race_time, headers)
+    event_id = get_event(venue, headers)
     if not event_id:
         return 0, 0, False, horse
 
