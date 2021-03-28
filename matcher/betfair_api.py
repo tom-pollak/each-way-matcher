@@ -86,9 +86,6 @@ def get_betfair_balance_in_bets():
 
 
 def get_event(venue, headers):
-    race_time_after = race_time + datetime.timedelta(0, 60)
-    race_time = race_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-    race_time_after = race_time_after.strftime("%Y-%m-%dT%H:%M:%SZ")
     venue = venue_names.get(venue, venue)
 
     event_req = (
