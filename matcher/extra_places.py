@@ -78,4 +78,4 @@ def run_extra_places():
                 sites[site]["get"](driver, index[0], index[1], tab)
                 horses = sites[site]["scrape"](driver, tab)
                 update_odds_df(odds_df, horses, site)
-        # break
+            break  # debug
