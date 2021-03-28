@@ -22,7 +22,7 @@ from .sporting_index import (
     get_balance_sporting_index,
 )
 from .betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
-from .betfair_scrape import get_site, scrape_odds
+from .betfair_scrape import get_site, scrape_odds_betfair
 from .calculate import (
     calculate_stakes,
     calculate_profit,
