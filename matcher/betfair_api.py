@@ -86,7 +86,6 @@ def get_betfair_balance_in_bets():
     return balance_in_bets
 
 
-
 def get_horse_id(horses, target_horse):
     for horse in horses["runners"]:
         if horse["runnerName"].lower() == target_horse.lower():
@@ -114,6 +113,7 @@ def get_horse_id(horses, target_horse):
 
 def get_horses(venue, race_time, headers):
     from dateutil import tz
+
     markets = []
     markets_ids = {}
     markets_req = (
@@ -128,7 +128,9 @@ def get_horses(venue, race_time, headers):
     try:
         market_type = markets_response["result"]
         for market in market_type:
-            start_time = datetime.datetime.strptime(market['marketStartTime'], "%Y-%m-%dT%H:%M:%S.000Z")
+            start_time = datetime.datetime.strptime(
+                market["marketStartTime"], "%Y-%m-%dT%H:%M:%S.000Z"
+            )
             if bool(time.localtime().tm_isdst):
                 start_time += datetime.timedelta(0, 0, 0, 0, 0, 1)
             if race_time == start_time:

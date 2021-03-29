@@ -12,7 +12,7 @@ def setup_scrape_betfair(driver, tab):
         "https://www.betfair.com/exchange/plus/horse-racing/",
     )
     time.sleep(0.53)
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
     ).click()
     driver.switch_to.default_content()

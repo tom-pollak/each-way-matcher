@@ -33,6 +33,7 @@ def update_odds_df(odds_df, horses, bookie):
         except KeyError:
             pass
 
+
 def setup_sites(races_df, odds_df, bookies_df, horse_id_df):
     idx = pd.IndexSlice
     tab = 0
@@ -41,7 +42,11 @@ def setup_sites(races_df, odds_df, bookies_df, horse_id_df):
     for index, race in (
         races_df.sort_values("time", ascending=True).sort_index(level=1).iterrows()
     ):
-        sites = [site for site in enabled_sites if site in bookies_df.loc[index].index.get_level_values('bookies')]
+        sites = [
+            site
+            for site in enabled_sites
+            if site in bookies_df.loc[index].index.get_level_values("bookies")
+        ]
         if sites:
             tab = create_tab_id(
                 driver, bookies_df, index[0], index[1], "Betfair Exchange Win", tab
@@ -62,6 +67,7 @@ def setup_sites(races_df, odds_df, bookies_df, horse_id_df):
                 enabled_sites[site]["get"](driver, index[0], index[1], tab)
                 horses = enabled_sites[site]["scrape"](driver, tab)
                 update_odds_df(odds_df, horses, site)
+
 
 def get_tab_id(bookies_df, venue, time, site):
     return bookies_df.at[(venue, time), (site, "tab_id")]
@@ -96,6 +102,5 @@ def run_extra_places():
     setup_sites(races_df, odds_df, bookies_df, horse_id_df)
     while True:
         get_odds(driver, odds_df, bookies_df)
-        return #debug
+        return  # debug
         time.sleep(5)
-
