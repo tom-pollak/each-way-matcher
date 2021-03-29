@@ -38,9 +38,19 @@ def scrape_odds_william_hill(driver, tab):
     )
     rows = table.find_elements_by_css_selector("tr[role='row']")
     for row in rows:
-        name = WebDriverWait(row, 15).until(EC.visibility_of_element_located((By.CLASS_NAME, "selection__title"))).text
-        odds = WebDriverWait(row, 15).until(EC.visibility_of_element_located((By.CLASS_NAME, "sp-betbutton"))).text.split("/")
+        name = (
+            WebDriverWait(row, 15)
+            .until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "selection__title"))
+            )
+            .text
+        )
+        odds = (
+            WebDriverWait(row, 15)
+            .until(EC.visibility_of_element_located((By.CLASS_NAME, "sp-betbutton")))
+            .text.split("/")
+        )
         odds = float(odds[0]) / float(odds[1]) + 1
-        if '- N/R' not in name:
+        if "- N/R" not in name:
             horses[name] = {"back_odds": odds}
     return horses
