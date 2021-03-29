@@ -1,4 +1,5 @@
 import datetime
+import time
 import pandas as pd
 from .run import setup_selenium
 from .scrape_races import generate_df
@@ -32,6 +33,35 @@ def update_odds_df(odds_df, horses, bookie):
         except KeyError:
             pass
 
+def setup_sites(races_df, odds_df, bookies_df, horse_id_df):
+    idx = pd.IndexSlice
+    tab = 0
+    driver = setup_selenium()
+    setup_scrape_betfair(driver, tab=0)
+    for index, race in (
+        races_df.sort_values("time", ascending=True).sort_index(level=1).iterrows()
+    ):
+        sites = [site for site in enabled_sites if site in bookies_df.loc[index].index.get_level_values('bookies')]
+        if sites:
+            tab = create_tab_id(
+                driver, bookies_df, index[0], index[1], "Betfair Exchange Win", tab
+            )
+            get_site(driver, race.win_market_id, tab)
+            horses = scrape_odds_betfair(driver, tab)
+            update_odds_df(odds_df, horses, "Betfair Exchange Win")
+
+            tab = create_tab_id(
+                driver, bookies_df, index[0], index[1], "Betfair Exchange Place", tab
+            )
+            get_site(driver, race.place_market_id, tab)
+            horses = scrape_odds_betfair(driver, tab)
+            update_odds_df(odds_df, horses, "Betfair Exchange Place")
+
+            for site in sites:
+                tab = create_tab_id(driver, bookies_df, index[0], index[1], site, tab)
+                enabled_sites[site]["get"](driver, index[0], index[1], tab)
+                horses = enabled_sites[site]["scrape"](driver, tab)
+                update_odds_df(odds_df, horses, site)
 
 def get_tab_id(bookies_df, venue, time, site):
     return bookies_df.at[(venue, time), (site, "tab_id")]
@@ -62,33 +92,10 @@ def close_races(driver, races_df, bookies_df):
 
 
 def run_extra_places():
-    tab = 0
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
-    return
-    driver = setup_selenium()
-    setup_scrape_betfair(driver, tab=0)
-    for index, race in (
-        races_df.sort_values("time", ascending=True).sort_index(level=1).iterrows()
-    ):
-        sites = [site for site in enabled_sites if site in horse_id_df[index].columns]
-        if sites:
-            tab = create_tab_id(
-                driver, bookies_df, index[0], index[1], "Betfair Exchange Win", tab
-            )
-            get_site(driver, race.win_market_id, tab)
-            horses = scrape_odds_betfair(driver, tab)
-            update_odds_df(odds_df, horses, "Betfair Exchange Win")
+    setup_sites(races_df, odds_df, bookies_df, horse_id_df)
+    while True:
+        get_odds(driver, odds_df, bookies_df)
+        return #debug
+        time.sleep(5)
 
-            tab = create_tab_id(
-                driver, bookies_df, index[0], index[1], "Betfair Exchange Place", tab
-            )
-            get_site(driver, race.place_market_id, tab)
-            horses = scrape_odds_betfair(driver, tab)
-            update_odds_df(odds_df, horses, "Betfair Exchange Place")
-
-            for site in sites:
-                tab = create_tab_id(driver, bookies_df, index[0], index[1], site, tab)
-                sites[site]["get"](driver, index[0], index[1], tab)
-                horses = sites[site]["scrape"](driver, tab)
-                update_odds_df(odds_df, horses, site)
-            break  # debug

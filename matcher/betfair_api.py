@@ -3,6 +3,7 @@ import json
 import os
 import difflib
 import requests
+import time
 
 from urllib import error, request
 from dotenv import load_dotenv
@@ -85,26 +86,6 @@ def get_betfair_balance_in_bets():
     return balance_in_bets
 
 
-def get_event(venue, headers):
-    venue = venue_names.get(venue, venue)
-
-    event_req = (
-        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listEvents", \
-        "params": {"filter": {"eventTypeIds": ["7"], "venues":["%s"]}}}'
-        % (venue)
-    )
-    event_response = call_api(event_req, headers)
-
-    try:
-        event_id = event_response["result"][0]["event"]["id"]
-        return event_id
-    except (KeyError, IndexError):
-        try:
-            print("Error in getting event: %s" % event_response["error"])
-        except KeyError:
-            pass
-    return False
-
 
 def get_horse_id(horses, target_horse):
     for horse in horses["runners"]:
@@ -131,27 +112,30 @@ def get_horse_id(horses, target_horse):
     return None, target_horse
 
 
-def get_horses(event_id, race_time, headers):
+def get_horses(venue, race_time, headers):
+    from dateutil import tz
+    markets = []
     markets_ids = {}
-    race_time_after = race_time + datetime.timedelta(0, 60)
-    race_time = race_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-    race_time_after = race_time_after.strftime("%Y-%m-%dT%H:%M:%SZ")
-
     markets_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
-        "params": {"filter":{"eventIds": ["%s"], "marketStartTime": {"from": "%s", "to": "%s"}}, \
-        "maxResults": "10", "sort":"FIRST_TO_START", \
-        "marketProjection": ["RUNNER_DESCRIPTION"]}}'
-        % (event_id, race_time, race_time_after)
+        "params": {"filter":{"venues": ["%s"], "marketTypeCodes": ["WIN", "PLACE"], "bspOnly": "True"},\
+        "maxResults": "1000", "sort":"FIRST_TO_START", \
+        "marketProjection": ["RUNNER_DESCRIPTION", "MARKET_START_TIME"]}, "id": 1}'
+        % (venue)
     )
     markets_response = call_api(markets_req, headers)
 
     try:
         market_type = markets_response["result"]
-        if len(market_type) < 2:
-            print(market_type)
-            raise ValueError("No market_type returned")
-    except KeyError:
+        for market in market_type:
+            start_time = datetime.datetime.strptime(market['marketStartTime'], "%Y-%m-%dT%H:%M:%S.000Z")
+            if bool(time.localtime().tm_isdst):
+                start_time += datetime.timedelta(0, 0, 0, 0, 0, 1)
+            if race_time == start_time:
+                markets.append(market)
+        if len(markets) < 2:
+            raise ValueError("Not enough markets returned returned")
+    except KeyError as e:
         try:
             print("Error in getting market: %s" % markets_response["error"])
             print(event_id, race_time)
@@ -160,23 +144,14 @@ def get_horses(event_id, race_time, headers):
             print(event_id, race_time)
         return None, None
 
-    total_matched = 0
     market_type_index = 0
-    changed_index = False
-    for i, market in enumerate(market_type):
+    for i, market in enumerate(markets):
         if market["marketName"] == "To Be Placed":
             markets_ids["Place"] = market["marketId"]
-            market_type_index = i
-            changed_index = True
-        elif market["totalMatched"] > total_matched:
+        else:
             markets_ids["Win"] = market["marketId"]
-            total_matched = market["totalMatched"]
-    if not changed_index:
-        print(market_type)
-        print()
-        print(markets_response)
-        return None, None
-    return markets_ids, market_type[market_type_index]
+            horses = market
+    return markets_ids, horses
 
 
 def cancel_unmatched_bets(headers):
@@ -243,11 +218,7 @@ def get_betfair_balance(headers):
 def get_race(race_time, venue, horse):
     headers = login_betfair()
     race_time = datetime.datetime.strptime(race_time, "%d %b %H:%M %Y")
-    event_id = get_event(venue, headers)
-    if not event_id:
-        return 0, 0, False, horse
-
-    markets_ids, horses = get_horses(event_id, race_time, headers)
+    markets_ids, horses = get_horses(venue, race_time, headers)
     selection_id, target_horse = get_horse_id(horses, horse)
     if selection_id is None:
         got_horse = False
@@ -273,8 +244,3 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
         (lay_win, win_matched, win_stake, win_stake_matched, win_odds),
         (lay_place, place_matched, place_stake, place_stake_matched, place_odds),
     )
-
-
-# print(get_betfair_balance_in_bets())
-# get_event('Cagnes-Sur-Mer', race_time, headers)
-# print(get_betfair_balance_in_bets())
