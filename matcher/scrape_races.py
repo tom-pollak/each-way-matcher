@@ -77,10 +77,12 @@ def create_race_df(races):
             datetime.date.today(), datetime.time(int(hour), int(mins))
         )
         event_id = get_event(race["venue"], headers)
+        print(event_id)
         if not event_id:
             continue
         try:
             market_ids, _ = get_horses(event_id, time, headers)
+            print(market_ids)
             win_market_id = market_ids["Win"]
             place_market_id = market_ids["Place"]
         except ValueError:

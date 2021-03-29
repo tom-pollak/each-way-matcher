@@ -64,6 +64,7 @@ def close_races(driver, races_df, bookies_df):
 def run_extra_places():
     tab = 0
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
+    return
     driver = setup_selenium()
     setup_scrape_betfair(driver, tab=0)
     for index, race in (
