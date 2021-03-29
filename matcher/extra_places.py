@@ -6,13 +6,13 @@ from .scrape_betfair import setup_scrape_betfair, get_site, scrape_odds_betfair
 from .william_hill import get_william_hill_page, scrape_odds_william_hill
 
 
+idx = pd.IndexSlice
 enabled_sites = {
     "William Hill": {"get": get_william_hill_page, "scrape": scrape_odds_william_hill}
 }
 
 
 def update_odds_df(odds_df, horses, bookie):
-    idx = pd.IndexSlice
     current_time = datetime.datetime.now()
     for horse in horses:
         data = horses[horse]
@@ -46,6 +46,18 @@ def create_tab_id(driver, bookies_df, venue, time, site, tab):
 
 
 def get_odds(driver, odds_df, bookies_df):
+    for tab in range(max(bookies_df.loc[:, idx[:, "tab_id"]])):
+        row = bookies_df.at[:, idx[:, tab]]
+        print(row)
+        if row:
+            site = row.columns.get_level_values("bookies")
+            race = row.index
+            print(site, race)
+            horses = sites[site]["scrape"](driver, tab)
+            update_odds_df(odds_df, horses, site)
+
+
+def close_races(driver, races_df, bookies_df):
     pass
 
 
