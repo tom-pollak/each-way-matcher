@@ -34,11 +34,9 @@ def update_odds_df(odds_df, horses, bookie):
             pass
 
 
-def setup_sites(races_df, odds_df, bookies_df, horse_id_df):
+def setup_sites(driver, races_df, odds_df, bookies_df, horse_id_df):
     idx = pd.IndexSlice
     tab = 0
-    driver = setup_selenium()
-    setup_scrape_betfair(driver, tab=0)
     for index, race in (
         races_df.sort_values("time", ascending=True).sort_index(level=1).iterrows()
     ):
@@ -99,7 +97,9 @@ def close_races(driver, races_df, bookies_df):
 
 def run_extra_places():
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
-    setup_sites(races_df, odds_df, bookies_df, horse_id_df)
+    driver = setup_selenium()
+    setup_scrape_betfair(driver, tab=0)
+    setup_sites(driver, races_df, odds_df, bookies_df, horse_id_df)
     while True:
         get_odds(driver, odds_df, bookies_df)
         return  # debug
