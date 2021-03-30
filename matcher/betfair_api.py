@@ -136,15 +136,14 @@ def get_horses(venue, race_time, headers):
                 markets.append(market)
         if len(markets) < 2:
             raise ValueError("Not enough markets returned returned")
-    except KeyError as e:
+    except KeyError:
         try:
             print("Error in getting market: %s" % markets_response["error"])
         except KeyError:
             print("Unknown error getting market: %s" % markets_response)
         return None, None
 
-    market_type_index = 0
-    for i, market in enumerate(markets):
+    for market in markets:
         if market["marketName"] == "To Be Placed":
             markets_ids["Place"] = market["marketId"]
         else:

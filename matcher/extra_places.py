@@ -38,8 +38,7 @@ def update_odds_df(odds_df, horses, bookie):
             pass
 
 
-def setup_sites(driver, races_df, odds_df, bookies_df, horse_id_df):
-    idx = pd.IndexSlice
+def setup_sites(driver, races_df, odds_df, bookies_df):
     tab = 0
     for index, race in (
         races_df.query("time > @datetime.datetime.now()")
@@ -91,7 +90,6 @@ def get_odds(driver, odds_df, bookies_df, tab):
         tabs = bookies_df.loc[:, idx[:, "tab_id"]]
         row = tabs.where(tabs == i).dropna(how="all").dropna(how="all", axis=1)
         site = row.columns.get_level_values("bookies")[0]
-        race = row.index
         if site in enabled_sites:
             horses = enabled_sites[site]["scrape"](driver, i)
         else:
@@ -107,7 +105,7 @@ def run_extra_places():
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
     driver = setup_selenium()
     setup_scrape_betfair(driver, tab=0)
-    tab = setup_sites(driver, races_df, odds_df, bookies_df, horse_id_df)
+    tab = setup_sites(driver, races_df, odds_df, bookies_df)
     odds_df.sort_index(0, inplace=True)
     while True:
         get_odds(driver, odds_df, bookies_df, tab)
