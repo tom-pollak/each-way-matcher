@@ -140,10 +140,8 @@ def get_horses(venue, race_time, headers):
     except KeyError as e:
         try:
             print("Error in getting market: %s" % markets_response["error"])
-            print(event_id, race_time)
         except KeyError:
             print("Unknown error getting market: %s" % markets_response)
-            print(event_id, race_time)
         return None, None
 
     market_type_index = 0
