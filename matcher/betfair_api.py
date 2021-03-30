@@ -113,18 +113,16 @@ def get_horse_id(horses, target_horse):
 
 def get_horses(venue, race_time, headers):
     from dateutil import tz
-
     markets = []
     markets_ids = {}
     markets_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
-        "params": {"filter":{"venues": ["%s"], "marketTypeCodes": ["WIN", "PLACE"], "bspOnly": "True"},\
+        "params": {"filter": {"venues": ["%s"], "marketTypeCodes": ["WIN", "PLACE"], "bspOnly": true}, \
         "maxResults": "1000", "sort":"FIRST_TO_START", \
-        "marketProjection": ["RUNNER_DESCRIPTION", "MARKET_START_TIME"]}, "id": 1}'
+        "marketProjection": ["RUNNER_DESCRIPTION", "MARKET_START_TIME"]}}'
         % (venue)
     )
     markets_response = call_api(markets_req, headers)
-
     try:
         market_type = markets_response["result"]
         for market in market_type:

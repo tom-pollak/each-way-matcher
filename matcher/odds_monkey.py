@@ -22,7 +22,7 @@ from .sporting_index import (
     get_balance_sporting_index,
 )
 from .betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
-from .scrape_betfair import get_site, scrape_odds_betfair
+from .scrape_betfair import get_betfair_page, scrape_odds_betfair
 from .calculate import (
     calculate_stakes,
     calculate_profit,
@@ -332,9 +332,9 @@ def betfair_bet(driver, race):
         return
 
     race["ew_stake"] = bookie_stake
-    get_site(driver, market_ids["Win"], tab=3)
+    get_betfair_page(driver, market_ids["Win"], tab=3)
     win_horse_odds = scrape_odds_betfair(driver, tab=3)
-    get_site(driver, market_ids["Place"], tab=3)
+    get_betfair_page(driver, market_ids["Place"], tab=3)
     place_horse_odds = scrape_odds_betfair(driver, tab=3)
     if (
         win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]

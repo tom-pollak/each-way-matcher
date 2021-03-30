@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 def get_william_hill_page(driver, venue, time, tab):
@@ -39,19 +40,27 @@ def scrape_odds_william_hill(driver, tab):
     )
     rows = table.find_elements_by_css_selector("tr[role='row']")
     for row in rows:
-        name = (
-            WebDriverWait(row, 15)
-            .until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "selection__title"))
-            )
-            .text
-        )
-        odds = (
-            WebDriverWait(row, 15)
-            .until(EC.visibility_of_element_located((By.CLASS_NAME, "sp-betbutton")))
-            .text.split("/")
-        )
-        odds = float(odds[0]) / float(odds[1]) + 1
+        for _ in range(5):
+            try:
+                name = (
+                    WebDriverWait(row, 60, ignored_exceptions=(StaleElementReferenceException, ))
+                    .until(
+                        EC.visibility_of_element_located((By.CLASS_NAME, "selection__title"))
+                    )
+                    .text
+                )
+                odds = (
+                    WebDriverWait(row, 60, ignored_exceptions=(StaleElementReferenceException, ))
+                    .until(EC.visibility_of_element_located((By.CLASS_NAME, "sp-betbutton")))
+                    .text.split("/")
+                )
+                break
+            except StaleElementReferenceException:
+                pass
+        if odds[0] == 'EVS':
+            odds = 1
+        else:
+            odds = float(odds[0]) / float(odds[1]) + 1
         if "- N/R" not in name:
             horses[name] = {"back_odds": odds}
     return horses

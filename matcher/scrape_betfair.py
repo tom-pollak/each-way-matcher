@@ -18,7 +18,7 @@ def setup_scrape_betfair(driver, tab):
     driver.switch_to.default_content()
 
 
-def get_site(driver, market_id, tab):
+def get_betfair_page(driver, market_id, tab):
     driver.switch_to.window(driver.window_handles[tab])
     driver.get(
         "https://www.betfair.com/exchange/plus/horse-racing/market/%s" % str(market_id),
