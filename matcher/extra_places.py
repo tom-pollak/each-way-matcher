@@ -1,5 +1,4 @@
 import datetime
-import time
 import pandas as pd
 from .run import setup_selenium
 from .scrape_races import generate_df
