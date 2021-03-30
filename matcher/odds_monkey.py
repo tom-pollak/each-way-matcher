@@ -492,7 +492,7 @@ def start_betfair(driver):
             sys.stdout.flush()
 
 
-def scrape(driver):
+def scrape(driver, lay):
     START_TIME = time()
     setup_sporting_index(driver)
     open_betfair_oddsmonkey(driver)
@@ -505,7 +505,8 @@ def scrape(driver):
             if count % 10 == 0:
                 show_info(count, START_TIME)
 
-        start_betfair(driver)
+        if lay:
+            start_betfair(driver)
         start_sporting_index(driver)
         sys.stdout.flush()
         sleep(REFRESH_TIME)

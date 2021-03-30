@@ -104,7 +104,7 @@ def login(driver):
     sys.stdout.flush()
 
 
-def run_matcher():
+def run_matcher(lay):
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
     check_vars()
     while True:
@@ -112,7 +112,7 @@ def run_matcher():
         sys.stdout.flush()
         try:
             login(driver)
-            scrape(driver)
+            scrape(driver, lay)
         except ValueError as e:
             sys.stdout.flush()
             print("ERROR: %s\n" % e)

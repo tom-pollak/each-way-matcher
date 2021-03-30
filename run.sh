@@ -5,7 +5,7 @@ cd "$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 echo -e "\n" 2> /dev/null 3<backup.log 3<&- >>backup.log
 git pull -q
 
-xvfb-run -a python3 -m matcher --run --stats | tee -a debug.log backup.log > /dev/null
+xvfb-run -a python3 -m matcher --run --lay --stats | tee -a debug.log backup.log > /dev/null
 
 git pull -q
 python3 -m matcher --graph > /dev/null

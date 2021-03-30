@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(
     description="Automated Each Way Matcher", prog="python3 -m matcher"
 )
 parser.add_argument("-r", "--run", help="Run the Each-way matcher", action="store_true")
+parser.add_argument("-l", "--lay", help="Lay on betfair", action="store_true")
 parser.add_argument(
     "-e", "--extra", help="Run Extra Places matcher", action="store_true"
 )
@@ -30,7 +31,7 @@ if args.run and args.extra:
     print("Can't run both Each-way matcher and Extra place matcher")
 
 elif args.run:
-    run_matcher()
+    run_matcher(args.lay)
 
 elif args.extra:
     run_extra_places()
