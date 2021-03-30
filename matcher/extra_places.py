@@ -42,7 +42,10 @@ def setup_sites(driver, races_df, odds_df, bookies_df, horse_id_df):
     idx = pd.IndexSlice
     tab = 0
     for index, race in (
-        races_df.query('time > @datetime.datetime.now()').sort_values("time", ascending=True).sort_index(level=1).iterrows()
+        races_df.query("time > @datetime.datetime.now()")
+        .sort_values("time", ascending=True)
+        .sort_index(level=1)
+        .iterrows()
     ):
         sites = [
             site
@@ -69,7 +72,7 @@ def setup_sites(driver, races_df, odds_df, bookies_df, horse_id_df):
                 enabled_sites[site]["get"](driver, index[0], index[1], tab)
                 horses = enabled_sites[site]["scrape"](driver, tab)
                 update_odds_df(odds_df, horses, site)
-                
+
     driver.switch_to.window(driver.window_handles[0])
     driver.close()
     return tab
@@ -86,7 +89,7 @@ def create_tab_id(driver, bookies_df, venue, time, site, tab):
 def get_odds(driver, odds_df, bookies_df, tab):
     for i in range(tab):
         tabs = bookies_df.loc[:, idx[:, "tab_id"]]
-        row = tabs.where(tabs == i).dropna(how='all').dropna(how='all', axis=1)
+        row = tabs.where(tabs == i).dropna(how="all").dropna(how="all", axis=1)
         site = row.columns.get_level_values("bookies")[0]
         race = row.index
         if site in enabled_sites:
@@ -111,5 +114,5 @@ def run_extra_places():
 
         # debug
         odds_df.sort_index(0, inplace=True)
-        print(odds_df.dropna(how='all').dropna(how='all', axis=1))
+        print(odds_df.dropna(how="all").dropna(how="all", axis=1))
         return

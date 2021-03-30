@@ -113,6 +113,7 @@ def get_horse_id(horses, target_horse):
 
 def get_horses(venue, race_time, headers):
     from dateutil import tz
+
     markets = []
     markets_ids = {}
     markets_req = (

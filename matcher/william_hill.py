@@ -43,21 +43,31 @@ def scrape_odds_william_hill(driver, tab):
         for _ in range(5):
             try:
                 name = (
-                    WebDriverWait(row, 60, ignored_exceptions=(StaleElementReferenceException, ))
+                    WebDriverWait(
+                        row, 60, ignored_exceptions=(StaleElementReferenceException,)
+                    )
                     .until(
-                        EC.visibility_of_element_located((By.CLASS_NAME, "selection__title"))
+                        EC.visibility_of_element_located(
+                            (By.CLASS_NAME, "selection__title")
+                        )
                     )
                     .text
                 )
                 odds = (
-                    WebDriverWait(row, 60, ignored_exceptions=(StaleElementReferenceException, ))
-                    .until(EC.visibility_of_element_located((By.CLASS_NAME, "sp-betbutton")))
+                    WebDriverWait(
+                        row, 60, ignored_exceptions=(StaleElementReferenceException,)
+                    )
+                    .until(
+                        EC.visibility_of_element_located(
+                            (By.CLASS_NAME, "sp-betbutton")
+                        )
+                    )
                     .text.split("/")
                 )
                 break
             except StaleElementReferenceException:
                 pass
-        if odds[0] == 'EVS':
+        if odds[0] == "EVS":
             odds = 1
         else:
             odds = float(odds[0]) / float(odds[1]) + 1
