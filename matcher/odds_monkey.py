@@ -234,7 +234,7 @@ def refresh_odds_monkey(driver, betfair=False):
             action.move_to_element(element)
             action.perform()
 
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 30).until(
                 EC.element_to_be_clickable(
                     (
                         By.XPATH,
@@ -243,7 +243,7 @@ def refresh_odds_monkey(driver, betfair=False):
                 )
             ).click()
             # wait until spinner disappeared
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 30).until(
                 EC.invisibility_of_element_located(
                     (
                         By.ID,

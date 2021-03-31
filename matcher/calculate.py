@@ -8,7 +8,7 @@ import pandas as pd
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
-MIN_PERCENTAGE_BALANCE = 0.4
+MIN_PERCENTAGE_BALANCE = 0.2
 RETURNS_CSV = os.environ.get("RETURNS_CSV")
 COMMISSION = float(os.environ.get("COMMISSION"))
 
@@ -125,7 +125,9 @@ def calculate_stakes(
     stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = stake_proporiton * max_stake
     min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
-    if max_stake > min_balance_staked > min_stake:
+    if min_balance_staked > max_stake:
+        stake_proporiton = 1
+    elif min_balance_staked > min_stake:
         stake_proporiton = min_balance_staked / max_stake
 
     bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
