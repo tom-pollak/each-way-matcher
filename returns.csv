@@ -1,7 +1,4 @@
 date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout,balance_in_betfair,current_time
-26 Mar 14:15 2021,New Heights,17.0,Lingfield,0.38,44.64,107.65,18.88%,0.07,18.96,23.88,17.5,3.45,302.73,2.99,False,0,0,0,5.0,0,26/03/2021 13:47:56
-26 Mar 16:55 2021,Book Of Verse,21.0,Dundalk,0.12,41.39,102.54,8.7%,0.01,15.51,16.92,21.0,4.6,307.24,0.79,False,0,0,0,5.0,0,26/03/2021 14:56:22
-27 Mar 17:45 2021,Top Of The Bill,11.0,Newbury,0.18,41.15,101.52,6.11%,0.01,7.49,10.12,12.5,2.54,307.24,0.26,False,0,0,0,5.0,0,27/03/2021 10:22:23
 30 Mar 16:45 2021,Bishops Road,5.0,Warwick,2.8,35.73,101.77,0,0,2.0,3.8,7.0,1.52,293.25,0.48,True,2.0,3.8,-0.09,4.0,13.989999999999998,30/03/2021 16:05:46
 31 Mar 14:50 2021,No Risk Des Flos,3.25,Southwell,0.73,39.87,102.12,6.28%,0.05,40.02,45.43,3.35,1.43,307.64,1.74,False,0,0,0,4.0,0,31/03/2021 14:03:16
 31 Mar 17:20 2021,Northern Falcon,12.0,Hexham,0.12,39.63,100.83,4.92%,0.01,28.55,30.1,12.0,3.05,307.64,0.47,False,0,0,0,5.0,0,31/03/2021 14:46:47
