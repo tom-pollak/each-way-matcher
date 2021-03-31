@@ -273,6 +273,7 @@ def open_betfair_oddsmonkey(driver):
     driver.switch_to.window(driver.window_handles[2])
     trigger_betfair_options(driver)
     driver.execute_script("""window.open("https://google.com","_blank");""")
+    driver.execute_script("""window.open("https://google.com","_blank");""")
 
 
 def get_no_rows(driver):
@@ -334,11 +335,13 @@ def betfair_bet(driver, race):
     race["ew_stake"] = bookie_stake
     get_betfair_page(driver, market_ids["Win"], tab=3)
     win_horse_odds = scrape_odds_betfair(driver, tab=3)
-    get_betfair_page(driver, market_ids["Place"], tab=3)
-    place_horse_odds = scrape_odds_betfair(driver, tab=3)
+    get_betfair_page(driver, market_ids["Place"], tab=4)
+    place_horse_odds = scrape_odds_betfair(driver, tab=4)
     if (
         win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
         and place_horse_odds[race["horse_name"]]["lay_odds_1"] > race["place_odds"]
+        and win_horse_odds[race["horse_name"]["lay_avaliable_1"]] < win_stake
+        and place_horse_odds[race["horse_name"]["lay_avaliable_1"]] < place_stake
     ):
         print(
             f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
@@ -347,7 +350,7 @@ def betfair_bet(driver, race):
             f"\t\t      {race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
         )
         return
-    race, bet_made = sporting_index_bet(driver, race)
+    race, bet_made = sporting_index_bet(driver, race, betfair=True)
     if bet_made is None:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"

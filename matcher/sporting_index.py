@@ -11,6 +11,8 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
 )
 
+from .scrape_betfair import scrape_odds_betfair
+
 
 def change_to_decimal(driver):
     WebDriverWait(driver, 60).until(
@@ -93,7 +95,7 @@ def get_sporting_index_page(driver, race):
     driver.get(race["bookie_exchange"])
 
 
-def sporting_index_bet(driver, race):
+def sporting_index_bet(driver, race, betfair=False):
     def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
@@ -141,6 +143,18 @@ def sporting_index_bet(driver, race):
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
 
     if float(cur_odd_price) == float(race["bookie_odds"]):
+        if betfair:
+            win_horse_odds = scrape_odds_betfair(driver, tab=3)
+            place_horse_odds = scrape_odds_betfair(driver, tab=4)
+            if (
+                win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
+                and place_horse_odds[race["horse_name"]]["lay_odds_1"]
+                > race["place_odds"]
+                and win_horse_odds[race["horse_name"]["lay_avaliable_1"]] < win_stake
+                and place_horse_odds[race["horse_name"]["lay_avaliable_1"]]
+                < place_stake
+            ):
+                return race, False
         for _ in range(3):
             bet_made = make_sporting_index_bet(driver, race)
             if bet_made:
