@@ -303,6 +303,8 @@ def betfair_bet(driver, race):
         race["place_stake"],
         race["place_odds"],
     )
+    race["win_stake"] = win_stake
+    race["place_stake"] = place_stake
 
     if not stakes_ok:
         return
