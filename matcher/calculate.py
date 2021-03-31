@@ -103,7 +103,7 @@ def calculate_stakes(
 
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
-    max_stake = bookie_stake * 2 + win_stake + place_stake
+    max_stake = bookie_stake * 2 + max_win_liability + max_place_liability
 
     lay_min_stake_proportion = 0
     bookie_min_stake_proportion = 0.1 / bookie_stake
