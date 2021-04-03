@@ -68,6 +68,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
         print("Not a valid operation" + str(url))
     except error.URLError:
         print("No service available at " + str(url))
+    print(jsonrpc_req)
     raise ValueError("API request failed")
 
 
