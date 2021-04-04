@@ -319,7 +319,6 @@ def betfair_bet(driver, race):
         race["place_payout"],
     )
     if min(*profits) <= 0:
-        print("profits below 0: %s" % str(profits))
         return
 
     minutes_until_race = (
@@ -337,14 +336,14 @@ def betfair_bet(driver, race):
 
     race["ew_stake"] = bookie_stake
     get_betfair_page(driver, market_ids["Win"], tab=3)
-    win_horse_odds = scrape_odds_betfair(driver, tab=3)
     get_betfair_page(driver, market_ids["Place"], tab=4)
+    win_horse_odds = scrape_odds_betfair(driver, tab=3)
     place_horse_odds = scrape_odds_betfair(driver, tab=4)
     if (
         win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
         and place_horse_odds[race["horse_name"]]["lay_odds_1"] > race["place_odds"]
-        and win_horse_odds[race["horse_name"]["lay_avaliable_1"]] < win_stake
-        and place_horse_odds[race["horse_name"]["lay_avaliable_1"]] < place_stake
+        and win_horse_odds[race["horse_name"]]["lay_avaliable_1"] < win_stake
+        and place_horse_odds[race["horse_name"]]["lay_avaliable_1"] < place_stake
     ):
         print(
             f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"

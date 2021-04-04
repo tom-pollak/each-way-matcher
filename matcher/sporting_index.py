@@ -150,10 +150,9 @@ def sporting_index_bet(driver, race, betfair=False):
                 win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
                 and place_horse_odds[race["horse_name"]]["lay_odds_1"]
                 > race["place_odds"]
-                and win_horse_odds[race["horse_name"]["lay_avaliable_1"]]
-                < race["win_stake"]
-                and place_horse_odds[race["horse_name"]["lay_avaliable_1"]]
-                < race["place_stake"]
+                and win_horse_odds[race["horse_name"]]["lay_avaliable_1"] < win_stake
+                and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+                < place_stake
             ):
                 return race, False
         for _ in range(3):
