@@ -25,7 +25,7 @@ at default program location (/usr/bin/chromedriver for linux)
 
 ### Create certificates + APP_KEY
 
-- client-2048.crt/key [connected to the betfair api](https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount)
+- client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>)
 - [APP_KEY](https://support.developer.betfair.com/hc/en-us/articles/115003864651-How-do-I-get-started-)
 
 ### Add to .env
@@ -56,8 +56,8 @@ python3 -m matcher --run
 or
 
 - Run with run.sh - uses xvfb to run selenium headless on a virtual screen and
-logs output **(recommended)**
-  - Can be run as a cron job or manually with ``` nohup ./run.sh >/dev/null 2>&1 &``` to run in the background
+  logs output **(recommended)**
+  - Can be run as a cron job or manually with `nohup ./run.sh >/dev/null 2>&1 &` to run in the background
 
 You can view the help menu with
 

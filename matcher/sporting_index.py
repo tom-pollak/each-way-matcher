@@ -115,7 +115,7 @@ def sporting_index_bet(driver, race, betfair=False):
         return False
 
     def close_bet(driver):
-        for _ in range(5):
+        for _ in range(3):
             try:
                 WebDriverWait(driver, 60).until(
                     EC.element_to_be_clickable(
