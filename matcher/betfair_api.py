@@ -227,13 +227,13 @@ def get_race(race_time, venue, horse):
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
     headers = login_betfair()
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
-        markets_ids["Win"], selection_id, round_stake(win_odds + 1), win_stake, headers
+        markets_ids["Win"], selection_id, round_stake(win_odds), win_stake, headers
     )
 
     lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
         markets_ids["Place"],
         selection_id,
-        round_stake(place_odds + 1),
+        round_stake(place_odds),
         place_stake,
         headers,
     )
