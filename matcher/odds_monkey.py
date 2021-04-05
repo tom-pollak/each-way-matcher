@@ -289,6 +289,7 @@ def get_no_rows(driver):
 
 
 def betfair_bet(driver, race):
+    start = time()
     if race["max_profit"] <= 0:
         return
 
@@ -403,6 +404,8 @@ def betfair_bet(driver, race):
             lay_win[4],
             lay_place[4],
         )
+        end = time()
+        print(f"time for betfair bet: {end - start}")
 
 
 def evaluate_bet(driver, race):
