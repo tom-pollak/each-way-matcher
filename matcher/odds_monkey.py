@@ -28,6 +28,7 @@ from .calculate import (
     calculate_profit,
     kelly_criterion,
     check_repeat_bets,
+    minimize_loss,
 )
 from .output import (
     update_csv_sporting_index,
@@ -366,6 +367,7 @@ def betfair_bet(driver, race):
             place_stake,
             race["place_odds"],
         )
+
         betfair_balance = get_betfair_balance(headers)
         sporting_index_balance = get_balance_sporting_index(driver)
         win_profit, place_profit, lose_profit = calculate_profit(
@@ -377,6 +379,24 @@ def betfair_bet(driver, race):
             lay_place[3],
             race["place_payout"],
         )
+
+        if lay_win[1] or lay_place[1]:
+            profits = (win_profit, place_profit, lose_profit)
+            win_unmatched_stake = win_stake - lay_win[3]
+            place_unmatched_stake = place_stake - lay_place[3]
+            new_win_odds = scrape_odds_betfair(driver, tab=3)
+            new_place_odds = scrape_odds_betfair(driver, tab=4)
+            minimize_loss(
+                race["bookie_odds"],
+                bookie_stake,
+                new_win_odds,
+                new_place_odds,
+                race["place_payout"],
+                win_unmatched_stake,
+                place_unmatched_stake,
+                profits,
+            )
+
         min_profit = min(win_profit, place_profit, lose_profit)
 
         output_lay_ew(
