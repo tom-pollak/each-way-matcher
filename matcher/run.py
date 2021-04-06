@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import (
+    WebDriverException,
     TimeoutException,
     ElementClickInterceptedException,
 )
@@ -117,6 +118,10 @@ def run_matcher(lay):
         except KeyboardInterrupt:
             sys.stdout.flush()
             break
+        except WebDriverException as e:
+            sys.stdout.flush()
+            print("Error occured: %s" % e)
+            print(traceback.format_exc())
         except Exception as e:
             sys.stdout.flush()
             print("Error occured: %s" % e)
