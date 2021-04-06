@@ -78,12 +78,10 @@ def login(driver):
         ).click()
     except TimeoutException:
         print("Need Oddsmonkey premium membership (OM12FOR1)")
-        sys.stdout.flush()
-        sys.exit()
+        raise KeyboardInterrupt
     except ElementClickInterceptedException:
         print("Dismiss one time pop-up boxes and setup oddsmonkey")
-        sys.stdout.flush()
-        sys.exit()
+        raise KeyboardInterrupt
 
     driver.execute_script(
         """window.open("https://www.sportingindex.com/fixed-odds","_blank");"""

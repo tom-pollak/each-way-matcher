@@ -71,8 +71,7 @@ def find_races(driver, row=0, window=0):
     if "sportingindex" not in bookie_exchange:
         print("Bookie is not SportingIndex, have you adjusted the filters?")
         print(bookie_exchange)
-        sys.stdout.flush()
-        sys.exit()
+        raise KeyboardInterrupt
 
     rating = driver.find_element_by_xpath(
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[17]'
