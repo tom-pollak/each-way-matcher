@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from .oddsmonkey import (
+from .odds_monkey import (
     find_races,
     refresh_odds_monkey,
     open_betfair_oddsmonkey,
