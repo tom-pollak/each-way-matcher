@@ -51,7 +51,7 @@ def refresh_sporting_index(driver):
 
 def click_betslip(driver):
     driver.refresh()
-    WebDriverWait(driver, 20).until(
+    WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable(
             (
                 By.XPATH,
@@ -130,7 +130,7 @@ def sporting_index_bet(driver, race, betfair=False):
                 try:
                     click_betslip(driver)
                 except TimeoutException:
-                    pass
+                    continue
         raise ValueError("Couldn't close bet")
 
     get_sporting_index_page(driver, race)
