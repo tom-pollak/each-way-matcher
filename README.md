@@ -30,7 +30,7 @@ at default program location (/usr/bin/chromedriver for linux)
 
 ### Create environmental variables
 
-Copy .env.template to .env:
+Copy .env.template to .env:  
 Sporting index: S_INDEX_USER S_INDEX_PASS  
 Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS  
 Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
