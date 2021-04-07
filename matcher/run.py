@@ -15,6 +15,7 @@ from selenium.common.exceptions import (
     ElementClickInterceptedException,
 )
 
+from .exceptions import MatcherError
 from .odds_monkey import scrape
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -60,7 +61,7 @@ def login(driver):
             )
         ).send_keys(ODD_M_USER)
     except TimeoutException:
-        raise ValueError("Couldn't login to Oddsmonkey")
+        raise MatcherError("Couldn't login to Oddsmonkey")
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(
         ODD_M_PASS
     )
@@ -95,7 +96,7 @@ def login(driver):
             EC.visibility_of_element_located((By.ID, "usernameCompact"))
         ).send_keys(S_INDEX_USER)
     except TimeoutException:
-        raise ValueError("Couldn't login to Sporting Index")
+        raise MatcherError("Couldn't login to Sporting Index")
     driver.find_element_by_id("passwordCompact").send_keys(S_INDEX_PASS)
     driver.find_element_by_id("submitLogin").click()
     sleep(5)
@@ -112,7 +113,7 @@ def run_matcher(lay):
         try:
             login(driver)
             scrape(driver, lay)
-        except ValueError as e:
+        except MatcherError as e:
             print("ERROR: %s\n" % e)
         except KeyboardInterrupt:
             sys.stdout.flush()

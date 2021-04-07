@@ -9,6 +9,7 @@ from urllib import error, request
 from dotenv import load_dotenv
 from requests.exceptions import ConnectionError
 
+from .exceptions import MatcherError
 from .calculate import round_stake
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
@@ -42,7 +43,7 @@ def login_betfair():
             headers=login_headers,
         )
     except ConnectionError as e:
-        raise ValueError("Can't login: %s" % e)
+        raise MatcherError("Can't login: %s" % e)
 
     if response.status_code == 200:
         SESS_TOK = response.json()["sessionToken"]
@@ -52,7 +53,7 @@ def login_betfair():
             "content-type": "application/json",
         }
 
-    raise ValueError("Can't login")
+    raise MatcherError("Can't login")
 
 
 def call_api(jsonrpc_req, headers, url=betting_url):
@@ -60,7 +61,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
         if url.lower().startswith("http"):
             req = request.Request(url, jsonrpc_req.encode("utf-8"), headers)
         else:
-            raise ValueError("url does not start with http")
+            raise MatcherError("url does not start with http")
         with request.urlopen(req) as response:
             json_res = response.read()
             return json.loads(json_res.decode("utf-8"))
@@ -69,7 +70,7 @@ def call_api(jsonrpc_req, headers, url=betting_url):
     except error.URLError:
         print("No service available at " + str(url))
     print(jsonrpc_req)
-    raise ValueError("API request failed")
+    raise MatcherError("API request failed")
 
 
 def get_betfair_balance_in_bets():
@@ -134,7 +135,7 @@ def get_horses(venue, race_time, headers):
             if race_time == start_time:
                 markets.append(market)
         if len(markets) < 2:
-            raise ValueError("Not enough markets returned returned")
+            raise MatcherError("Not enough markets returned returned")
     except KeyError:
         try:
             print("Error in getting market: %s" % markets_response["error"])
@@ -157,7 +158,7 @@ def cancel_unmatched_bets(headers):
         cancel_res = call_api(cancel_req, headers)
         if cancel_res["result"]["status"] == "SUCCESS":
             return True
-    except (KeyError, ValueError):
+    except (KeyError, MatcherError):
         print("ERROR: Could not cancel unmatched bets!")
         print(cancel_res)
     return False

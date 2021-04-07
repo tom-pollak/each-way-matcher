@@ -11,6 +11,7 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
 )
 
+from .exceptions import MatcherError
 from .scrape_betfair import scrape_odds_betfair
 
 
@@ -40,7 +41,7 @@ def get_balance_sporting_index(driver):
                 return float(balance)
         except (NoSuchElementException, TimeoutException):
             driver.refresh()
-    raise ValueError("Couldn't get balance")
+    raise MatcherError("Couldn't get balance")
 
 
 def refresh_sporting_index(driver):
@@ -131,7 +132,7 @@ def sporting_index_bet(driver, race, betfair=False):
                     click_betslip(driver)
                 except TimeoutException:
                     continue
-        raise ValueError("Couldn't close bet")
+        raise MatcherError("Couldn't close bet")
 
     get_sporting_index_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])

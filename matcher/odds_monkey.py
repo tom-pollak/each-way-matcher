@@ -15,6 +15,7 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
 )
 
+from .exceptions import MatcherError
 from .sporting_index import (
     setup_sporting_index,
     sporting_index_bet,
@@ -86,13 +87,13 @@ def find_races(driver, row=0, window=0):
             f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl{"{:02d}".format(2 * row + 4)}_calcButton"]'
         ).click()
     except ElementNotInteractableException:
-        raise ValueError("Couldn't click calculator button")
+        raise MatcherError("Couldn't click calculator button")
 
     sleep(2)
     try:
         driver.switch_to.frame("RadWindow2")
     except NoSuchFrameException:
-        raise ValueError("Couldn't switch to calculator window find_races")
+        raise MatcherError("Couldn't switch to calculator window find_races")
 
     try:
         horse_name_window = (
@@ -105,10 +106,10 @@ def find_races(driver, row=0, window=0):
             .text.title()
         )
     except (TimeoutException, NoSuchWindowException):
-        raise ValueError("Couldn't get calculator window")
+        raise MatcherError("Couldn't get calculator window")
 
     if horse_name != horse_name_window:
-        raise ValueError(
+        raise MatcherError(
             "horse_name not same: %s, %s" % (horse_name, horse_name_window)
         )
 
@@ -229,7 +230,7 @@ def refresh_odds_monkey(driver, betfair=False):
                     )
                 )
             except TimeoutException:
-                raise ValueError("Timout in refresh odds monkey")
+                raise MatcherError("Timout in refresh odds monkey")
             action.move_to_element(element)
             action.perform()
 
@@ -262,7 +263,7 @@ def refresh_odds_monkey(driver, betfair=False):
             if betfair:
                 trigger_betfair_options(driver)
                 driver.switch_to.default_content()
-    raise ValueError("Couldn't refresh Oddsmonkey")
+    raise MatcherError("Couldn't refresh Oddsmonkey")
 
 
 def open_betfair_oddsmonkey(driver):
