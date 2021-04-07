@@ -10,11 +10,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import (
+    WebDriverException,
     TimeoutException,
     ElementClickInterceptedException,
 )
 
-from .odds_monkey import scrape
+from .exceptions import MatcherError
+from .each_way import scrape
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -59,7 +61,7 @@ def login(driver):
             )
         ).send_keys(ODD_M_USER)
     except TimeoutException:
-        raise ValueError("Couldn't login to Oddsmonkey")
+        raise MatcherError("Couldn't login to Oddsmonkey")
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(
         ODD_M_PASS
     )
@@ -78,12 +80,10 @@ def login(driver):
         ).click()
     except TimeoutException:
         print("Need Oddsmonkey premium membership (OM12FOR1)")
-        sys.stdout.flush()
-        sys.exit()
+        raise KeyboardInterrupt
     except ElementClickInterceptedException:
         print("Dismiss one time pop-up boxes and setup oddsmonkey")
-        sys.stdout.flush()
-        sys.exit()
+        raise KeyboardInterrupt
 
     driver.execute_script(
         """window.open("https://www.sportingindex.com/fixed-odds","_blank");"""
@@ -96,7 +96,7 @@ def login(driver):
             EC.visibility_of_element_located((By.ID, "usernameCompact"))
         ).send_keys(S_INDEX_USER)
     except TimeoutException:
-        raise ValueError("Couldn't login to Sporting Index")
+        raise MatcherError("Couldn't login to Sporting Index")
     driver.find_element_by_id("passwordCompact").send_keys(S_INDEX_PASS)
     driver.find_element_by_id("submitLogin").click()
     sleep(5)
@@ -113,14 +113,15 @@ def run_matcher(lay):
         try:
             login(driver)
             scrape(driver, lay)
-        except ValueError as e:
-            sys.stdout.flush()
+        except MatcherError as e:
             print("ERROR: %s\n" % e)
         except KeyboardInterrupt:
             sys.stdout.flush()
             break
+        except WebDriverException as e:
+            print("Error occured: %s" % e)
+            print(traceback.format_exc())
         except Exception as e:
-            sys.stdout.flush()
             print("Error occured: %s" % e)
             print(traceback.format_exc())
         finally:

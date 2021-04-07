@@ -3,6 +3,7 @@ import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
 
+from .exceptions import MatcherError
 from .betfair_api import login_betfair, get_horses
 
 
@@ -80,7 +81,7 @@ def create_race_df(races):
             market_ids, _ = get_horses(race["venue"], time, headers)
             win_market_id = market_ids["Win"]
             place_market_id = market_ids["Place"]
-        except ValueError:
+        except MatcherError:
             continue
         indexes.append((race["venue"], time))
         data.append(
@@ -122,7 +123,7 @@ def create_odds_df(races_df, races):
             for horse in get_horses(key[0], key[1], headers)[1]["runners"]:
                 indexes.append((key[0], key[1], horse["runnerName"], None))
                 horse_ids[horse["runnerName"]] = horse["selectionId"]
-        except ValueError:
+        except MatcherError:
             continue
 
     indexes = pd.MultiIndex.from_tuples(
