@@ -28,17 +28,19 @@ at default program location (/usr/bin/chromedriver for linux)
 - client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>)
 - [APP_KEY](https://support.developer.betfair.com/hc/en-us/articles/115003864651-How-do-I-get-started-)
 
-### Add to .env
+### Create environmental variables
 
-Sporting index: S_INDEX_USER S_INDEX_PASS  
-Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS  
-Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
+#### Copy .env.template to .env:
+
+- Sporting index: S_INDEX_USER S_INDEX_PASS  
+- Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS  
+- Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
 
 ### Modify filters
 
 Go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
 
-- Each Way Rating: 95 to 200
+- Each Way Rating: 98 to 200
 - SNR Rating, Normal Arb Rating, Back Odds: 0 to 200
 - Event Start Time: Now to 7 days
 - Sports: Horse Racing
@@ -58,10 +60,14 @@ or
 - Run with run.sh - uses xvfb to run selenium headless on a virtual screen and
   logs output **(recommended)**
   - Can be run as a cron job
-  ```0 7 * * * [path to run.sh]
+  ```
+  0 7 * * * [path to run.sh]
   @reboot [path to run.sh]
   ```
-  - or manually with `nohup ./run.sh >/dev/null 2>&1 &` to run in the background
+  - or manually with
+  ```
+  nohup ./run.sh >/dev/null 2>&1 &
+  ```
 
 You can view the help menu with
 
