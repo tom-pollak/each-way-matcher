@@ -38,7 +38,7 @@ Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
 
 Go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
 
-- Each Way Rating: 95 to 200
+- Each Way Rating: 98 to 200
 - SNR Rating, Normal Arb Rating, Back Odds: 0 to 200
 - Event Start Time: Now to 7 days
 - Sports: Horse Racing
