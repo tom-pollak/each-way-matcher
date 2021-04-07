@@ -16,7 +16,7 @@ from selenium.common.exceptions import (
 )
 
 from .exceptions import MatcherError
-from .odds_monkey import scrape
+from .each_way import scrape
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
