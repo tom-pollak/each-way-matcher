@@ -57,7 +57,11 @@ or
 
 - Run with run.sh - uses xvfb to run selenium headless on a virtual screen and
   logs output **(recommended)**
-  - Can be run as a cron job or manually with `nohup ./run.sh >/dev/null 2>&1 &` to run in the background
+  - Can be run as a cron job
+  ```0 7 * * * [path to run.sh]
+  @reboot [path to run.sh]
+  ```
+  - or manually with `nohup ./run.sh >/dev/null 2>&1 &` to run in the background
 
 You can view the help menu with
 
