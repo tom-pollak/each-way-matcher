@@ -32,9 +32,9 @@ at default program location (/usr/bin/chromedriver for linux)
 
 #### Copy .env.template to .env:
 
-Sporting index: S_INDEX_USER S_INDEX_PASS  
-Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS  
-Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
+- Sporting index: S_INDEX_USER S_INDEX_PASS  
+- Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS  
+- Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
 
 ### Modify filters
 
