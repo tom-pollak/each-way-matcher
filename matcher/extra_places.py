@@ -2,8 +2,12 @@ import datetime
 import pandas as pd
 from .run import setup_selenium
 from .scrape_races import generate_df
-from .scrape_betfair import setup_scrape_betfair, get_betfair_page, scrape_odds_betfair
-from .william_hill import get_william_hill_page, scrape_odds_william_hill
+from matcher.sites.scrape_betfair import (
+    setup_scrape_betfair,
+    get_betfair_page,
+    scrape_odds_betfair,
+)
+from matcher.sites.william_hill import get_william_hill_page, scrape_odds_william_hill
 
 
 idx = pd.IndexSlice

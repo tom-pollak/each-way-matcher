@@ -9,8 +9,8 @@ from urllib import error, request
 from dotenv import load_dotenv
 from requests.exceptions import ConnectionError
 
-from .exceptions import MatcherError
-from .calculate import round_stake
+from matcher.exceptions import MatcherError
+from matcher.calculate import round_stake
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 

@@ -14,7 +14,7 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
 )
 
-from .exceptions import MatcherError
+from matcher.exceptions import MatcherError
 
 
 def find_races(driver, row=0, window=0):

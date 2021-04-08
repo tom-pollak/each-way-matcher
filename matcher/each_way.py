@@ -6,15 +6,20 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from .odds_monkey import (
+from matcher.sites.odds_monkey import (
     find_races,
     refresh_odds_monkey,
     open_betfair_oddsmonkey,
     get_no_rows,
 )
-from .betfair_api import lay_ew, get_betfair_balance, login_betfair, get_race
-from .scrape_betfair import get_betfair_page, scrape_odds_betfair
-from .sporting_index import (
+from matcher.sites.betfair_api import (
+    lay_ew,
+    get_betfair_balance,
+    login_betfair,
+    get_race,
+)
+from matcher.sites.scrape_betfair import get_betfair_page, scrape_odds_betfair
+from matcher.sites.sporting_index import (
     setup_sporting_index,
     sporting_index_bet,
     refresh_sporting_index,

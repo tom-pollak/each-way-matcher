@@ -5,8 +5,12 @@ from datetime import datetime
 from dotenv import load_dotenv
 from csv import DictWriter
 
-from .betfair_api import get_betfair_balance, login_betfair, get_betfair_balance_in_bets
-from .sporting_index import get_balance_sporting_index
+from matcher.sites.betfair_api import (
+    get_betfair_balance,
+    login_betfair,
+    get_betfair_balance_in_bets,
+)
+from matcher.sites.sporting_index import get_balance_sporting_index
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))

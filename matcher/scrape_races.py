@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from .exceptions import MatcherError
-from .betfair_api import login_betfair, get_horses
+from matcher.sites.betfair_api import login_betfair, get_horses
 
 
 def get_extra_place_races():

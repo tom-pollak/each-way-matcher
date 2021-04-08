@@ -11,7 +11,7 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
 )
 
-from .exceptions import MatcherError
+from matcher.exceptions import MatcherError
 from .scrape_betfair import scrape_odds_betfair
 
 
