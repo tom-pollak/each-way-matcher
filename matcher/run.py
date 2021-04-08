@@ -114,15 +114,14 @@ def run_matcher(lay):
             login(driver)
             scrape(driver, lay)
         except MatcherError as e:
-            print("ERROR: %s\n" % e)
+            print(e)
         except KeyboardInterrupt:
-            sys.stdout.flush()
             break
         except WebDriverException as e:
-            print("Error occured: %s" % e)
+            print("WebDriver error occured: %s" % e)
             print(traceback.format_exc())
         except Exception as e:
-            print("Error occured: %s" % e)
+            print("Unknown error occured: %s" % e)
             print(traceback.format_exc())
         finally:
             sys.stdout.flush()

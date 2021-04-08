@@ -73,7 +73,7 @@ def make_sporting_index_bet(driver, race):
             except (StaleElementReferenceException, ElementNotInteractableException):
                 click_betslip(driver)
         else:
-            return False
+            return None
 
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
         WebDriverWait(driver, 120).until(
@@ -161,7 +161,8 @@ def sporting_index_bet(driver, race, betfair=False):
             bet_made = make_sporting_index_bet(driver, race)
             if bet_made:
                 return race, True
-            close_bet(driver)
+            if not bet_made:
+                close_bet(driver)
     return race, False
 
 
