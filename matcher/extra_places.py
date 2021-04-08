@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 from .run import setup_selenium
-from .scrape_races import generate_df
+from .scrape_extra_places import generate_df
 from matcher.sites.scrape_betfair import (
     setup_scrape_betfair,
     get_betfair_page,
