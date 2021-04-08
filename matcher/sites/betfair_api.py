@@ -15,7 +15,7 @@ betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
 venue_names = {"Cagnes-Sur-Mer": "Cagnes Sur Mer"}
 
-BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
 APP_KEY = os.environ.get("APP_KEY")
