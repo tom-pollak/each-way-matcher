@@ -1,11 +1,28 @@
 import sys
+import traceback
 from time import sleep, time
 from datetime import datetime
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import WebDriverException
 
+from .setup import setup_selenium, login, check_vars
+from .calculate import (
+    calculate_stakes,
+    calculate_profit,
+    kelly_criterion,
+    check_repeat_bets,
+)
+from .output import (
+    update_csv_sporting_index,
+    update_csv_betfair,
+    show_info,
+    output_lay_ew,
+    output_race,
+)
+from .exceptions import MatcherError
 from matcher.sites.odds_monkey import (
     find_races,
     refresh_odds_monkey,
@@ -24,19 +41,6 @@ from matcher.sites.sporting_index import (
     sporting_index_bet,
     refresh_sporting_index,
     get_balance_sporting_index,
-)
-from .calculate import (
-    calculate_stakes,
-    calculate_profit,
-    kelly_criterion,
-    check_repeat_bets,
-)
-from .output import (
-    update_csv_sporting_index,
-    update_csv_betfair,
-    show_info,
-    output_lay_ew,
-    output_race,
 )
 
 REFRESH_TIME = 60
@@ -251,7 +255,7 @@ def start_betfair(driver):
             sys.stdout.flush()
 
 
-def scrape(driver, lay):
+def start_matcher(driver, lay):
     START_TIME = time()
     setup_sporting_index(driver)
     open_betfair_oddsmonkey(driver)
@@ -270,3 +274,31 @@ def scrape(driver, lay):
         sys.stdout.flush()
         sleep(REFRESH_TIME)
         count += 1
+
+
+def run_each_way(lay):
+    if datetime.now().hour < 7:
+        print("\nMatcher started too early (before 7am)")
+        return
+    print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
+
+    check_vars()
+    while True:
+        driver = setup_selenium()
+        sys.stdout.flush()
+        try:
+            login(driver)
+            start_matcher(driver, lay)
+        except MatcherError as e:
+            print(e)
+        except KeyboardInterrupt:
+            break
+        except WebDriverException as e:
+            print("WebDriver error occured: %s" % e)
+            print(traceback.format_exc())
+        except Exception as e:
+            print("Unknown error occured: %s" % e)
+            print(traceback.format_exc())
+        finally:
+            sys.stdout.flush()
+            driver.quit()

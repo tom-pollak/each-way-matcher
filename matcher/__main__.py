@@ -1,10 +1,10 @@
 import argparse
 import sys
 
-from .run import run_matcher
+from .each_way import run_each_way
 from .extra_places import run_extra_places
 from .stats import output_profit, plot_bal_time_series_graph
-from .output import reset_csv
+from .setup import reset_csv
 
 parser = argparse.ArgumentParser(
     description="Automated Each Way Matcher", prog="python3 -m matcher"
@@ -28,10 +28,10 @@ if args.setup:
     reset_csv()
 
 if args.run and args.extra:
-    print("Can't run both Each-way matcher and Extra place matcher")
+    print("Can't run both each-way matcher and extra place matcher")
 
 elif args.run:
-    run_matcher(args.lay)
+    run_each_way(args.lay)
 
 elif args.extra:
     run_extra_places()
