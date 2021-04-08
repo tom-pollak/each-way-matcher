@@ -161,7 +161,7 @@ def sporting_index_bet(driver, race, betfair=False):
             bet_made = make_sporting_index_bet(driver, race)
             if bet_made:
                 return race, True
-            if not bet_made:
+            if bet_made is not None:
                 close_bet(driver)
     return race, False
 
