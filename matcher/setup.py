@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 from datetime import datetime
 from time import sleep
 from dotenv import load_dotenv
@@ -23,6 +24,7 @@ ODD_M_USER = os.environ.get("ODD_M_USER")
 ODD_M_PASS = os.environ.get("ODD_M_PASS")
 S_INDEX_USER = os.environ.get("S_INDEX_USER")
 S_INDEX_PASS = os.environ.get("S_INDEX_PASS")
+RETURNS_CSV = os.environ.get("RETURNS_CSV")
 
 
 def check_vars():
