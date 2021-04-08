@@ -105,7 +105,11 @@ def login(driver):
 
 
 def run_matcher(lay):
+    if datetime.now().hour < 7:
+        print("\nMatcher started too early (before 7am)")
+        return
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
+
     check_vars()
     while True:
         driver = setup_selenium()
