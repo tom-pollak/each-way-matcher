@@ -7,7 +7,6 @@ import time
 
 from urllib import error, request
 from dotenv import load_dotenv
-from requests.exceptions import ConnectionError
 
 from matcher.exceptions import MatcherError
 from matcher.calculate import round_stake
@@ -42,7 +41,7 @@ def login_betfair():
             cert=(CERT, KEY),
             headers=login_headers,
         )
-    except ConnectionError as e:
+    except requests.exceptions.ConnectionError as e:
         raise MatcherError("Can't login: %s" % e)
 
     if response.status_code == 200:
