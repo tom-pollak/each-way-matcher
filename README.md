@@ -38,7 +38,8 @@ at default program location (/usr/bin/chromedriver for linux)
 
 ### Modify filters
 
-Go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
+
+Create a (premium) OddsMonkey account and go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
 
 - Each Way Rating: 98 to 200
 - SNR Rating, Normal Arb Rating, Back Odds: 0 to 200
