@@ -4,4 +4,4 @@ class MatcherError(Exception):
         super().__init__(self.message)
 
     def __str__(self):
-        return f"ERROR Ocurred: {self.message}"
+        return f"ERROR Occurred: {self.message}"

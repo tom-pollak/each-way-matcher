@@ -118,7 +118,7 @@ def sporting_index_bet(driver, race, betfair=False):
     def close_bet(driver):
         for _ in range(3):
             try:
-                WebDriverWait(driver, 60).until(
+                WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable(
                         (
                             By.XPATH,
@@ -130,6 +130,17 @@ def sporting_index_bet(driver, race, betfair=False):
             except TimeoutException:
                 try:
                     click_betslip(driver)
+                    WebDriverWait(driver, 10).until(
+                        (
+                            EC.element_to_be_clickable(
+                                (
+                                    By.XPATH,
+                                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button',
+                                )
+                            )
+                        )
+                    )
+                    return
                 except TimeoutException:
                     continue
         raise MatcherError("Couldn't close bet")
