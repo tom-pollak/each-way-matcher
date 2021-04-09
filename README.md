@@ -25,7 +25,7 @@ at default program location (/usr/bin/chromedriver for linux)
 
 ### Create certificates + APP_KEY
 
-- client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>)
+- client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>) (put in git root directory)
 - [APP_KEY](https://support.developer.betfair.com/hc/en-us/articles/115003864651-How-do-I-get-started-)
 
 ### Create environmental variables
