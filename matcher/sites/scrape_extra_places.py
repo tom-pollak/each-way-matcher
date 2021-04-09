@@ -3,7 +3,7 @@ import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
 
-from .exceptions import MatcherError
+from matcher.exceptions import MatcherError
 from matcher.sites.betfair_api import login_betfair, get_horses
 
 
