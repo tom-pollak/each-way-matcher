@@ -28,10 +28,12 @@ RETURNS_CSV = os.environ.get("RETURNS_CSV")
 
 def check_vars():
     if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
-        raise Exception("ERROR: SportingIndex or Oddsmonkey env variables not set")
+        print("ERROR: SportingIndex or Oddsmonkey env variables not set")
+        raise Exception
 
     if not os.path.isfile("client-2048.crt") or not os.path.isfile("client-2048.key"):
-        raise Exception("client-2048 certificates not found")
+        print("client-2048 certificates not found")
+        raise Exception
 
 
 def setup_selenium():
