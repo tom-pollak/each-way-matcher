@@ -25,7 +25,7 @@ at default program location (/usr/bin/chromedriver for linux)
 
 ### Create certificates + APP_KEY
 
-- client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>)
+- client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>) (put in git root directory)
 - [APP_KEY](https://support.developer.betfair.com/hc/en-us/articles/115003864651-How-do-I-get-started-)
 
 ### Create environmental variables
@@ -38,7 +38,8 @@ at default program location (/usr/bin/chromedriver for linux)
 
 ### Modify filters
 
-Go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
+
+Create a (premium) OddsMonkey account and go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
 
 - Each Way Rating: 98 to 200
 - SNR Rating, Normal Arb Rating, Back Odds: 0 to 200
