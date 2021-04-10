@@ -1,4 +1,5 @@
 from time import sleep
+import traceback  # debug
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -143,6 +144,7 @@ def sporting_index_bet(driver, race, betfair=False):
                     return
                 except TimeoutException:
                     continue
+        traceback.print_stack(file=sys.stdout)  # debug
         raise MatcherError("Couldn't close bet")
 
     get_sporting_index_page(driver, race)
