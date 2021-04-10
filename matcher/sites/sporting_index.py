@@ -145,7 +145,10 @@ def sporting_index_bet(driver, race, betfair=False):
                     return
                 except TimeoutException:
                     continue
-        traceback.print_stack(file=sys.stdout)  # debug
+        print("here")
+        traceback.print_stack()  # debug
+        print("after")
+        sys.stdout.flush()
         raise MatcherError("Couldn't close bet")
 
     get_sporting_index_page(driver, race)
