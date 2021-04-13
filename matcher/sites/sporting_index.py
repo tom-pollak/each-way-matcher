@@ -1,6 +1,6 @@
 from time import sleep
 import sys  # debug
-import traceback  # debug
+from matcher.exceptions import TrackTime
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -82,14 +82,17 @@ def make_sporting_index_bet(driver, race):
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
 
+        print("clicked place bet button")
         WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "//button[contains(text(), 'Continue')]")
             )
         ).click()
+        print("clicked continue")
         return True
 
-    except WebDriverException:
+    except WebDriverException as e:
+        print(traceback.format_exc())
         return False
 
 
@@ -176,7 +179,9 @@ def sporting_index_bet(driver, race, betfair=False):
             if bet_made:
                 return race, True
             if bet_made is not None:
+                debug_close_bet = TrackTime("close_bet")
                 close_bet(driver)
+                debug_close_bet.end()
     return race, False
 
 
