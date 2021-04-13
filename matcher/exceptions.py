@@ -16,4 +16,6 @@ class TrackTime:
         self.start = time.time()
 
     def end(self):
-        print(f"{self.funtion_name} completed in {time.time() - self.start}")
+        diff = round(time.time() - self.start)
+        if diff > 60:
+            print(f"{self.funtion_name} completed in {diff}")

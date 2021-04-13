@@ -271,6 +271,7 @@ def start_matcher(driver, lay):
     count = 0
     driver.switch_to.window(driver.window_handles[0])
     while True:
+        loop_time = time()
         # So sporting index dosent logout
         if count % 2 == 0:
             refresh_sporting_index(driver)
@@ -285,7 +286,9 @@ def start_matcher(driver, lay):
         start_sporting_index(driver)
         debug_sporting_index.end()
         sys.stdout.flush()
-        sleep(REFRESH_TIME)
+        diff = time() - loop_time
+        if diff < REFRESH_TIME:
+            sleep(REFRESH_TIME - diff)
         count += 1
 
 
