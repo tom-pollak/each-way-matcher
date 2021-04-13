@@ -291,6 +291,7 @@ def run_each_way(lay):
             start_matcher(driver, lay)
         except MatcherError as e:
             print(e)
+            print(traceback.format_exc())
         except KeyboardInterrupt:
             break
         except WebDriverException as e:
