@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -11,7 +10,6 @@ def setup_scrape_betfair(driver, tab):
     driver.get(
         "https://www.betfair.com/exchange/plus/horse-racing/",
     )
-    time.sleep(0.53)
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
     ).click()
@@ -35,7 +33,6 @@ def get_betfair_page(driver, market_id, tab):
 
 
 def scrape_odds_betfair(driver, tab):
-    time.sleep(3)
     driver.switch_to.window(driver.window_handles[tab])
     horses = {}
     soup = BeautifulSoup(driver.page_source, "html.parser")

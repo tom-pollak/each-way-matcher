@@ -192,12 +192,12 @@ def trigger_betfair_options(driver):
 
 
 def refresh_odds_monkey(driver, betfair=False):
-    for _ in range(5):
+    for _ in range(3):
         driver.switch_to.default_content()
         try:
             action = ActionChains(driver)
             try:
-                element = WebDriverWait(driver, 60).until(
+                element = WebDriverWait(driver, 30).until(
                     EC.visibility_of_element_located(
                         (
                             By.XPATH,
