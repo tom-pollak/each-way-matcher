@@ -34,7 +34,6 @@ def get_william_hill_page(driver, venue, time, tab):
 def scrape_odds_william_hill(driver, tab):
     horses = {}
     driver.switch_to.window(driver.window_handles[tab])
-    driver.refresh()
     table = WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'tbody[role="rowgroup"]'))
     )
