@@ -82,13 +82,11 @@ def make_sporting_index_bet(driver, race):
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
 
-        print("clicked place bet button")
         WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "//button[contains(text(), 'Continue')]")
             )
         ).click()
-        print("clicked continue")
         return True
 
     except WebDriverException as e:

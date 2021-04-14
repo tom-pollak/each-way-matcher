@@ -62,7 +62,7 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
     n -= 0.5  # - the stake lost from losing win place
 
     p = 1 / win_odds  # true odds of winning
-    q = 1 / (place_odds) - p  # true odds of placing
+    q = 1 / place_odds - p  # true odds of placing
 
     A = m * n
     B = (p + q) * m * n + p * n + q * m - m - n
@@ -92,6 +92,7 @@ def calculate_stakes(
     max_place_liability = (place_odds - 1) * place_stake
     total_liability = max_win_liability + max_place_liability
 
+    # ratio of max liability by balance to max possible liability
     if total_liability > betfair_balance:
         liabiltity_ratio = betfair_balance / total_liability
     liabiltity_ratio = min(liabiltity_ratio, bookie_ratio)
@@ -105,6 +106,7 @@ def calculate_stakes(
     max_place_liability = (place_odds - 1) * place_stake
     max_stake = bookie_stake * 2 + max_win_liability + max_place_liability
 
+    # ratio of minimum allowed stake to maximum stake we can place with current balance
     lay_min_stake_proportion = 0
     bookie_min_stake_proportion = 0.1 / bookie_stake
 
@@ -119,11 +121,13 @@ def calculate_stakes(
         else:
             lay_min_stake_proportion = stake_min_stake_proportion
 
-    if lay_min_stake_proportion == 0:  # Stake not above 2 or liability above 10
+    if lay_min_stake_proportion == 0:  # max stake not above 2 or liability above 10
         return False, 0, 0, 0
 
     stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = stake_proporiton * max_stake
+
+    # attempt to create stakes that are 20% the size of our total balance
     min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > max_stake:
         stake_proporiton = 1
@@ -133,6 +137,8 @@ def calculate_stakes(
     bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
     win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
     place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
+
+    # postcondition
     if (
         (win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance)
         or (bookie_stake * 2 > bookie_balance)
@@ -143,8 +149,8 @@ def calculate_stakes(
         print(
             f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
         )
-
         return False, 0, 0, 0
+
     return True, bookie_stake, win_stake, place_stake
 
 
