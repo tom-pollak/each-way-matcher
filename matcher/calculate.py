@@ -76,6 +76,31 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
     return round(ew_stake, 2), round(C * ew_stake * 2, 2), str(round(C * 200, 2)) + "%"
 
 
+def arb_kelly_criterion(win_profit, place_profit, lose_profit, win_odds, place_odds):
+    win_prob = 1 / win_odds
+    place_prob = 1 / place_odds - win_prob
+
+    A = win_profit * place_profit * lose_profit
+    B = (
+        (win_prob + place_prob + lose_profit) * win_profit * place_profit * lose_profit
+        + win_prob * place_profit
+        + place_prob * win_profit
+    )
+    C = (
+        win_prob * win_profit
+        + place_prob * place_profit
+        + lose_profit * (1 - win_prob - place_prob)
+    )
+    try:
+        stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
+    except ZeroDivisionError:  # if the profit from place is 0 then 0 division
+        return 0, 0, "0%"
+    print(stake_proportion, round(C * 100, 2))
+
+
+arb_kelly_criterion(5, 2, 2, 5, 3)
+
+
 def calculate_stakes(
     bookie_balance,
     betfair_balance,

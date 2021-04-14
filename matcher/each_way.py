@@ -185,7 +185,9 @@ def evaluate_bet(driver, race):
         race["date_of_race"], race["venue"], race["horse_name"]
     )
 
+    debug_sporting_index_bet = TrackTime("sporting_index_bet")
     race, bet_made = sporting_index_bet(driver, race)
+    debug_sporting_index_bet.end()
     if bet_made is None:  # horse not found
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
