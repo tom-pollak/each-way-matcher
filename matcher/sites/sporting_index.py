@@ -1,5 +1,6 @@
 from time import sleep
 import sys  # debug
+import traceback  # debug
 from matcher.exceptions import TrackTime
 
 from selenium.webdriver.common.by import By
@@ -78,11 +79,11 @@ def make_sporting_index_bet(driver, race):
             return None
 
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        WebDriverWait(driver, 120).until(
+        WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
 
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "//button[contains(text(), 'Continue')]")
             )
