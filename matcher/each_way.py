@@ -67,6 +67,7 @@ def betfair_bet(driver, race):
     race["place_stake"] = place_stake
 
     if not stakes_ok:
+        print(f"Stakes not ok: {win_stake}, {place_stake}")
         return
 
     profits = calculate_profit(
@@ -79,6 +80,7 @@ def betfair_bet(driver, race):
         race["place_payout"],
     )
     if min(*profits) <= 0:
+        print("Profits below 0")
         return
 
     minutes_until_race = (
@@ -92,6 +94,7 @@ def betfair_bet(driver, race):
         race["date_of_race"], race["venue"], race["horse_name"]
     )
     if not got_race:
+        print("Couldn't get race")
         return
 
     race["ew_stake"] = bookie_stake
