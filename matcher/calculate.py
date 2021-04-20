@@ -57,16 +57,24 @@ def check_repeat_bets(horse_name, date_of_race, venue):
 
 
 def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
-    n = 0.5 * (bookie_odds - 1) / place_payout  # profit from place
-    m = bookie_odds * 0.5 - 0.5 + n  # profit from win
-    n -= 0.5  # - the stake lost from losing win place
+    place_profit = 0.5 * (bookie_odds - 1) / place_payout
+    win_profit = bookie_odds * 0.5 - 0.5 + place_profit
+    place_profit -= 0.5
 
-    p = 1 / win_odds  # true odds of winning
-    q = 1 / place_odds - p  # true odds of placing
+    win_prob = 1 / win_odds
+    place_prob = 1 / place_odds - win_prob
 
-    A = m * n
-    B = (p + q) * m * n + p * n + q * m - m - n
-    C = p * m + q * n - (1 - p - q)  # Expected profit on 0.5 unit EW bet
+    A = win_profit * place_profit
+    B = (
+        (win_prob + place_prob) * win_profit * place_profit
+        + win_prob * place_profit
+        + place_prob * win_profit
+        - win_profit
+        - place_profit
+    )
+    C = (
+        win_prob * win_profit + place_prob * place_profit - (1 - win_prob - place_prob)
+    )  # Expected profit on 0.5 unit EW bet
 
     try:
         stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
@@ -76,29 +84,40 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
     return round(ew_stake, 2), round(C * ew_stake * 2, 2), str(round(C * 200, 2)) + "%"
 
 
-def arb_kelly_criterion(win_profit, place_profit, lose_profit, win_odds, place_odds):
+def arb_kelly_criterion(
+    win_profit, place_profit, lose_profit, win_odds, place_odds, proportion
+):
     win_prob = 1 / win_odds
     place_prob = 1 / place_odds - win_prob
+    lose_prob = 1 - win_prob - place_prob
 
-    A = win_profit * place_profit * lose_profit
-    B = (
-        (win_prob + place_prob + lose_profit) * win_profit * place_profit * lose_profit
-        + win_prob * place_profit
-        + place_prob * win_profit
+    stake_proporiton = (
+        win_prob * math.log10(1 + win_profit * proportion)
+        + place_prob * math.log10(1 + place_profit * proportion)
+        + lose_prob * math.log10(1 + lose_profit * proportion)
     )
-    C = (
-        win_prob * win_profit
-        + place_prob * place_profit
-        + lose_profit * (1 - win_prob - place_prob)
-    )
-    try:
-        stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
-    except ZeroDivisionError:  # if the profit from place is 0 then 0 division
-        return 0, 0, "0%"
-    print(stake_proportion, round(C * 100, 2))
+    print(stake_proporiton)
+    return stake_proporiton
+
+    # A = win_profit * place_profit * lose_profit
+    # B = (
+    #     (win_prob + place_prob + lose_profit) * win_profit * place_profit * lose_profit
+    #     + win_prob * place_profit
+    #     + place_prob * win_profit
+    # )
+    # C = (
+    #     win_prob * win_profit
+    #     + place_prob * place_profit
+    #     + lose_profit * (1 - win_prob - place_prob)
+    # )
+    # try:
+    #     stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
+    # except ZeroDivisionError:  # if the profit from place is 0 then 0 division
+    #     return 0, 0, "0%"
+    # print(stake_proportion, round(C * 100, 2))
 
 
-arb_kelly_criterion(5, 2, 2, 5, 3)
+arb_kelly_criterion(5, 2, 2, 5, 3, 0.2)
 
 
 def calculate_stakes(
