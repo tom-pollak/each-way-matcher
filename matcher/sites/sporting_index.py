@@ -119,35 +119,36 @@ def sporting_index_bet(driver, race, betfair=False):
         return False
 
     def close_bet(driver):
-        for _ in range(3):
-            try:
-                WebDriverWait(driver, 15).until(
+        try:
+            WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
+                    )
+                )
+            ).click()
+            return
+        except TimeoutException:
+            pass
+
+        try:
+            click_betslip(driver)
+            WebDriverWait(driver, 10).until(
+                (
                     EC.element_to_be_clickable(
                         (
                             By.XPATH,
-                            '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
+                            '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button',
                         )
                     )
-                ).click()
-                return
-            except TimeoutException:
-                try:
-                    click_betslip(driver)
-                    WebDriverWait(driver, 10).until(
-                        (
-                            EC.element_to_be_clickable(
-                                (
-                                    By.XPATH,
-                                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button',
-                                )
-                            )
-                        )
-                    )
-                    return
-                except TimeoutException:
-                    continue
-        sys.stdout.flush()
-        raise MatcherError("Couldn't close bet")
+                )
+            )
+            return
+        except TimeoutException:
+            pass
+        # sys.stdout.flush()
+        # raise MatcherError("Couldn't close bet")
 
     get_sporting_index_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
