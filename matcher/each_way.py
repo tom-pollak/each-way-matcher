@@ -8,7 +8,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException
 
-from .exceptions import TrackTime
 from .setup import setup_selenium, login, check_vars
 from .calculate import (
     calculate_stakes,
@@ -98,10 +97,8 @@ def betfair_bet(driver, race):
         return
 
     race["ew_stake"] = bookie_stake
-    debug_get_betfair_page = TrackTime("get_betfair_page")
     get_betfair_page(driver, market_ids["Win"], tab=3)
     get_betfair_page(driver, market_ids["Place"], tab=4)
-    debug_get_betfair_page.end()
     win_horse_odds = scrape_odds_betfair(driver, tab=3)
     place_horse_odds = scrape_odds_betfair(driver, tab=4)
     if (
@@ -188,9 +185,7 @@ def evaluate_bet(driver, race):
         race["date_of_race"], race["venue"], race["horse_name"]
     )
 
-    debug_sporting_index_bet = TrackTime("sporting_index_bet")
     race, bet_made = sporting_index_bet(driver, race)
-    debug_sporting_index_bet.end()
     if bet_made is None:  # horse not found
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
@@ -239,9 +234,7 @@ def start_betfair(driver):
     race = {"balance": get_balance_sporting_index(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[2])
-    debug_refresh_odds_monkey = TrackTime("refresh_odds_monkey")
     refresh_odds_monkey(driver, betfair=True)
-    debug_refresh_odds_monkey.end()
     if not driver.find_elements_by_class_name("rgNoRecords"):
         for row in range(get_no_rows(driver)):
             horse_name = (
@@ -259,9 +252,7 @@ def start_betfair(driver):
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 2))
                 processed_horses.append(race["horse_name"])
-                debug_betfair_bet = TrackTime("betfair_bet")
                 betfair_bet(driver, race)
-                debug_betfair_bet.end()
             driver.switch_to.window(driver.window_handles[2])
             driver.switch_to.default_content()
             sys.stdout.flush()
@@ -269,10 +260,8 @@ def start_betfair(driver):
 
 def start_matcher(driver, lay):
     START_TIME = time()
-    debug_setup = TrackTime("setup")
     setup_sporting_index(driver)
     open_betfair_oddsmonkey(driver)
-    debug_setup.end()
     count = 0
     driver.switch_to.window(driver.window_handles[0])
     while True:
@@ -284,12 +273,8 @@ def start_matcher(driver, lay):
                 show_info(count, START_TIME)
 
         if lay:
-            debug_betfair = TrackTime("start_betfair")
             start_betfair(driver)
-            debug_betfair.end()
-        debug_sporting_index = TrackTime("start_sporting_index")
         start_sporting_index(driver)
-        debug_sporting_index.end()
         sys.stdout.flush()
         diff = time() - loop_time
         if diff < REFRESH_TIME:

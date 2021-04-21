@@ -1,7 +1,6 @@
 from time import sleep
 import sys  # debug
 import traceback  # debug
-from matcher.exceptions import TrackTime
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -178,9 +177,7 @@ def sporting_index_bet(driver, race, betfair=False):
             if bet_made:
                 return race, True
             if bet_made is not None:
-                debug_close_bet = TrackTime("close_bet")
                 close_bet(driver)
-                debug_close_bet.end()
     return race, False
 
 
