@@ -4,6 +4,7 @@ from datetime import datetime
 from time import strptime
 from dotenv import load_dotenv
 import pandas as pd
+from scipy.optimize import minimize
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -85,19 +86,22 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
 
 
 def arb_kelly_criterion(
-    win_profit, place_profit, lose_profit, win_odds, place_odds, proportion
+    proportion, win_profit, place_profit, lose_profit, win_odds, place_odds
 ):
     win_prob = 1 / win_odds
     place_prob = 1 / place_odds - win_prob
     lose_prob = 1 - win_prob - place_prob
 
-    stake_proporiton = (
-        win_prob * math.log10(1 + win_profit * proportion)
-        + place_prob * math.log10(1 + place_profit * proportion)
-        + lose_prob * math.log10(1 + lose_profit * proportion)
-    )
-    print(stake_proporiton)
-    return stake_proporiton
+    try:
+        stake_proporiton = (
+            win_prob * math.log10(1 + win_profit * proportion)
+            + place_prob * math.log10(1 + place_profit * proportion)
+            + lose_prob * math.log10(1 + lose_profit * proportion)
+        )
+    except ValueError:
+        return 9999
+    print(proportion, stake_proporiton)
+    return -stake_proporiton
 
     # A = win_profit * place_profit * lose_profit
     # B = (
@@ -117,7 +121,20 @@ def arb_kelly_criterion(
     # print(stake_proportion, round(C * 100, 2))
 
 
-arb_kelly_criterion(5, 2, 2, 5, 3, 0.2)
+def maximize_arb(win_profit, place_profit, lose_profit, win_odds, place_odds):
+    result = minimize(
+        arb_kelly_criterion,
+        0,
+        args=(win_profit, place_profit, lose_profit, win_odds, place_odds),
+        bounds=((0, 1),),
+    )
+    print(result)
+    if result.fun == 9999:
+        return 0
+    return result.x[0]
+
+
+# maximize_arb(5, 2, -1, 5, 3)
 
 
 def calculate_stakes(
