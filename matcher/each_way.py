@@ -79,7 +79,7 @@ def betfair_bet(driver, race):
         race["place_payout"],
     )
     if min(*profits) <= 0:
-        print("Profits below 0")
+        print(f"Profits below 0: {profits}")
         return
 
     minutes_until_race = (
