@@ -67,17 +67,21 @@ def make_sporting_index_bet(driver, race):
     try:
         for _ in range(3):
             try:
-                WebDriverWait(driver, 60).until(
+                WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable((By.CLASS_NAME, "ng-pristine"))
                 ).send_keys(str(race["ew_stake"]))
                 break
-            except (StaleElementReferenceException, ElementNotInteractableException):
+            except (
+                TimeoutException,
+                StaleElementReferenceException,
+                ElementNotInteractableException,
+            ):
                 click_betslip(driver)
         else:
             return None
 
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        WebDriverWait(driver, 15).until(
+        WebDriverWait(driver, 30).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
 
@@ -111,7 +115,6 @@ def sporting_index_bet(driver, race, betfair=False):
                 if cur_odd_price not in ["", "SUSP"]:
                     horse_button.click()
                     return cur_odd_price
-                sleep(2)
             except (StaleElementReferenceException, TimeoutException):
                 driver.refresh()
             except NoSuchElementException:
@@ -131,7 +134,6 @@ def sporting_index_bet(driver, race, betfair=False):
             return
         except TimeoutException:
             pass
-
         try:
             click_betslip(driver)
             WebDriverWait(driver, 10).until(
@@ -160,20 +162,20 @@ def sporting_index_bet(driver, race, betfair=False):
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
 
     if float(cur_odd_price) == float(race["bookie_odds"]):
-        if betfair:
-            win_horse_odds = scrape_odds_betfair(driver, tab=3)
-            place_horse_odds = scrape_odds_betfair(driver, tab=4)
-            if (
-                win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
-                and place_horse_odds[race["horse_name"]]["lay_odds_1"]
-                > race["place_odds"]
-                and win_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-                < race["win_stake"]
-                and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-                < race["place_stake"]
-            ):
-                return race, False
         for _ in range(3):
+            if betfair:
+                win_horse_odds = scrape_odds_betfair(driver, tab=3)
+                place_horse_odds = scrape_odds_betfair(driver, tab=4)
+                if (
+                    win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
+                    and place_horse_odds[race["horse_name"]]["lay_odds_1"]
+                    > race["place_odds"]
+                    and win_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+                    < race["win_stake"]
+                    and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+                    < race["place_stake"]
+                ):
+                    return race, False
             bet_made = make_sporting_index_bet(driver, race)
             if bet_made:
                 return race, True
