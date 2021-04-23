@@ -77,6 +77,7 @@ def check_stakes(
             f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
         )
         return False
+    return True
 
 
 def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
