@@ -175,6 +175,9 @@ def sporting_index_bet(driver, race, betfair=False):
                     and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
                     < race["place_stake"]
                 ):
+                    print(
+                        f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
+                    )
                     return race, False
             bet_made = make_sporting_index_bet(driver, race)
             if bet_made:
