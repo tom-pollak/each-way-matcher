@@ -14,6 +14,8 @@ from .calculate import (
     calculate_profit,
     kelly_criterion,
     check_repeat_bets,
+    maximize_arb,
+    check_stakes,
 )
 from .output import (
     update_csv_sporting_index,
@@ -48,48 +50,60 @@ REFRESH_TIME = 60
 
 def betfair_bet(driver, race):
     start = time()
-    if race["max_profit"] <= 0:
-        return
-
     headers = login_betfair()
-    betfair_balance = get_betfair_balance(headers)
-    stakes_ok, bookie_stake, win_stake, place_stake = calculate_stakes(
+    race["betfair_balance"] = get_betfair_balance(headers)
+    (
+        stakes_ok,
+        race["ew_stake"],
+        race["win_stake"],
+        race["place_stake"],
+    ) = calculate_stakes(
         race["balance"],
-        betfair_balance,
-        race["bookie_stake"],
+        race["betfair_balance"],
+        race["ew_stake"],
         race["win_stake"],
         race["win_odds"],
         race["place_stake"],
         race["place_odds"],
     )
-    race["win_stake"] = win_stake
-    race["place_stake"] = place_stake
 
     if not stakes_ok:
-        print(f"Stakes not ok: {win_stake}, {place_stake}")
+        print(f"Stakes not ok: {race['win_stake']}, {race['place_stake']}")
         return
 
     profits = calculate_profit(
         race["bookie_odds"],
-        bookie_stake,
+        race["ew_stake"],
         race["win_odds"],
-        win_stake,
+        race["win_stake"],
         race["place_odds"],
-        place_stake,
+        race["place_stake"],
         race["place_payout"],
     )
-    if min(*profits) <= 0:
-        print(f"Profits below 0: {profits}")
-        print(bookie_stake, win_stake, place_stake)
-        print(race["bookie_odds"], race["win_odds"], race["place_odds"])
-        return
+    if min(*profits) < 0:
+        stake_proportion = maximize_arb(race["win_odds"], race["place_odds"], *profits)
+        if stake_proportionn == 0:
+            print("Arb bet not profitable")
+            return
 
-    minutes_until_race = (
-        datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
-    ).total_seconds() / 60
-    if minutes_until_race <= 2:
-        print("Race too close to start time: %s" % minutes_until_race)
-        return
+        race["ew_stake"] = race["ew_stake"] * stake_proportion
+        race["win_stake"] = race["win_stake"] * stake_proportion
+        race["place_stake"] = race["place_stake"] * stake_proportion
+        stakes_ok = check_stakes(
+            race["balance"],
+            race["betfair_balance"],
+            race["ew_stake"],
+            race["win_stake"],
+            race["win_odds"],
+            race["place_stake"],
+            race["place_odds"],
+        )
+        if not stakes_ok:
+            print(f"Profits below 0: {profits}")
+            print(bookie_stake, win_stake, place_stake)
+            print(race["bookie_odds"], race["win_odds"], race["place_odds"])
+            print(f"stake_proportion: {stake_proportion} too small")
+            return
 
     market_ids, selection_id, got_race, race["horse_name"] = get_race(
         race["date_of_race"], race["venue"], race["horse_name"]
@@ -98,7 +112,6 @@ def betfair_bet(driver, race):
         print("Couldn't get race")
         return
 
-    race["ew_stake"] = bookie_stake
     get_betfair_page(driver, market_ids["Win"], tab=3)
     get_betfair_page(driver, market_ids["Place"], tab=4)
     win_horse_odds = scrape_odds_betfair(driver, tab=3)
@@ -116,6 +129,14 @@ def betfair_bet(driver, race):
             f"\t\t      {race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
         )
         return
+
+    minutes_until_race = (
+        datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
+    ).total_seconds() / 60
+    if minutes_until_race <= 2:
+        print("Race too close to start time: %s" % minutes_until_race)
+        return
+
     race, bet_made = sporting_index_bet(driver, race, betfair=True)
     if bet_made is None:
         print(
@@ -125,42 +146,36 @@ def betfair_bet(driver, race):
         lay_win, lay_place = lay_ew(
             market_ids,
             selection_id,
-            win_stake,
+            race["win_stake"],
             race["win_odds"],
-            place_stake,
+            race["place_stake"],
             race["place_odds"],
         )
-        betfair_balance = get_betfair_balance(headers)
-        sporting_index_balance = get_balance_sporting_index(driver)
-        win_profit, place_profit, lose_profit = calculate_profit(
+        race["betfair_balance"] = get_betfair_balance(headers)
+        race["balance"] = get_balance_sporting_index(driver)
+        (
+            race["win_profit"],
+            race["place_profit"],
+            race["lose_profit"],
+        ) = calculate_profit(
             race["bookie_odds"],
-            bookie_stake,
+            race["ew_stake"],
             lay_win[4],
             lay_win[3],
             lay_place[4],
             lay_place[3],
             race["place_payout"],
         )
-        min_profit = min(win_profit, place_profit, lose_profit)
+        min_profit = min(race["win_profit"], race["place_profit"], race["lose_profit"])
 
         output_lay_ew(
             race,
-            betfair_balance,
-            sporting_index_balance,
             min_profit,
             *lay_win,
             *lay_place,
-            win_profit,
-            place_profit,
-            lose_profit,
         )
         update_csv_betfair(
             race,
-            sporting_index_balance,
-            bookie_stake,
-            win_stake,
-            place_stake,
-            betfair_balance,
             lay_win[3],
             lay_place[3],
             min_profit,

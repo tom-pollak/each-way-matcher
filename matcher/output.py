@@ -54,8 +54,6 @@ def output_race(driver, race):
 
 def output_lay_ew(
     race,
-    betfair_balance,
-    sporting_index_balance,
     profit,
     win_bet_made,
     win_is_matched,
@@ -67,16 +65,13 @@ def output_lay_ew(
     place_stake,
     place_matched,
     place_odds,
-    win_profit,
-    place_profit,
-    lose_profit,
 ):
     print(
         f"\nArb bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
     )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(
-        f"\tBack bookie: {race['bookie_odds']} - £{format(race['ew_stake'], '.2f')} Lay win: {win_odds} - £{format(win_stake, '.2f')} Lay place: {place_odds} - £{format(place_stake, '.2f')}"
+        f"\tBack bookie: {race['bookie_odds']} - £{format(race['ew_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}"
     )
 
     print(
@@ -91,10 +86,10 @@ def output_lay_ew(
         print()
 
     print(
-        f"\tWin profit: £{format(win_profit, '.2f')} Place profit: £{format(place_profit, '.2f')} Lose profit: £{format(lose_profit, '.2f')}"
+        f"\tWin profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}"
     )
     print(
-        f"Current balance: £{format(sporting_index_balance, '.2f')}, betfair balance: £{format(betfair_balance, '.2f')}\n"
+        f"Current balance: £{format(race['balance'], '.2f')}, betfair balance: £{format(race['betfair_balance'], '.2f')}\n"
     )
 
 
@@ -140,11 +135,6 @@ def update_csv_sporting_index(driver, race):
 
 def update_csv_betfair(
     race,
-    sporting_index_balance,
-    bookie_stake,
-    win_stake,
-    place_stake,
-    betfair_balance,
     win_matched,
     lay_matched,
     arbritrage_profit,
@@ -152,11 +142,6 @@ def update_csv_betfair(
     place_odds,
 ):
     race["is_lay"] = True
-    race["ew_stake"] = bookie_stake
-    race["win_stake"] = win_stake
-    race["place_stake"] = place_stake
-    race["betfair_balance"] = betfair_balance
-    race["balance"] = sporting_index_balance
     race["win_matched"] = win_matched
     race["lay_matched"] = lay_matched
     race["arbritrage_profit"] = arbritrage_profit
