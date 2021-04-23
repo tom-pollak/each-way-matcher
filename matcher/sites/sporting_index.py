@@ -90,6 +90,7 @@ def make_sporting_index_bet(driver, race):
         return True
 
     except WebDriverException as e:
+        print(e)
         print(traceback.format_exc())
         return False
 

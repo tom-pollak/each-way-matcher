@@ -71,7 +71,7 @@ def output_lay_ew(
     )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(
-        f"\tBack bookie: {race['bookie_odds']} - £{format(race['ew_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}"
+        f"\tBack bookie: {race['bookie_odds']} - £{format(race['ew_stake'], '.2f')} Lay win: {win_odds} - £{format(win_stake, '.2f')} Lay place: {place_odds} - £{format(place_stake, '.2f')}"
     )
 
     print(

@@ -82,7 +82,7 @@ def betfair_bet(driver, race):
     )
     if min(*profits) < 0:
         stake_proportion = maximize_arb(race["win_odds"], race["place_odds"], *profits)
-        if stake_proportionn == 0:
+        if stake_proportion == 0:
             print("Arb bet not profitable")
             return
 
@@ -100,7 +100,7 @@ def betfair_bet(driver, race):
         )
         if not stakes_ok:
             print(f"Profits below 0: {profits}")
-            print(bookie_stake, win_stake, place_stake)
+            print(race["bookie_stake"], race["win_stake"], race["place_stake"])
             print(race["bookie_odds"], race["win_odds"], race["place_odds"])
             print(f"stake_proportion: {stake_proportion} too small")
             return
@@ -119,8 +119,9 @@ def betfair_bet(driver, race):
     if (
         win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
         and place_horse_odds[race["horse_name"]]["lay_odds_1"] > race["place_odds"]
-        and win_horse_odds[race["horse_name"]]["lay_avaliable_1"] < win_stake
-        and place_horse_odds[race["horse_name"]]["lay_avaliable_1"] < place_stake
+        and win_horse_odds[race["horse_name"]]["lay_avaliable_1"] < race["win_stake"]
+        and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+        < race["place_stake"]
     ):
         print(
             f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
