@@ -3,7 +3,16 @@ from datetime import datetime
 from dotenv import load_dotenv
 import pandas as pd
 
-from .calculate import custom_date_parser
+# from .calculate import custom_date_parser
+from datetime import datetime
+from time import strptime
+
+
+def custom_date_parser(x):
+    if "/" not in x:
+        return datetime(*(strptime(x, "%d %b %H:%M %Y")[0:6]))
+    return datetime(*(strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
+
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -28,16 +37,12 @@ def get_today_starting_balance():
         today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[0]
     except KeyError:
         return None
-    count = 0
-    for index, _ in df.iterrows():
-        if today_first_bet == index:
-            break
-        count += 1
+    num_races = df[:today_first_bet].shape[0] - 1
 
     return (
         df.loc[datetime.now().strftime("%Y-%m-%d")]["balance"].values[0]
         + df.loc[datetime.now().strftime("%Y-%m-%d")]["betfair_balance"].values[0]
-        + calc_unfinished_races(count)
+        + calc_unfinished_races(num_races)
     )
 
 
@@ -149,3 +154,5 @@ try:
         pass
 except FileNotFoundError:
     print("No returns.csv found!")
+
+output_profit()
