@@ -154,5 +154,3 @@ try:
         pass
 except FileNotFoundError:
     print("No returns.csv found!")
-
-output_profit()
