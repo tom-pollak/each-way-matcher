@@ -1,4 +1,4 @@
-date_of_race,horse_name,bookie_odds,venue,ew_stake,balance,rating,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout,balance_in_betfair,current_time
+date_of_race,horse_name,bookie_odds,venue,bookie_stake,balance,rating,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,is_lay,win_matched,lay_matched,arbritrage_profit,place_payout,balance_in_betfair,current_time
 17 Jan 16:05 2021,Kraka,21.0,Southwell,0.31,49.38,107.71,19.22%,0.06,23.79,23.47,19.0,4.6,50.0,3.31,False,0.0,0.0,0.0,,0.0,17/01/2021 16:02:04
 18 Jan 13:15 2021,Fricka,17.0,Lingfield,0.11,49.16,98.17,4.55%,0.01,5.81,9.69,22.0,3.3,50.0,0.27,False,0.0,0.0,0.0,,0.0,18/01/2021 08:10:26
 18 Jan 15:55 2021,Isayalittleprayer,8.0,Lingfield,0.57,48.02,104.04,10.91%,0.06,74.72,99.39,8.8,2.0,50.0,6.63,False,0.0,0.0,0.0,,0.0,18/01/2021 08:39:59
