@@ -69,7 +69,7 @@ def make_sporting_index_bet(driver, race):
             try:
                 WebDriverWait(driver, 15).until(
                     EC.element_to_be_clickable((By.CLASS_NAME, "ng-pristine"))
-                ).send_keys(str(race["ew_stake"]))
+                ).send_keys(str(race["bookie_stake"]))
                 break
             except (
                 TimeoutException,

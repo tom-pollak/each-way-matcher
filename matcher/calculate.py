@@ -103,8 +103,12 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
         stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
     except ZeroDivisionError:  # if the profit from place is 0 then 0 division
         return 0, 0, "0%"
-    ew_stake = stake_proportion * balance
-    return round(ew_stake, 2), round(C * ew_stake * 2, 2), str(round(C * 200, 2)) + "%"
+    bookie_stake = stake_proportion * balance
+    return (
+        round(bookie_stake, 2),
+        round(C * bookie_stake * 2, 2),
+        str(round(C * 200, 2)) + "%",
+    )
 
 
 def arb_kelly_criterion(

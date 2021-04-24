@@ -54,13 +54,13 @@ def betfair_bet(driver, race):
     race["betfair_balance"] = get_betfair_balance(headers)
     (
         stakes_ok,
-        race["ew_stake"],
+        race["bookie_stake"],
         race["win_stake"],
         race["place_stake"],
     ) = calculate_stakes(
         race["balance"],
         race["betfair_balance"],
-        race["ew_stake"],
+        race["bookie_stake"],
         race["win_stake"],
         race["win_odds"],
         race["place_stake"],
@@ -73,7 +73,7 @@ def betfair_bet(driver, race):
 
     profits = calculate_profit(
         race["bookie_odds"],
-        race["ew_stake"],
+        race["bookie_stake"],
         race["win_odds"],
         race["win_stake"],
         race["place_odds"],
@@ -86,13 +86,13 @@ def betfair_bet(driver, race):
             print("Arb bet not profitable")
             return
 
-        race["ew_stake"] = race["ew_stake"] * stake_proportion
+        race["bookie_stake"] = race["bookie_stake"] * stake_proportion
         race["win_stake"] = race["win_stake"] * stake_proportion
         race["place_stake"] = race["place_stake"] * stake_proportion
         stakes_ok = check_stakes(
             race["balance"],
             race["betfair_balance"],
-            race["ew_stake"],
+            race["bookie_stake"],
             race["win_stake"],
             race["win_odds"],
             race["place_stake"],
@@ -160,7 +160,7 @@ def betfair_bet(driver, race):
             race["lose_profit"],
         ) = calculate_profit(
             race["bookie_odds"],
-            race["ew_stake"],
+            race["bookie_stake"],
             lay_win[4],
             lay_win[3],
             lay_place[4],
@@ -188,7 +188,11 @@ def betfair_bet(driver, race):
 
 
 def evaluate_bet(driver, race):
-    race["ew_stake"], race["expected_return"], race["expected_value"] = kelly_criterion(
+    (
+        race["bookie_stake"],
+        race["expected_return"],
+        race["expected_value"],
+    ) = kelly_criterion(
         race["bookie_odds"],
         race["win_odds"],
         race["place_odds"],
@@ -196,7 +200,7 @@ def evaluate_bet(driver, race):
         race["balance"],
     )
 
-    if race["ew_stake"] < 0.1:
+    if race["bookie_stake"] < 0.1:
         return False
 
     _, _, _, race["horse_name"] = get_race(

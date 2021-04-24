@@ -28,7 +28,7 @@ def calc_unfinished_races(index=-1):
     )
     races = df.loc[mask]
     for _, row in races.iterrows():
-        in_bet_balance += row["ew_stake"] * 2
+        in_bet_balance += row["bookie_stake"] * 2
     return round(in_bet_balance + df.iloc[index].balance_in_betfair, 2)
 
 
