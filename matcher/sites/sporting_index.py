@@ -8,7 +8,6 @@ from selenium.common.exceptions import (
     TimeoutException,
     StaleElementReferenceException,
     NoSuchElementException,
-    ElementNotInteractableException,
 )
 
 from matcher.exceptions import MatcherError
@@ -134,8 +133,6 @@ def sporting_index_bet(driver, race, betfair=False):
             return
         except TimeoutException:
             pass
-        # sys.stdout.flush()
-        # raise MatcherError("Couldn't close bet")
 
     get_sporting_index_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
@@ -166,6 +163,7 @@ def sporting_index_bet(driver, race, betfair=False):
         bet_made = make_sporting_index_bet(driver, race)
         if bet_made:
             return race, True
+        close_bet(driver)
     return race, False
 
 
