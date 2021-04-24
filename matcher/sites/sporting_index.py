@@ -1,5 +1,4 @@
 from time import sleep
-import traceback  # debug
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -80,7 +79,7 @@ def make_sporting_index_bet(driver, race):
         ).click()
         return True
 
-    except WebDriverException as e:
+    except WebDriverException:
         return False
 
 

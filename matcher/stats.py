@@ -3,15 +3,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import pandas as pd
 
-# from .calculate import custom_date_parser
-from datetime import datetime
-from time import strptime
-
-
-def custom_date_parser(x):
-    if "/" not in x:
-        return datetime(*(strptime(x, "%d %b %H:%M %Y")[0:6]))
-    return datetime(*(strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
+from .calculate import custom_date_parser
 
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
