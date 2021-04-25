@@ -46,8 +46,12 @@ def get_balance_sporting_index(driver):
 
 def refresh_sporting_index(driver):
     driver.switch_to.window(driver.window_handles[1])
-    sleep(0.1)
     driver.refresh()
+    WebDriverWait(driver, 60).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
+        )
+    )
 
 
 def click_betslip(driver):
@@ -86,6 +90,11 @@ def make_sporting_index_bet(driver, race):
 def get_sporting_index_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.get(race["bookie_exchange"])
+    WebDriverWait(driver, 60).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
+        )
+    )
 
 
 def sporting_index_bet(driver, race, betfair=False):

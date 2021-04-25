@@ -178,7 +178,7 @@ def betfair_bet(driver, race):
         print(f"time for betfair bet: {end - start}")
 
 
-def evaluate_bet(driver, race):
+def evaluate_sporting_index_bet(driver, race):
     (
         race["bookie_stake"],
         race["expected_return"],
@@ -236,7 +236,7 @@ def start_sporting_index(driver):
                 if check_repeat_bets(
                     race["horse_name"], race["date_of_race"], race["venue"]
                 ):
-                    evaluate_bet(driver, race)
+                    evaluate_sporting_index_bet(driver, race)
 
             driver.switch_to.window(driver.window_handles[0])
             driver.switch_to.default_content()
@@ -280,7 +280,7 @@ def start_matcher(driver, lay):
     while True:
         loop_time = time()
         # So sporting index dosent logout
-        if count % 2 == 0:
+        if count % 4 == 0:
             refresh_sporting_index(driver)
             if count % 10 == 0:
                 show_info(count, START_TIME)
