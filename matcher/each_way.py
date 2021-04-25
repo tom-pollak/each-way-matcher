@@ -288,8 +288,8 @@ def start_matcher(driver, lay):
         # So sporting index dosent logout
         if count % 4 == 0:
             refresh_sporting_index(driver)
-            if count % 10 == 0:
-                show_info(count, START_TIME)
+        if count % 10 == 0:
+            show_info(count, START_TIME)
 
         if lay:
             start_betfair(driver)
