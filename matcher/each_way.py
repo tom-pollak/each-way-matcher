@@ -50,6 +50,17 @@ REFRESH_TIME = 60
 
 
 def betfair_bet(driver, race):
+    def check_start_time():
+        minutes_until_race = (
+            datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
+        ).total_seconds() / 60
+        if minutes_until_race <= 2:
+            print("Race too close to start time: %s" % minutes_until_race)
+            return False
+        return True
+
+    if not check_start_time():
+        return
     start = time()
     headers = login_betfair()
     race["betfair_balance"] = get_betfair_balance(headers)
@@ -122,13 +133,8 @@ def betfair_bet(driver, race):
     if check_odds_changes(race, win_horse_odds, place_horse_odds):
         return
 
-    minutes_until_race = (
-        datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
-    ).total_seconds() / 60
-    if minutes_until_race <= 2:
-        print("Race too close to start time: %s" % minutes_until_race)
+    if not check_start_time():
         return
-
     race, bet_made = sporting_index_bet(driver, race, betfair=True)
     if bet_made is None:
         print(
