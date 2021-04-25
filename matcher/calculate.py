@@ -255,3 +255,27 @@ def calculate_profit(
     place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
     lose_profit = win_stake + place_stake - bookie_stake * 2 - commission_lose
     return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
+
+
+def check_odds_changes(race, win_horse_odds, place_horse_odds):
+    try:
+        if not (
+            win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
+            and place_horse_odds[race["horse_name"]]["lay_odds_1"] > race["place_odds"]
+            and win_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+            < race["win_stake"]
+            and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+            < race["place_stake"]
+        ):
+            return False
+        print(
+            f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
+        )
+        print(
+            f"\t\t      {race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
+        )
+    except KeyError:
+        print("ERROR scraping betfair")
+        print(win_horse_odds)
+        print(place_horse_odds)
+    return True

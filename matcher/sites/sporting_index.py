@@ -11,6 +11,7 @@ from selenium.common.exceptions import (
 )
 
 from matcher.exceptions import MatcherError
+from matcher.calculate import check_odds_changes
 from .scrape_betfair import scrape_odds_betfair
 
 
@@ -147,18 +148,7 @@ def sporting_index_bet(driver, race, betfair=False):
         if betfair:
             win_horse_odds = scrape_odds_betfair(driver, tab=3)
             place_horse_odds = scrape_odds_betfair(driver, tab=4)
-            if (
-                win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
-                and place_horse_odds[race["horse_name"]]["lay_odds_1"]
-                > race["place_odds"]
-                and win_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-                < race["win_stake"]
-                and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-                < race["place_stake"]
-            ):
-                print(
-                    f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
-                )
+            if check_odds_changes(race, win_horse_odds, place_horse_odds):
                 return race, False
         bet_made = make_sporting_index_bet(driver, race)
         if bet_made:

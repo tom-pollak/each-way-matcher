@@ -16,6 +16,7 @@ from .calculate import (
     check_repeat_bets,
     maximize_arb,
     check_stakes,
+    check_odds_changes,
 )
 from .output import (
     update_csv_sporting_index,
@@ -112,23 +113,13 @@ def betfair_bet(driver, race):
         print("Couldn't get race")
         return
 
+    start_scrape_betfair = time()  # debug
     get_betfair_page(driver, market_ids["Win"], tab=3)
     get_betfair_page(driver, market_ids["Place"], tab=4)
     win_horse_odds = scrape_odds_betfair(driver, tab=3)
     place_horse_odds = scrape_odds_betfair(driver, tab=4)
-    if (
-        win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
-        and place_horse_odds[race["horse_name"]]["lay_odds_1"] > race["place_odds"]
-        and win_horse_odds[race["horse_name"]]["lay_avaliable_1"] < race["win_stake"]
-        and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-        < race["place_stake"]
-    ):
-        print(
-            f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
-        )
-        print(
-            f"\t\t      {race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
-        )
+    print(f"Betfair scrape took: {time() - start_scrape_betfair}")  # debug
+    if check_odds_changes(race, win_horse_odds, place_horse_odds):
         return
 
     minutes_until_race = (
