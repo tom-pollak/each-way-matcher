@@ -204,20 +204,16 @@ def minimize_calculate_profits(
     profits,
 ):
     def make_minimize(stakes):
-        if not win_stake:
-            win_stake = stakes[0]
-            if not place_stake:
-                place_stake = stakes[1]
-        else:
-            place_stake = stakes[0]
+        w_stake = stakes[0] + win_stake
+        p_stake = stakes[1] + place_stake
 
         min_profits = calculate_profit(
             bookie_odds,
             bookie_stake,
             win_odds,
-            win_stake,
+            w_stake,
             place_odds,
-            place_stake,
+            p_stake,
             place_payout,
             round=False,
         )
@@ -237,9 +233,8 @@ def minimize_loss(
     place_stake,
     profits,
 ):
-    x0 = [0 for x in [win_stake, place_stake] if not x]
-    bnds = [(0, None) for x in [win_stake, place_stake] if not x]
-    print(x0, bnds)
+    x0 = [0 for x in [win_stake, place_stake]]
+    bnds = [(0, None) for x in [win_stake, place_stake]]
     win_stake, place_stake = minimize(
         minimize_calculate_profits(
             bookie_odds,
@@ -255,6 +250,3 @@ def minimize_loss(
         bounds=bnds,
     ).x
     return round_stake(win_stake), round_stake(place_stake)
-
-
-print(minimize_loss(1.2, 100, 11, 5, 3, 0, 0, [0.1, 0, -1.03]))
