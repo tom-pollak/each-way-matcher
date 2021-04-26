@@ -155,10 +155,10 @@ def sporting_index_bet(driver, race, betfair=False):
 
     if float(cur_odd_price) == float(race["bookie_odds"]):
         if betfair:
-            win_horse_odds = scrape_odds_betfair(driver, tab=3)
-            place_horse_odds = scrape_odds_betfair(driver, tab=4)
-            if check_odds_changes(race, win_horse_odds, place_horse_odds):
-                return race, False
+            # win_horse_odds = scrape_odds_betfair(driver, tab=3)
+            # place_horse_odds = scrape_odds_betfair(driver, tab=4)
+            # if check_odds_changes(race, win_horse_odds, place_horse_odds):
+            #     return race, False
         bet_made = make_sporting_index_bet(driver, race)
         if bet_made:
             return race, True

@@ -124,17 +124,17 @@ def betfair_bet(driver, race):
         print("Couldn't get race")
         return
 
-    start_scrape_betfair = time()  # debug
-    get_betfair_page(driver, market_ids["Win"], tab=3)
-    get_betfair_page(driver, market_ids["Place"], tab=4)
-    win_horse_odds = scrape_odds_betfair(driver, tab=3)
-    place_horse_odds = scrape_odds_betfair(driver, tab=4)
-    print(f"Betfair scrape took: {time() - start_scrape_betfair}")  # debug
-    if check_odds_changes(race, win_horse_odds, place_horse_odds):
-        return
+    # start_scrape_betfair = time()  # debug
+    # get_betfair_page(driver, market_ids["Win"], tab=3)
+    # get_betfair_page(driver, market_ids["Place"], tab=4)
+    # win_horse_odds = scrape_odds_betfair(driver, tab=3)
+    # place_horse_odds = scrape_odds_betfair(driver, tab=4)
+    # print(f"Betfair scrape took: {time() - start_scrape_betfair}")  # debug
+    # if check_odds_changes(race, win_horse_odds, place_horse_odds):
+    #     return
+    # if not check_start_time():
+    #     return
 
-    if not check_start_time():
-        return
     race, bet_made = sporting_index_bet(driver, race, betfair=True)
     if bet_made is None:
         print(
