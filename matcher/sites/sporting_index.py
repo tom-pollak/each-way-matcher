@@ -12,7 +12,7 @@ from selenium.common.exceptions import (
 
 from matcher.exceptions import MatcherError
 from matcher.calculate import check_odds_changes
-from .scrape_betfair import scrape_odds_betfair
+from .betfair_api import get_race_odds
 
 
 def change_to_decimal(driver):
@@ -97,7 +97,7 @@ def get_sporting_index_page(driver, race):
     )
 
 
-def sporting_index_bet(driver, race, betfair=False):
+def sporting_index_bet(driver, race, market_ids=None, betfair=False):
     def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
@@ -155,10 +155,12 @@ def sporting_index_bet(driver, race, betfair=False):
 
     if float(cur_odd_price) == float(race["bookie_odds"]):
         if betfair:
-            # win_horse_odds = scrape_odds_betfair(driver, tab=3)
-            # place_horse_odds = scrape_odds_betfair(driver, tab=4)
-            # if check_odds_changes(race, win_horse_odds, place_horse_odds):
-            #     return race, False
+            if market_ids == None:
+                raise MatcherError("market_ids are None")
+            win_horse_odds = get_race_odds(market_ids["Win"])
+            place_horse_odds = get_race_odds(market_ids["Place"])
+            if check_odds_changes(race, win_horse_odds, place_horse_odds):
+                return race, False
         bet_made = make_sporting_index_bet(driver, race)
         if bet_made:
             return race, True

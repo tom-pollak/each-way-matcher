@@ -55,6 +55,30 @@ def login_betfair():
     raise MatcherError("Can't login")
 
 
+def get_race_odds(market_id):
+    horses = {}
+    resp = requests.get(
+        f"https://www.betfair.com/www/sports/exchange/readonly/v1/bymarket?_ak=nzIFcwyWhrlwYMrh&alt=json&currencyCode=GBP&locale=en_GB&marketIds={market_id}&rollupLimit=10&rollupModel=STAKE&types=EVENT,RUNNER_DESCRIPTION,%20RUNNER_EXCHANGE_PRICES_BEST"
+    )
+    horses_resp = resp.json()["eventTypes"][0]["eventNodes"][0]["marketNodes"][0][
+        "runners"
+    ]
+    for horse in horses_resp:
+        horse_name = horse["description"]["runnerName"]
+        horses[horse_name] = {}
+        back = horse["exchange"].get("availableToBack")
+        lay = horse["exchange"].get("availableToLay")
+        if back is None and lay is None:
+            continue
+        for i, odds in enumerate(back):
+            horses[horse_name][f"back_odds_{i+1}"] = odds["price"]
+            horses[horse_name][f"back_avaliable_{i+1}"] = odds["size"]
+        for i, odds in enumerate(lay):
+            horses[horse_name][f"lay_odds_{i+1}"] = odds["price"]
+            horses[horse_name][f"lay_avaliable_{i+1}"] = odds["size"]
+    return horses
+
+
 def call_api(jsonrpc_req, headers, url=betting_url):
     try:
         if url.lower().startswith("http"):

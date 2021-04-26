@@ -37,6 +37,7 @@ from matcher.sites.betfair_api import (
     get_betfair_balance,
     login_betfair,
     get_race,
+    get_race_odds,
 )
 from matcher.sites.scrape_betfair import get_betfair_page, scrape_odds_betfair
 from matcher.sites.sporting_index import (
@@ -124,18 +125,11 @@ def betfair_bet(driver, race):
         print("Couldn't get race")
         return
 
-    # start_scrape_betfair = time()  # debug
-    # get_betfair_page(driver, market_ids["Win"], tab=3)
-    # get_betfair_page(driver, market_ids["Place"], tab=4)
-    # win_horse_odds = scrape_odds_betfair(driver, tab=3)
-    # place_horse_odds = scrape_odds_betfair(driver, tab=4)
-    # print(f"Betfair scrape took: {time() - start_scrape_betfair}")  # debug
-    # if check_odds_changes(race, win_horse_odds, place_horse_odds):
-    #     return
-    # if not check_start_time():
-    #     return
+    win_horse_odds = get_race_odds(market_ids["Win"])
+    place_horse_odds = get_race_odds(market_ids["Place"])
+    check_odds_changes(race, win_horse_odds, place_horse_odds)
 
-    race, bet_made = sporting_index_bet(driver, race, betfair=True)
+    race, bet_made = sporting_index_bet(driver, race, market_ids, betfair=True)
     if bet_made is None:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
