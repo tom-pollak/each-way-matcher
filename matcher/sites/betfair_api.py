@@ -7,10 +7,10 @@ import time
 
 from urllib import error, request
 from dotenv import load_dotenv
-from simplejson.errors import JSONDecodeError
+from json.decoder import JSONDecodeError
 
-from matcher.exceptions import MatcherError
-from matcher.calculate import round_stake
+# from matcher.exceptions import MatcherError
+# from matcher.calculate import round_stake
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -96,7 +96,7 @@ def call_api(jsonrpc_req, url=betting_url):
             json_res = response.read()
             return json.loads(json_res.decode("utf-8"))
     except error.HTTPError:
-        print("Not a valid operation" + str(url))
+        print("Not a valid operation " + str(url))
     except error.URLError:
         print("No service available at " + str(url))
     print(jsonrpc_req)
@@ -115,6 +115,19 @@ def get_betfair_balance_in_bets():
 
         balance_in_bets += stake * (odds - 1) + stake_remaining * (original_odds - 1)
     return balance_in_bets
+
+
+def get_unmatched_bets(market_ids):
+    order_req = (
+        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"marketIds": ["%s", "%s"]}, "id": 1}'
+        % (market_ids["Win"], market_ids["Place"])
+    )
+    res = call_api(order_req)
+    for bet in res["result"]["currentOrders"]:
+        print(bet)
+
+
+get_unmatched_bets({"Win": 1.182570279, "Place": 1.182570280})
 
 
 def get_horse_id(horses, target_horse):
@@ -210,6 +223,7 @@ def lay_bets(market_id, selection_id, price, stake):
     try:
         if bet_res["result"]["status"] == "SUCCESS":
             bet_made = True
+            bet_id = bet_res["result"]["instructionReports"][0]["betId"]
             stake_matched = bet_res["result"]["instructionReports"][0]["sizeMatched"]
             if stake_matched == stake:
                 matched = True
@@ -232,7 +246,7 @@ def lay_bets(market_id, selection_id, price, stake):
             print("Unknown error making bet: %s" % bet_res)
             print()
             print(bet_req)
-    return bet_made, matched_price, matched, stake_matched
+    return bet_made, matched_price, matched, stake_matched, bet_id
 
 
 def get_betfair_balance():
@@ -255,19 +269,30 @@ def get_race(race_time, venue, horse):
 
 
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
-    lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
+    lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(
         markets_ids["Win"], selection_id, round_stake(win_odds), win_stake
     )
-    lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
+    lay_place, place_odds, place_matched, place_stake_matched, place_bet_id = lay_bets(
         markets_ids["Place"],
         selection_id,
         round_stake(place_odds),
         place_stake,
     )
     return (
-        (lay_win, win_matched, win_stake, win_stake_matched, win_odds),
-        (lay_place, place_matched, place_stake, place_stake_matched, place_odds),
+        {
+            "success": lay_win,
+            "matched": win_matched,
+            "total_stake": win_stake,
+            "matched_stake": win_stake_matched,
+            "odds": win_odds,
+            "bet_id": win_bet_id,
+        },
+        {
+            "success": lay_place,
+            "matched": place_matched,
+            "total_stake": place_stake,
+            "matched_stake": place_stake_matched,
+            "odds": place_odds,
+            "bet_id": place_bet_id,
+        },
     )
-
-
-cancel_unmatched_bets()

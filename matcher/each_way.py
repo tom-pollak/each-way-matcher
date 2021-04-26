@@ -49,6 +49,69 @@ from matcher.sites.sporting_index import (
 REFRESH_TIME = 60
 
 
+def place_arb(
+    selection_id,
+    market_ids,
+    bookie_stake,
+    bookie_odds,
+    win_stake,
+    win_odds,
+    place_stake,
+    place_odds,
+):
+    first_run = True
+    while first_run or not lay_win["matched"] or not lay_place["matched"]:
+        lay_win, lay_place = lay_ew(
+            market_ids,
+            selection_id,
+            win_stake,
+            win_odds,
+            place_stake,
+            place_odds,
+            place_payout,
+        )
+        if first_run:
+            first_run = False
+            win_stake = lay_win["matched_stake"]
+            place_stake = lay_place["matched_stake"]
+            init_win_odds = lay_win["odds"]
+            init_place_odds = lay_place["odds"]
+        else:
+            win_stake += lay_win["matched_stake"] * lay_win["odds"] / init_win_odds
+            place_stake += (
+                lay_place["matched_stake"] * lay_place["odds"] / init_place_odds
+            )
+
+        win_profit, place_profit, lose_profit = calculate_profit(
+            bookie_odds,
+            bookie_stake,
+            init_win_odds,
+            win_stake,
+            init_place_odds,
+            place_stake,
+            place_payout,
+        )
+
+        win_odds = get_race_odds(market_ids["Win"])["lay_odds_1"]
+        place_odds = get_race_odds(market_ids["Place"])["lay_odds_1"]
+        new_win_stake, new_place_stake = maximize_arb(
+            win_odds, place_odds, win_profit, place_profit, lose_profit
+        )
+        betfair_balance = get_betfair_balance()
+        if not check_stakes(
+            None,
+            betfair_balance,
+            bookie_stake,
+            new_win_stake,
+            win_odds,
+            new_place_stake,
+            place_odds,
+        ):
+            break
+
+    return win_stake, init_win_odds, place_stake, init_place_odds
+
+
 def betfair_bet(driver, race):
     def check_start_time():
         minutes_until_race = (
@@ -133,16 +196,21 @@ def betfair_bet(driver, race):
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
     elif bet_made:
-        lay_win, lay_place = lay_ew(
-            market_ids,
+        (
+            race["win_stake"],
+            race["win_odds"],
+            race["place_stake"],
+            race["place_odds"],
+        ) = place_arb(
             selection_id,
+            market_ids,
+            race["bookie_stake"],
+            race["bookie_odds"],
             race["win_stake"],
             race["win_odds"],
             race["place_stake"],
             race["place_odds"],
         )
-        race["betfair_balance"] = get_betfair_balance()
-        race["balance"] = get_balance_sporting_index(driver)
         (
             race["win_profit"],
             race["place_profit"],
@@ -150,27 +218,23 @@ def betfair_bet(driver, race):
         ) = calculate_profit(
             race["bookie_odds"],
             race["bookie_stake"],
-            lay_win[4],
-            lay_win[3],
-            lay_place[4],
-            lay_place[3],
+            race["win_odds"],
+            race["win_stake"],
+            race["place_odds"],
+            race["place_stake"],
             race["place_payout"],
         )
+        race["betfair_balance"] = get_betfair_balance()
+        race["balance"] = get_balance_sporting_index(driver)
         min_profit = min(race["win_profit"], race["place_profit"], race["lose_profit"])
 
         output_lay_ew(
             race,
             min_profit,
-            *lay_win,
-            *lay_place,
         )
         update_csv_betfair(
             race,
-            lay_win[3],
-            lay_place[3],
             min_profit,
-            lay_win[4],
-            lay_place[4],
         )
         end = time()
 

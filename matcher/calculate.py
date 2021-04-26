@@ -10,7 +10,7 @@ from scipy.optimize import minimize
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
-MIN_PERCENTAGE_BALANCE = 0.2
+MIN_PERCENTAGE_BALANCE = 0
 RETURNS_CSV = os.environ.get("RETURNS_CSV")
 COMMISSION = float(os.environ.get("COMMISSION"))
 
@@ -69,9 +69,9 @@ def check_stakes(
 ):
     if (
         (win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance)
-        or (bookie_stake * 2 > bookie_balance)
         or (win_stake < 2 and win_stake * (win_odds - 1) < 10)
         or (place_stake < 2 and place_stake * (place_odds - 1) < 10)
+        or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
     ):
         print("Arb stakes not bettable:")
         print(

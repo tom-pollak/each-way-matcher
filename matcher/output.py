@@ -52,39 +52,14 @@ def output_race(driver, race):
     )
 
 
-def output_lay_ew(
-    race,
-    profit,
-    win_bet_made,
-    win_is_matched,
-    win_stake,
-    win_matched,
-    win_odds,
-    place_bet_made,
-    place_is_matched,
-    place_stake,
-    place_matched,
-    place_odds,
-):
+def output_lay_ew(race, profit):
     print(
         f"\nArb bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
     )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(
-        f"\tBack bookie: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {win_odds} - £{format(win_stake, '.2f')} Lay place: {place_odds} - £{format(place_stake, '.2f')}"
+        f"\tBack bookie: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}"
     )
-
-    print(
-        f"\tLay win: {win_bet_made} - is matched: {win_is_matched} Lay place: {place_bet_made} is matched: {place_is_matched}"
-    )
-
-    if not win_is_matched:
-        print(f"\tLay win matched size: £{format(win_matched, '.2f')} ", end="")
-    if not place_is_matched:
-        print(f"\tLay place matched size: £{format(place_matched, '.2f')}")
-    if not win_matched and place_matched:
-        print()
-
     print(
         f"\tWin profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}"
     )
@@ -95,8 +70,6 @@ def output_lay_ew(
 
 def update_csv_sporting_index(driver, race):
     race["is_lay"] = False
-    race["win_matched"] = 0
-    race["lay_matched"] = 0
     race["arbritrage_profit"] = 0
     race["balance"] = get_balance_sporting_index(driver)
     race["betfair_balance"] = get_betfair_balance()
@@ -118,8 +91,6 @@ def update_csv_sporting_index(driver, race):
         "betfair_balance",
         "max_profit",
         "is_lay",
-        "win_matched",
-        "lay_matched",
         "arbritrage_profit",
         "place_payout",
         "balance_in_betfair",
@@ -134,19 +105,11 @@ def update_csv_sporting_index(driver, race):
 
 def update_csv_betfair(
     race,
-    win_matched,
-    lay_matched,
     arbritrage_profit,
-    win_odds,
-    place_odds,
 ):
     race["is_lay"] = True
-    race["win_matched"] = win_matched
-    race["lay_matched"] = lay_matched
     race["arbritrage_profit"] = arbritrage_profit
     race["expected_value"] = race["expected_return"] = 0
-    race["win_odds"] = win_odds
-    race["place_odds"] = place_odds
     race["balance_in_betfair"] = get_betfair_balance_in_bets()
     csv_columns = [
         "date_of_race",
@@ -165,8 +128,6 @@ def update_csv_betfair(
         "betfair_balance",
         "max_profit",
         "is_lay",
-        "win_matched",
-        "lay_matched",
         "arbritrage_profit",
         "place_payout",
         "balance_in_betfair",
