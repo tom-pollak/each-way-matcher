@@ -59,6 +59,7 @@ def place_arb(
     win_odds,
     place_stake,
     place_odds,
+    place_payout,
 ):
     first_run = True
     while first_run or not lay_win["matched"] or not lay_place["matched"]:
@@ -69,7 +70,6 @@ def place_arb(
             win_odds,
             place_stake,
             place_odds,
-            place_payout,
         )
         cancel_unmatched_bets()
         if first_run:
@@ -212,6 +212,7 @@ def betfair_bet(driver, race):
             race["win_odds"],
             race["place_stake"],
             race["place_odds"],
+            race["place_payout"],
         )
         (
             race["win_profit"],

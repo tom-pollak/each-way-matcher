@@ -155,7 +155,7 @@ def sporting_index_bet(driver, race, market_ids=None, betfair=False):
 
     if float(cur_odd_price) == float(race["bookie_odds"]):
         if betfair:
-            if market_ids == None:
+            if market_ids is None:
                 raise MatcherError("market_ids are None")
             win_horse_odds = get_race_odds(market_ids["Win"])
             place_horse_odds = get_race_odds(market_ids["Place"])
