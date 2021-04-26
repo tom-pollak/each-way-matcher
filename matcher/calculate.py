@@ -3,6 +3,7 @@ import math
 from datetime import datetime
 from time import strptime
 from dotenv import load_dotenv
+import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
@@ -244,6 +245,7 @@ def calculate_profit(
     place_odds,
     place_stake,
     place_payout,
+    round=True,
 ):
     commission_lose = (win_stake + place_stake) * COMMISSION
     commission_place = win_stake * COMMISSION
@@ -254,7 +256,9 @@ def calculate_profit(
     win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
     place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
     lose_profit = win_stake + place_stake - bookie_stake * 2 - commission_lose
-    return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
+    if round:
+        return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
+    return win_profit, place_profit, lose_profit
 
 
 def check_odds_changes(race, win_horse_odds, place_horse_odds):
@@ -279,3 +283,63 @@ def check_odds_changes(race, win_horse_odds, place_horse_odds):
         print(win_horse_odds)
         print(place_horse_odds)
     return True
+    lose_profit = win_stake + place_stake - bookie_stake * 2 - commision
+
+
+def minimize_calculate_profits(
+    bookie_odds,
+    bookie_stake,
+    win_odds,
+    place_odds,
+    place_payout,
+    win_stake,
+    place_stake,
+    profits,
+):
+    def make_minimize(stakes):
+        w_stake = stakes[0] + win_stake
+        p_stake = stakes[1] + place_stake
+
+        min_profits = calculate_profit(
+            bookie_odds,
+            bookie_stake,
+            win_odds,
+            w_stake,
+            place_odds,
+            p_stake,
+            place_payout,
+            round=False,
+        )
+        min_profits = np.add(profits, min_profits)
+        return -min(min_profits)
+
+    return make_minimize
+
+
+def minimize_loss(
+    bookie_odds,
+    bookie_stake,
+    win_odds,
+    place_odds,
+    place_payout,
+    win_stake,
+    place_stake,
+    profits,
+):
+    x0 = [0 for x in [win_stake, place_stake]]
+    bnds = [(0, None) for x in [win_stake, place_stake]]
+    win_stake, place_stake = minimize(
+        minimize_calculate_profits(
+            bookie_odds,
+            bookie_stake,
+            win_odds,
+            place_odds,
+            place_payout,
+            win_stake,
+            place_stake,
+            profits,
+        ),
+        x0=x0,
+        bounds=bnds,
+    ).x
+    return round_stake(win_stake), round_stake(place_stake)
