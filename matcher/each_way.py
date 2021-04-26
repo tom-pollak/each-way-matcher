@@ -174,7 +174,6 @@ def betfair_bet(driver, race):
             lay_place[4],
         )
         end = time()
-        print(f"time for betfair bet: {end - start}")
 
 
 def evaluate_sporting_index_bet(driver, race):

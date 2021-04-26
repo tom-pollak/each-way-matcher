@@ -196,7 +196,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
         "side": "LAY", "handicap": "0", "orderType": "LIMIT", "limitOrder": {"size": "%s", \
-        "price": "%s", "persistenceType": "LAPSE"}}]}, "id": 1}'
+        "price": "%s", "persistenceType": "MARKET_ON_CLOSE"}}]}, "id": 1}'
         % (market_id, selection_id, round(stake, 2), price)
     )
     bet_res = call_api(bet_req, headers)
@@ -212,8 +212,8 @@ def lay_bets(market_id, selection_id, price, stake, headers):
                 ),
                 2,
             )
-            if price - 1 != matched_price:
-                print("Odds have changed, original price: %s" % (price - 1))
+            if price != matched_price:
+                print("Odds have changed, original price: %s" % (price))
 
         elif bet_res["result"]["status"] == "FAILURE":
             print("Lay bet failed: %s" % bet_res["result"])
