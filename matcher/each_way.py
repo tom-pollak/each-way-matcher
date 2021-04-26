@@ -62,13 +62,15 @@ def place_arb(
     place_payout,
 ):
     first_run = True
+    temp_win_stake, temp_place_stake = win_stake, place_stake
+
     while first_run or not lay_win["matched"] or not lay_place["matched"]:
         lay_win, lay_place = lay_ew(
             market_ids,
             selection_id,
-            win_stake,
+            temp_win_stake,
             win_odds,
-            place_stake,
+            temp_place_stake,
             place_odds,
         )
         cancel_unmatched_bets()
@@ -96,7 +98,7 @@ def place_arb(
 
         win_odds = get_race_odds(market_ids["Win"])["lay_odds_1"]
         place_odds = get_race_odds(market_ids["Place"])["lay_odds_1"]
-        new_win_stake, new_place_stake = maximize_arb(
+        temp_win_stake, temp_place_stake = maximize_arb(
             win_odds, place_odds, win_profit, place_profit, lose_profit
         )
         betfair_balance = get_betfair_balance()
@@ -104,9 +106,9 @@ def place_arb(
             None,
             betfair_balance,
             bookie_stake,
-            new_win_stake,
+            temp_win_stake,
             win_odds,
-            new_place_stake,
+            temp_place_stake,
             place_odds,
         ):
             break
