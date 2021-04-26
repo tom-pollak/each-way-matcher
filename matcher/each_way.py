@@ -38,6 +38,7 @@ from matcher.sites.betfair_api import (
     login_betfair,
     get_race,
     get_race_odds,
+    cancel_unmatched_bets,
 )
 from matcher.sites.sporting_index import (
     setup_sporting_index,
@@ -70,6 +71,7 @@ def place_arb(
             place_odds,
             place_payout,
         )
+        cancel_unmatched_bets()
         if first_run:
             first_run = False
             win_stake = lay_win["matched_stake"]

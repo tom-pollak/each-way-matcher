@@ -1,7 +1,5 @@
 # TODO
 
-- change lay_win and lay_place tuples into dicts
-- minimize arb loss
 - possibly make betfair_api OOP
 - make scrape betfair 'import betfair and betfair.scrape'
 - use logging instead of prints

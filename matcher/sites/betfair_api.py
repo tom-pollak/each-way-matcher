@@ -9,8 +9,8 @@ from urllib import error, request
 from dotenv import load_dotenv
 from json.decoder import JSONDecodeError
 
-# from matcher.exceptions import MatcherError
-# from matcher.calculate import round_stake
+from matcher.exceptions import MatcherError
+from matcher.calculate import round_stake
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -117,7 +117,7 @@ def get_betfair_balance_in_bets():
     return balance_in_bets
 
 
-def get_unmatched_bets(market_ids):
+def get_bets(market_ids):
     order_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"marketIds": ["%s", "%s"]}, "id": 1}'
         % (market_ids["Win"], market_ids["Place"])
@@ -125,9 +125,6 @@ def get_unmatched_bets(market_ids):
     res = call_api(order_req)
     for bet in res["result"]["currentOrders"]:
         print(bet)
-
-
-get_unmatched_bets({"Win": 1.182570279, "Place": 1.182570280})
 
 
 def get_horse_id(horses, target_horse):
