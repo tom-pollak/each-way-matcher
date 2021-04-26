@@ -245,7 +245,7 @@ def calculate_profit(
     place_odds,
     place_stake,
     place_payout,
-    round=True,
+    round_profit=True,
 ):
     commission_lose = (win_stake + place_stake) * COMMISSION
     commission_place = win_stake * COMMISSION
@@ -256,7 +256,7 @@ def calculate_profit(
     win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
     place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
     lose_profit = win_stake + place_stake - bookie_stake * 2 - commission_lose
-    if round:
+    if round_profit:
         return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
     return win_profit, place_profit, lose_profit
 
@@ -283,7 +283,6 @@ def check_odds_changes(race, win_horse_odds, place_horse_odds):
         print(win_horse_odds)
         print(place_horse_odds)
     return True
-    lose_profit = win_stake + place_stake - bookie_stake * 2 - commision
 
 
 def minimize_calculate_profits(
@@ -308,7 +307,7 @@ def minimize_calculate_profits(
             place_odds,
             p_stake,
             place_payout,
-            round=False,
+            round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
         return -min(min_profits)
