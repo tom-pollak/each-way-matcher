@@ -7,6 +7,7 @@ import time
 
 from urllib import error, request
 from dotenv import load_dotenv
+from simplejson.errors import JSONDecodeError
 
 from matcher.exceptions import MatcherError
 from matcher.calculate import round_stake
@@ -60,9 +61,14 @@ def get_race_odds(market_id):
     resp = requests.get(
         f"https://www.betfair.com/www/sports/exchange/readonly/v1/bymarket?_ak=nzIFcwyWhrlwYMrh&alt=json&currencyCode=GBP&locale=en_GB&marketIds={market_id}&rollupLimit=10&rollupModel=STAKE&types=EVENT,RUNNER_DESCRIPTION,%20RUNNER_EXCHANGE_PRICES_BEST"
     )
-    horses_resp = resp.json()["eventTypes"][0]["eventNodes"][0]["marketNodes"][0][
-        "runners"
-    ]
+    try:
+        horses_resp = resp.json()["eventTypes"][0]["eventNodes"][0]["marketNodes"][0][
+            "runners"
+        ]
+    except JSONDecodeError:
+        print(json)
+        raise MatcherError("Couldn't decode JSON")
+
     for horse in horses_resp:
         horse_name = horse["description"]["runnerName"]
         horses[horse_name] = {}
@@ -179,6 +185,7 @@ def cancel_unmatched_bets(headers):
     cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
     try:
         cancel_res = call_api(cancel_req, headers)
+        print(cancel_res)
         if cancel_res["result"]["status"] == "SUCCESS":
             return True
     except (KeyError, MatcherError):
@@ -264,3 +271,7 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
         (lay_win, win_matched, win_stake, win_stake_matched, win_odds),
         (lay_place, place_matched, place_stake, place_stake_matched, place_odds),
     )
+
+
+headers = login_betfair()
+cancel_unmatched_bets(headers)
