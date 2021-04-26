@@ -39,7 +39,6 @@ from matcher.sites.betfair_api import (
     get_race,
     get_race_odds,
 )
-from matcher.sites.scrape_betfair import get_betfair_page, scrape_odds_betfair
 from matcher.sites.sporting_index import (
     setup_sporting_index,
     sporting_index_bet,

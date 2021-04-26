@@ -15,7 +15,6 @@ from selenium.common.exceptions import (
 )
 
 from matcher.exceptions import MatcherError
-from .scrape_betfair import setup_scrape_betfair
 
 
 def find_races(driver, row=0, window=0):
@@ -249,9 +248,6 @@ def open_betfair_oddsmonkey(driver):
     )
     driver.switch_to.window(driver.window_handles[2])
     trigger_betfair_options(driver)
-    driver.execute_script("""window.open("https://google.com","_blank");""")
-    driver.execute_script("""window.open("https://google.com","_blank");""")
-    setup_scrape_betfair(driver, tab=4)
 
 
 def get_no_rows(driver):
