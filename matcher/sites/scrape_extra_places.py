@@ -69,7 +69,6 @@ def get_extra_place_races():
 
 
 def create_race_df(races):
-    headers = login_betfair()
     data = []
     indexes = []
     for i, race in enumerate(races):
@@ -78,7 +77,7 @@ def create_race_df(races):
             datetime.date.today(), datetime.time(int(hour), int(mins))
         )
         try:
-            market_ids, _ = get_horses(race["venue"], time, headers)
+            market_ids, _ = get_horses(race["venue"], time)
             win_market_id = market_ids["Win"]
             place_market_id = market_ids["Place"]
         except MatcherError:
@@ -110,7 +109,6 @@ def create_race_df(races):
 
 
 def create_odds_df(races_df, races):
-    headers = login_betfair()
     horse_ids = {}
     bookies = set()
     for i in [x["bookies"].keys() for x in races]:
@@ -120,7 +118,7 @@ def create_odds_df(races_df, races):
     for race in races_df.iterrows():
         key = race[0]
         try:
-            for horse in get_horses(key[0], key[1], headers)[1]["runners"]:
+            for horse in get_horses(key[0], key[1])[1]["runners"]:
                 indexes.append((key[0], key[1], horse["runnerName"], None))
                 horse_ids[horse["runnerName"]] = horse["selectionId"]
         except MatcherError:

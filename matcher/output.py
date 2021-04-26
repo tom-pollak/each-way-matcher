@@ -94,13 +94,12 @@ def output_lay_ew(
 
 
 def update_csv_sporting_index(driver, race):
-    headers = login_betfair()
     race["is_lay"] = False
     race["win_matched"] = 0
     race["lay_matched"] = 0
     race["arbritrage_profit"] = 0
     race["balance"] = get_balance_sporting_index(driver)
-    race["betfair_balance"] = get_betfair_balance(headers)
+    race["betfair_balance"] = get_betfair_balance()
     race["balance_in_betfair"] = get_betfair_balance_in_bets()
     csv_columns = [
         "date_of_race",

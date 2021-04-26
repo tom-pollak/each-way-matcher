@@ -62,8 +62,7 @@ def betfair_bet(driver, race):
     if not check_start_time():
         return
     start = time()
-    headers = login_betfair()
-    race["betfair_balance"] = get_betfair_balance(headers)
+    race["betfair_balance"] = get_betfair_balance()
     (
         stakes_ok,
         race["bookie_stake"],
@@ -142,7 +141,7 @@ def betfair_bet(driver, race):
             race["place_stake"],
             race["place_odds"],
         )
-        race["betfair_balance"] = get_betfair_balance(headers)
+        race["betfair_balance"] = get_betfair_balance()
         race["balance"] = get_balance_sporting_index(driver)
         (
             race["win_profit"],
@@ -308,7 +307,7 @@ def run_each_way(lay):
             start_matcher(driver, lay)
         except MatcherError as e:
             print(e)
-            print(traceback.format_exc())
+            # print(traceback.format_exc())
         except KeyboardInterrupt:
             break
         except WebDriverException as e:

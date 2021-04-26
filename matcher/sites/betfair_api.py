@@ -85,7 +85,8 @@ def get_race_odds(market_id):
     return horses
 
 
-def call_api(jsonrpc_req, headers, url=betting_url):
+def call_api(jsonrpc_req, url=betting_url):
+    headers = login_betfair()
     try:
         if url.lower().startswith("http"):
             req = request.Request(url, jsonrpc_req.encode("utf-8"), headers)
@@ -103,10 +104,9 @@ def call_api(jsonrpc_req, headers, url=betting_url):
 
 
 def get_betfair_balance_in_bets():
-    headers = login_betfair()
     balance_in_bets = 0
     order_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders"}'
-    res = call_api(order_req, headers)
+    res = call_api(order_req)
     for race in res["result"]["currentOrders"]:
         odds = race["averagePriceMatched"]
         stake = race["sizeMatched"]
@@ -142,7 +142,7 @@ def get_horse_id(horses, target_horse):
     return None, target_horse
 
 
-def get_horses(venue, race_time, headers):
+def get_horses(venue, race_time):
     markets = []
     markets_ids = {}
     markets_req = (
@@ -152,7 +152,7 @@ def get_horses(venue, race_time, headers):
         "marketProjection": ["RUNNER_DESCRIPTION", "MARKET_START_TIME"]}}'
         % (venue)
     )
-    markets_response = call_api(markets_req, headers)
+    markets_response = call_api(markets_req)
     try:
         market_type = markets_response["result"]
         for market in market_type:
@@ -181,10 +181,10 @@ def get_horses(venue, race_time, headers):
     return markets_ids, horses
 
 
-def cancel_unmatched_bets(headers):
+def cancel_unmatched_bets():
     cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
     try:
-        cancel_res = call_api(cancel_req, headers)
+        cancel_res = call_api(cancel_req)
         print(cancel_res)
         if cancel_res["result"]["status"] == "SUCCESS":
             return True
@@ -194,7 +194,7 @@ def cancel_unmatched_bets(headers):
     return False
 
 
-def lay_bets(market_id, selection_id, price, stake, headers):
+def lay_bets(market_id, selection_id, price, stake):
     matched = False
     bet_made = False
     stake_matched = 0
@@ -206,7 +206,7 @@ def lay_bets(market_id, selection_id, price, stake, headers):
         "price": "%s", "persistenceType": "MARKET_ON_CLOSE"}}]}, "id": 1}'
         % (market_id, selection_id, round(stake, 2), price)
     )
-    bet_res = call_api(bet_req, headers)
+    bet_res = call_api(bet_req)
     try:
         if bet_res["result"]["status"] == "SUCCESS":
             bet_made = True
@@ -235,18 +235,17 @@ def lay_bets(market_id, selection_id, price, stake, headers):
     return bet_made, matched_price, matched, stake_matched
 
 
-def get_betfair_balance(headers):
+def get_betfair_balance():
     account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
     balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    balance_res = call_api(balance_req, headers, url=account_url)
+    balance_res = call_api(balance_req, url=account_url)
     balance = balance_res["result"]["availableToBetBalance"]
     return balance
 
 
 def get_race(race_time, venue, horse):
-    headers = login_betfair()
     race_time = datetime.datetime.strptime(race_time, "%d %b %H:%M %Y")
-    markets_ids, horses = get_horses(venue, race_time, headers)
+    markets_ids, horses = get_horses(venue, race_time)
     selection_id, target_horse = get_horse_id(horses, horse)
     if selection_id is None:
         got_horse = False
@@ -256,16 +255,14 @@ def get_race(race_time, venue, horse):
 
 
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
-    headers = login_betfair()
     lay_win, win_odds, win_matched, win_stake_matched = lay_bets(
-        markets_ids["Win"], selection_id, round_stake(win_odds), win_stake, headers
+        markets_ids["Win"], selection_id, round_stake(win_odds), win_stake
     )
     lay_place, place_odds, place_matched, place_stake_matched = lay_bets(
         markets_ids["Place"],
         selection_id,
         round_stake(place_odds),
         place_stake,
-        headers,
     )
     return (
         (lay_win, win_matched, win_stake, win_stake_matched, win_odds),
@@ -273,5 +270,4 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
     )
 
 
-headers = login_betfair()
-cancel_unmatched_bets(headers)
+cancel_unmatched_bets()
