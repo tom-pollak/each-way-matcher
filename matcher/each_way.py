@@ -126,7 +126,6 @@ def betfair_bet(driver, race):
 
     if not check_start_time():
         return
-    start = time()
     race["betfair_balance"] = get_betfair_balance()
     (
         stakes_ok,
@@ -239,7 +238,6 @@ def betfair_bet(driver, race):
             race,
             min_profit,
         )
-        end = time()
 
 
 def evaluate_sporting_index_bet(driver, race):
