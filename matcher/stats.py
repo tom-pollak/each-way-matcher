@@ -136,13 +136,12 @@ try:
         date_parser=custom_date_parser,
         squeeze=True,
     )
-    try:
-        STARTING_BALANCE = (
-            df["balance"].values[0]
-            + df["betfair_balance"].values[0]
-            + calc_unfinished_races(0)
-        )
-    except IndexError:
-        pass
+    STARTING_BALANCE = (
+        df["balance"].values[0]
+        + df["betfair_balance"].values[0]
+        + calc_unfinished_races(0)
+    )
 except FileNotFoundError:
     print("No returns.csv found!")
+except IndexError:
+    pass
