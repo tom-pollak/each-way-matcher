@@ -117,14 +117,49 @@ def get_betfair_balance_in_bets():
     return balance_in_bets
 
 
-def get_bets(market_ids):
+def get_bets_by_race(win_market_id, place_market_id):
+    bet_info = {"win": [], "place": []}
     order_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"marketIds": ["%s", "%s"]}, "id": 1}'
-        % (market_ids["Win"], market_ids["Place"])
+        % (win_market_id, place_market_id)
     )
-    res = call_api(order_req)
-    for bet in res["result"]["currentOrders"]:
-        print(bet)
+    bets = call_api(order_req)["result"]["currentOrders"]
+    print(bets)
+    for bet in bets:
+        odds = bet["averagePriceMatched"]
+        stake = bet["sizeMatched"]
+        temp = {"odds": odds, "stake": stake}
+        if bet["marketId"] == win_bet_id:
+            bet_info["win"].append(temp)
+        else:
+            bet_info["place"].append(temp)
+    win_stake = place_stake = win_odds = place_odds = 0
+    for win_bet, place_bet in zip(bet_info["win"], bet_info["place"]):
+        win_stake += win_bet["stake"]
+        place_stake += place_bet["stake"]
+        win_odds += win_bet["stake"] * win_bet["odds"]
+        place_odds += place_bet["stake"] * place_bet["odds"]
+    win_odds /= win_stake
+    place_odds /= place_stake
+    return win_stake, win_odds, place_stake, place_odds
+
+
+def get_bets_by_bet_id(win_bet_id, place_bet_id):
+    bet_info = {}
+    order_req = (
+        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"betIds": ["%s", "%s"]}, "id": 1}'
+        % (win_bet_id, place_bet_id)
+    )
+    bets = call_api(order_req)["result"]["currentOrders"]
+    for bet in bets:
+        odds = bet["averagePriceMatched"]
+        stake = bet["sizeMatched"]
+        temp = {"odds": odds, "stake": stake}
+        if bet["betId"] == win_bet_id:
+            bet_info["win"] = temp
+        else:
+            bet_info["place"] = temp
+    return bet_info
 
 
 def get_horse_id(horses, target_horse):
@@ -184,9 +219,9 @@ def get_horses(venue, race_time):
 
     for market in markets:
         if market["marketName"] == "To Be Placed":
-            markets_ids["Place"] = market["marketId"]
+            markets_ids["place"] = market["marketId"]
         else:
-            markets_ids["Win"] = market["marketId"]
+            markets_ids["win"] = market["marketId"]
             horses = market
     return markets_ids, horses
 
@@ -267,10 +302,10 @@ def get_race(race_time, venue, horse):
 
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
     lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(
-        markets_ids["Win"], selection_id, round_stake(win_odds), win_stake
+        markets_ids["win"], selection_id, round_stake(win_odds), win_stake
     )
     lay_place, place_odds, place_matched, place_stake_matched, place_bet_id = lay_bets(
-        markets_ids["Place"],
+        markets_ids["place"],
         selection_id,
         round_stake(place_odds),
         place_stake,

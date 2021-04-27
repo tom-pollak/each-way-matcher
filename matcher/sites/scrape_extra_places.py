@@ -78,8 +78,8 @@ def create_race_df(races):
         )
         try:
             market_ids, _ = get_horses(race["venue"], time)
-            win_market_id = market_ids["Win"]
-            place_market_id = market_ids["Place"]
+            win_market_id = market_ids["win"]
+            place_market_id = market_ids["place"]
         except MatcherError:
             continue
         indexes.append((race["venue"], time))
