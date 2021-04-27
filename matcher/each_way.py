@@ -152,7 +152,6 @@ def betfair_bet(driver, race):
     )
 
     if not stakes_ok:
-        print(f"Stakes not ok: {race['win_stake']}, {race['place_stake']}")
         return
 
     profits = calculate_profit(
@@ -165,10 +164,12 @@ def betfair_bet(driver, race):
         race["place_payout"],
     )
     if min(*profits) < 0:
-        stake_proportion = maximize_arb(race["win_odds"], race["place_odds"], *profits)
-        if stake_proportion == 0:
-            print(f"Arb bet not profitable: {profits}")
-            return
+        # stake_proportion = maximize_arb(race["win_odds"], race["place_odds"], *profits)
+        # if stake_proportion == 0:
+        #     print(f"Arb bet not profitable: {profits}")
+        #     return
+        print(f"Arb bet not profitable: {profits}")
+        return
 
         race["bookie_stake"] = race["bookie_stake"] * stake_proportion
         race["win_stake"] = race["win_stake"] * stake_proportion
