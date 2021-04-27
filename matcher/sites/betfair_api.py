@@ -70,6 +70,7 @@ def get_race_odds(market_id):
         raise MatcherError("Couldn't decode JSON")
 
     for horse in horses_resp:
+        horse_name = horse["description"]["runnerName"]
         horses[horse_name] = {
             "back_odds_1": 0,
             "back_odds_2": 0,
@@ -84,8 +85,6 @@ def get_race_odds(market_id):
             "lay_avaliable_2": 0,
             "lay_avaliable_3": 0,
         }
-        horse_name = horse["description"]["runnerName"]
-        horses[horse_name] = {}
         back = horse["exchange"].get("availableToBack")
         lay = horse["exchange"].get("availableToLay")
         if back is not None:
