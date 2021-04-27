@@ -70,18 +70,32 @@ def get_race_odds(market_id):
         raise MatcherError("Couldn't decode JSON")
 
     for horse in horses_resp:
+        horses[horse_name] = {
+            "back_odds_1": 0,
+            "back_odds_2": 0,
+            "back_odds_3": 0,
+            "lay_odds_1": 99999,
+            "lay_odds_2": 99999,
+            "lay_odds_3": 99999,
+            "back_avaliable_1": 0,
+            "back_avaliable_2": 0,
+            "back_avaliable_3": 0,
+            "lay_avaliable_1": 0,
+            "lay_avaliable_2": 0,
+            "back_avaliable_3": 0,
+        }
         horse_name = horse["description"]["runnerName"]
         horses[horse_name] = {}
         back = horse["exchange"].get("availableToBack")
         lay = horse["exchange"].get("availableToLay")
-        if back is None and lay is None:
-            continue
-        for i, odds in enumerate(back):
-            horses[horse_name][f"back_odds_{i+1}"] = odds["price"]
-            horses[horse_name][f"back_avaliable_{i+1}"] = odds["size"]
-        for i, odds in enumerate(lay):
-            horses[horse_name][f"lay_odds_{i+1}"] = odds["price"]
-            horses[horse_name][f"lay_avaliable_{i+1}"] = odds["size"]
+        if back is not None:
+            for i, odds in enumerate(back):
+                horses[horse_name][f"back_odds_{i+1}"] = odds["price"]
+                horses[horse_name][f"back_avaliable_{i+1}"] = odds["size"]
+        if lay is not None:
+            for i, odds in enumerate(lay):
+                horses[horse_name][f"lay_odds_{i+1}"] = odds["price"]
+                horses[horse_name][f"lay_avaliable_{i+1}"] = odds["size"]
     return horses
 
 
