@@ -82,7 +82,7 @@ def get_race_odds(market_id):
             "back_avaliable_3": 0,
             "lay_avaliable_1": 0,
             "lay_avaliable_2": 0,
-            "back_avaliable_3": 0,
+            "lay_avaliable_3": 0,
         }
         horse_name = horse["description"]["runnerName"]
         horses[horse_name] = {}
@@ -143,7 +143,7 @@ def get_bets_by_race(win_market_id, place_market_id):
         odds = bet["averagePriceMatched"]
         stake = bet["sizeMatched"]
         temp = {"odds": odds, "stake": stake}
-        if bet["marketId"] == win_bet_id:
+        if bet["marketId"] == win_market_id:
             bet_info["win"].append(temp)
         else:
             bet_info["place"].append(temp)
