@@ -1,8 +1,9 @@
 # TODO
 
+- have a look at arb_kelly algorithm
 - possibly make betfair_api OOP
-- make scrape betfair 'import betfair and betfair.scrape'
 - use logging instead of prints
+
 - find more ways to access odds directly
 
 - optimize sporting index where possible
