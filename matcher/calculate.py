@@ -332,7 +332,6 @@ def minimize_calculate_profits(
             round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
-        print(stakes, min_profits)
         return -min(min_profits)
 
     return make_minimize
