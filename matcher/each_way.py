@@ -94,34 +94,21 @@ def place_arb(
 
         win_odds = get_race_odds(market_ids["win"])["lay_odds_1"]
         place_odds = get_race_odds(market_ids["place"])["lay_odds_1"]
-        betfair_balance = get_betfair_balance()
         win_stake, place_stake = minimize_loss(
-            win_odds,
-            place_odds,
-            place_payout,
-            profits,
+            win_odds, place_odds, place_payout, profits, get_betfair_balance()
         )
-        if check_stakes(
+        profits = place_arb(
+            selection_id,
+            market_ids,
             None,
-            betfair_balance,
-            bookie_stake,
+            None,
             win_stake,
             win_odds,
             place_stake,
             place_odds,
-        ):
-            profits = place_arb(
-                selection_id,
-                market_ids,
-                None,
-                None,
-                win_stake,
-                win_odds,
-                place_stake,
-                place_odds,
-                place_payout,
-                profits,
-            )
+            place_payout,
+            profits,
+        )
     return profits
 
 

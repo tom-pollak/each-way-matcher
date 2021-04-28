@@ -69,6 +69,7 @@ def check_stakes(
     win_odds,
     place_stake,
     place_odds,
+    output=True,
 ):
     total_stake = 0
     if win_stake is not None:
@@ -85,10 +86,11 @@ def check_stakes(
         )
         or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
     ):
-        print("Arb stakes not bettable:")
-        print(
-            f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
-        )
+        if output:
+            print("Arb stakes not bettable:")
+            print(
+                f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
+            )
         return False
     return True
 
@@ -313,13 +315,26 @@ def minimize_calculate_profits(
     place_odds,
     place_payout,
     profits,
+    win_min_stake,
+    place_min_stake,
+    betfair_balance,
 ):
     def make_minimize(stakes):
-        win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
         if stakes[0] < win_min_stake:
             stakes[0] = 0
         if stakes[1] < place_min_stake:
             stakes[1] = 0
+        if not check_stakes(
+            None,
+            betfair_balance,
+            None,
+            stakes[0],
+            win_odds,
+            stakes[1],
+            place_odds,
+            output=False,
+        ):
+            return (stakes[0] + stakes[1]) * 1000
 
         min_profits = calculate_profit(
             None,
@@ -352,8 +367,8 @@ def minimize_loss(
     place_odds,
     place_payout,
     profits,
+    betfair_balance,
 ):
-
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
     x0 = (win_min_stake, place_min_stake)
     bnds = ((0, None), (0, None))
@@ -363,6 +378,9 @@ def minimize_loss(
             place_odds,
             place_payout,
             profits,
+            win_min_stake,
+            place_min_stake,
+            betfair_balance,
         ),
         x0=x0,
         bounds=bnds,
@@ -372,3 +390,6 @@ def minimize_loss(
     if place_stake < place_min_stake:
         place_stake = None
     return round_stake(win_stake), round_stake(place_stake)
+
+
+print(minimize_loss(2.18, 1.16, 5, (22.46, -14.74, -26.48), 0))
