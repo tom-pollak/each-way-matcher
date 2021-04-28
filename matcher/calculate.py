@@ -48,16 +48,25 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     except IndexError:
         return False
     mask = (
-        (df["horse_name"] == horse_name)
-        & (df["date_of_race"] == date_of_race)
+        (df["date_of_race"] == date_of_race)
         & (df["venue"] == venue)
         & (df["is_lay"] == False)
     )
     if len(df.loc[mask]) == 0:
         return True
-    if len(df.loc[mask]) > 1:
+    elif len(df.loc[mask]) > 1:
         print("ERROR more than one race matched")
         print(df.loc[mask])
+        return None
+
+    mask = (
+        (df["horse_name"] == horse_name)
+        & (df["date_of_race"] == date_of_race)
+        & (df["venue"] == venue)
+        & (df["is_lay"] == False)
+    )
+    horses = df.loc[mask]
+    print(horses)
     return False
 
 
