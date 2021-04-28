@@ -14,7 +14,7 @@ from .calculate import (
     calculate_profit,
     kelly_criterion,
     check_repeat_bets,
-    maximize_arb,
+    minimize_loss,
     check_stakes,
     check_odds_changes,
 )
@@ -62,9 +62,7 @@ def place_arb(
     place_stake,
     place_odds,
     place_payout,
-    win_profit=0,
-    place_profit=0,
-    lose_profit=0,
+    profits=(0, 0, 0),
 ):
     lay_win, lay_place = lay_ew(
         market_ids,
@@ -76,9 +74,14 @@ def place_arb(
     )
 
     if not lay_win["matched"] or not lay_place["matched"]:
+        print("bets not matched:", lay_win, lay_place)
         cancel_unmatched_bets()
         bet_info = get_bets_by_bet_id(lay_win["bet_id"], lay_place["bet_id"])
-        profits = calculate_profit(
+        if bet_info.get("win") is None:
+            bet_info["win"] = {"odds": 0, "stake": 0}
+        if bet_info.get("place") is None:
+            bet_info["place"] = {"odds": 0, "stake": 0}
+        new_profits = calculate_profit(
             bookie_odds,
             bookie_stake,
             bet_info["win"]["odds"],
@@ -87,16 +90,17 @@ def place_arb(
             bet_info["place"]["stake"],
             place_payout,
         )
-        win_profit, place_profit, lose_profit = tuple(
-            map(sum, zip((win_profit, place_profit, lose_profit), profits))
-        )
+        profits = tuple(map(sum, zip(profits, new_profits)))
 
         win_odds = get_race_odds(market_ids["win"])["lay_odds_1"]
         place_odds = get_race_odds(market_ids["place"])["lay_odds_1"]
-        win_stake, place_stake = maximize_arb(
-            win_odds, place_odds, win_profit, place_profit, lose_profit
-        )
         betfair_balance = get_betfair_balance()
+        win_stake, place_stake = minimize_loss(
+            win_odds,
+            place_odds,
+            place_payout,
+            profits,
+        )
         if check_stakes(
             None,
             betfair_balance,
@@ -106,7 +110,7 @@ def place_arb(
             place_stake,
             place_odds,
         ):
-            win_profit, place_profit, lose_profit = place_arb(
+            profits = place_arb(
                 selection_id,
                 market_ids,
                 None,
@@ -116,11 +120,9 @@ def place_arb(
                 place_stake,
                 place_odds,
                 place_payout,
-                win_profit,
-                place_profit,
-                lose_profit,
+                profits,
             )
-    return win_profit, place_profit, lose_profit
+    return profits
 
 
 def betfair_bet(driver, race):

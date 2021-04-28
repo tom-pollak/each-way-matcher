@@ -70,10 +70,19 @@ def check_stakes(
     place_stake,
     place_odds,
 ):
+    total_stake = 0
+    if win_stake is not None:
+        total_stake += win_stake * (win_odds - 1)
+    if place_stake is not None:
+        total_stake += place_stake * (place_odds - 1)
     if (
-        (win_stake * (win_odds - 1) + place_stake * (place_odds - 1) > betfair_balance)
-        or (win_stake < 2 and win_stake * (win_odds - 1) < 10)
-        or (place_stake < 2 and place_stake * (place_odds - 1) < 10)
+        (total_stake > betfair_balance)
+        or (win_stake is not None and win_stake < 2 and win_stake * (win_odds - 1) < 10)
+        or (
+            place_stake is not None
+            and place_stake < 2
+            and place_stake * (place_odds - 1) < 10
+        )
         or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
     ):
         print("Arb stakes not bettable:")
@@ -133,12 +142,18 @@ def arb_kelly_criterion(
     return -stake_proporiton
 
 
-def maximize_arb(win_odds, place_odds, win_profit, place_profit, lose_profit):
+def maximize_arb(
+    win_odds, place_odds, win_profit, place_profit, lose_profit, negative=False
+):
+    if negative:
+        bnds = ((None, None),)
+    else:
+        bounds = ((0, 1),)
     result = minimize(
         arb_kelly_criterion,
         0,
         args=(win_profit, place_profit, lose_profit, win_odds, place_odds),
-        bounds=((0, 1),),
+        bounds=bnds,
     )
     if result.fun == 9999:
         return 0
@@ -224,6 +239,8 @@ def calculate_stakes(
 
 
 def round_stake(odd):
+    if odd is None:
+        return None
     for price in price_increments:
         if odd < price:
             return round(
@@ -292,59 +309,67 @@ def check_odds_changes(race, win_horse_odds, place_horse_odds):
 
 
 def minimize_calculate_profits(
-    bookie_odds,
-    bookie_stake,
     win_odds,
     place_odds,
     place_payout,
-    win_stake,
-    place_stake,
     profits,
 ):
     def make_minimize(stakes):
-        w_stake = stakes[0] + win_stake
-        p_stake = stakes[1] + place_stake
+        win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
+        if stakes[0] < win_min_stake:
+            stakes[0] = 0
+        if stakes[1] < place_min_stake:
+            stakes[1] = 0
 
         min_profits = calculate_profit(
-            bookie_odds,
-            bookie_stake,
+            None,
+            None,
             win_odds,
-            w_stake,
+            stakes[0],
             place_odds,
-            p_stake,
+            stakes[1],
             place_payout,
             round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
+        print(stakes, min_profits)
         return -min(min_profits)
 
     return make_minimize
 
 
+def get_min_stake(win_odds, place_odds):
+    win_min_stake = 10 / (win_odds - 1)
+    place_min_stake = 10 / (place_odds - 1)
+    if win_min_stake > 2:
+        win_min_stake = 2
+    if place_min_stake > 2:
+        place_min_stake = 2
+    return win_min_stake, place_min_stake
+
+
 def minimize_loss(
-    bookie_odds,
-    bookie_stake,
     win_odds,
     place_odds,
     place_payout,
-    win_stake,
-    place_stake,
     profits,
 ):
-    x0 = [0 for x in [win_stake, place_stake]]
-    bnds = [(0, None) for x in [win_stake, place_stake]]
+
+    win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
+    x0 = (win_min_stake, place_min_stake)
+    bnds = ((0, None), (0, None))
     win_stake, place_stake = minimize(
         minimize_calculate_profits(
-            bookie_odds,
-            bookie_stake,
             win_odds,
             place_odds,
             place_payout,
-            win_stake,
-            place_stake,
             profits,
         ),
         x0=x0,
         bounds=bnds,
     ).x
+    if win_stake < win_min_stake:
+        win_stake = None
+    if place_stake < place_min_stake:
+        place_stake = None
     return round_stake(win_stake), round_stake(place_stake)

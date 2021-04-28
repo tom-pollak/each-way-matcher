@@ -170,7 +170,7 @@ def get_bets_by_bet_id(win_bet_id, place_bet_id):
         temp = {"odds": odds, "stake": stake}
         if bet["betId"] == win_bet_id:
             bet_info["win"] = temp
-        else:
+        elif bet["bet_id"] == place_bet_id:
             bet_info["place"] = temp
     return bet_info
 
@@ -314,30 +314,39 @@ def get_race(race_time, venue, horse):
 
 
 def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
-    lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(
-        markets_ids["win"], selection_id, round_stake(win_odds), win_stake
-    )
-    lay_place, place_odds, place_matched, place_stake_matched, place_bet_id = lay_bets(
-        markets_ids["place"],
-        selection_id,
-        round_stake(place_odds),
-        place_stake,
-    )
-    return (
-        {
+    win_dict = place_dict = {"matched": True, "bet_id": None}
+    if win_stake is not None:
+        lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(
+            markets_ids["win"], selection_id, round_stake(win_odds), win_stake
+        )
+        win_dict = {
             "success": lay_win,
             "matched": win_matched,
             "total_stake": win_stake,
             "matched_stake": win_stake_matched,
             "odds": win_odds,
             "bet_id": win_bet_id,
-        },
-        {
+        }
+
+    if place_stake is not None:
+        (
+            lay_place,
+            place_odds,
+            place_matched,
+            place_stake_matched,
+            place_bet_id,
+        ) = lay_bets(
+            markets_ids["place"],
+            selection_id,
+            round_stake(place_odds),
+            place_stake,
+        )
+        place_dict = {
             "success": lay_place,
             "matched": place_matched,
             "total_stake": place_stake,
             "matched_stake": place_stake_matched,
             "odds": place_odds,
             "bet_id": place_bet_id,
-        },
-    )
+        }
+    return win_dict, place_dict
