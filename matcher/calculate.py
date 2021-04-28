@@ -390,6 +390,3 @@ def minimize_loss(
     if place_stake < place_min_stake:
         place_stake = None
     return round_stake(win_stake), round_stake(place_stake)
-
-
-print(minimize_loss(2.18, 1.16, 5, (22.46, -14.74, -26.48), 0))
