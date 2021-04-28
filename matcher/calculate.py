@@ -136,38 +136,58 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
 
 
 def arb_kelly_criterion(
-    proportion, win_profit, place_profit, lose_profit, win_odds, place_odds
+    proportion,
+    total_balance,
+    win_profit,
+    place_profit,
+    lose_profit,
+    win_odds,
+    place_odds,
 ):
     win_prob = 1 / win_odds
     place_prob = 1 / place_odds - win_prob
     lose_prob = 1 - win_prob - place_prob
 
-    try:
-        stake_proporiton = (
-            win_prob * math.log10(1 + win_profit * proportion)
-            + place_prob * math.log10(1 + place_profit * proportion)
-            + lose_prob * math.log10(1 + lose_profit * proportion)
-        )
-    except ValueError:
-        return 9999
-    return -stake_proporiton
+    win_bankroll = total_balance + win_profit * proportion
+    place_bankroll = total_balance + place_profit * proportion
+    lose_bankroll = total_balance + lose_profit * proportion
+
+    stake_proporiton = -sum(
+        [
+            p * e
+            for p, e in zip(
+                [win_prob, place_prob, lose_prob],
+                np.log([win_bankroll, place_bankroll, lose_bankroll]),
+            )
+        ]
+    )
+    return stake_proporiton
 
 
 def maximize_arb(
-    win_odds, place_odds, win_profit, place_profit, lose_profit, negative=False
+    bookie_balance,
+    betfair_balance,
+    win_odds,
+    place_odds,
+    win_profit,
+    place_profit,
+    lose_profit,
 ):
-    if negative:
-        bnds = ((None, None),)
-    else:
-        bounds = ((0, 1),)
     result = minimize(
         arb_kelly_criterion,
-        0,
-        args=(win_profit, place_profit, lose_profit, win_odds, place_odds),
-        bounds=bnds,
+        x0=0,
+        args=(
+            bookie_balance + betfair_balance,
+            win_profit,
+            place_profit,
+            lose_profit,
+            win_odds,
+            place_odds,
+        ),
+        bounds=((0, 1),),
     )
-    if result.fun == 9999:
-        return 0
+    # if result.fun == 9999:
+    #     return 0
     return result.x[0]
 
 
@@ -254,8 +274,11 @@ def round_stake(odd):
         return None
     for price in price_increments:
         if odd < price:
-            return round(
-                round(odd / price_increments[price]) * price_increments[price], 2
+            return (
+                math.ceil(
+                    round(odd / price_increments[price]) * price_increments[price] * 100
+                )
+                / 100
             )
     return odd
 
@@ -322,7 +345,6 @@ def check_odds_changes(race, win_horse_odds, place_horse_odds):
 def minimize_calculate_profits(
     win_odds,
     place_odds,
-    place_payout,
     profits,
     win_min_stake,
     place_min_stake,
@@ -352,10 +374,11 @@ def minimize_calculate_profits(
             stakes[0],
             place_odds,
             stakes[1],
-            place_payout,
+            None,
             round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
+        print(stakes, min_profits, -min(min_profits))
         return -min(min_profits)
 
     return make_minimize
@@ -368,13 +391,12 @@ def get_min_stake(win_odds, place_odds):
         win_min_stake = 2
     if place_min_stake > 2:
         place_min_stake = 2
-    return win_min_stake, place_min_stake
+    return round_stake(win_min_stake), round_stake(place_min_stake)
 
 
 def minimize_loss(
     win_odds,
     place_odds,
-    place_payout,
     profits,
     betfair_balance,
 ):
@@ -385,7 +407,6 @@ def minimize_loss(
         minimize_calculate_profits(
             win_odds,
             place_odds,
-            place_payout,
             profits,
             win_min_stake,
             place_min_stake,
@@ -394,8 +415,13 @@ def minimize_loss(
         x0=x0,
         bounds=bnds,
     ).x
+    print(win_stake, place_stake)
     if win_stake < win_min_stake:
         win_stake = None
     if place_stake < place_min_stake:
         place_stake = None
     return round_stake(win_stake), round_stake(place_stake)
+
+
+# print(maximize_arb(100, 200, 3, 1.925, -19, -13, 20))
+# print(minimize_loss(4, 8, (300, -70, -200), 200))

@@ -17,6 +17,7 @@ from .calculate import (
     minimize_loss,
     check_stakes,
     check_odds_changes,
+    maximize_arb,
 )
 from .output import (
     update_csv_sporting_index,
@@ -153,12 +154,16 @@ def betfair_bet(driver, race):
         race["place_payout"],
     )
     if min(*profits) < 0:
-        # stake_proportion = maximize_arb(race["win_odds"], race["place_odds"], *profits)
-        # if stake_proportion == 0:
-        #     print(f"Arb bet not profitable: {profits}")
-        #     return
-        print(f"Arb bet not profitable: {profits}")
-        return
+        stake_proportion = maximize_arb(
+            race["balance"],
+            race["betfair_balance"],
+            race["win_odds"],
+            race["place_odds"],
+            *profits,
+        )
+        if stake_proportion == 0:
+            print(f"Arb bet not profitable: {profits}")
+            return
 
         race["bookie_stake"] = race["bookie_stake"] * stake_proportion
         race["win_stake"] = race["win_stake"] * stake_proportion
@@ -173,7 +178,7 @@ def betfair_bet(driver, race):
             race["place_odds"],
         )
         if not stakes_ok:
-            print(f"Profits below 0: {profits}")
+            print(f"Arb bet not profitable: {profits}")
             print(race["bookie_stake"], race["win_stake"], race["place_stake"])
             print(race["bookie_odds"], race["win_odds"], race["place_odds"])
             print(f"stake_proportion: {stake_proportion} too small")
