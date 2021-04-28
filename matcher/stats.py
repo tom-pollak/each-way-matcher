@@ -131,8 +131,8 @@ try:
     df = pd.read_csv(
         RETURNS_CSV,
         header=0,
-        parse_dates=[21, 0],
-        index_col=21,
+        parse_dates=[19, 0],
+        index_col=19,
         date_parser=custom_date_parser,
         squeeze=True,
     )
