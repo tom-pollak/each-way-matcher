@@ -76,10 +76,9 @@ def calculate_profit(
     commission_lose = (win_stake + place_stake) * COMMISSION
     commission_place = win_stake * COMMISSION
 
-    if bookie_odds is not None and bookie_stake is not None:
-        place_profit = bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
-        win_profit = bookie_stake * (bookie_odds - 1) + place_profit + bookie_stake
-        lose_profit = -bookie_stake * 2
+    place_profit = bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
+    win_profit = bookie_stake * (bookie_odds - 1) + place_profit + bookie_stake
+    lose_profit = -bookie_stake * 2
 
     win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
     place_profit += win_stake - place_stake * (place_odds - 1) - commission_place

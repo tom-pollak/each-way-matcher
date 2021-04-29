@@ -63,11 +63,13 @@ def place_arb(
     if not lay_win["matched"] or not lay_place["matched"]:
         print("bets not matched:", lay_win, lay_place)
         betfair.cancel_unmatched_bets()
-        bet_info = betfair.get_bets_by_bet_id(lay_win["bet_id"], lay_place["bet_id"])
-        if bet_info.get("win") is None:
-            bet_info["win"] = {"odds": 0, "stake": 0}
-        if bet_info.get("place") is None:
-            bet_info["place"] = {"odds": 0, "stake": 0}
+        bet_info = {
+            "win": {"odds": 0, "stake": 0},
+            "place": {"odds": 0, "stake": 0},
+        }
+        bet_info.update(
+            betfair.get_bets_by_bet_id(lay_win["bet_id"], lay_place["bet_id"])
+        )
         new_profits = calculate_profit(
             bookie_odds,
             bookie_stake,
@@ -81,14 +83,25 @@ def place_arb(
 
         win_odds = betfair.get_odds(market_ids["win"])["lay_odds_1"]
         place_odds = betfair.get_odds(market_ids["place"])["lay_odds_1"]
+        betfair_balance = betfair.get_balance()
         win_stake, place_stake = minimize_loss(
-            win_odds, place_odds, place_payout, profits, betfair.get_balance()
+            win_odds, place_odds, place_payout, profits, betfair_balance
         )
+        if not check_stakes(
+            None,
+            betfair_balance,
+            0,
+            win_stake,
+            win_odds,
+            place_stake,
+            place_odds,
+        ):
+            return profits
         profits = place_arb(
             selection_id,
             market_ids,
-            None,
-            None,
+            0,
+            0,
             win_stake,
             win_odds,
             place_stake,
@@ -196,6 +209,7 @@ def evaluate_arb(driver, race):
         )
     elif not bet_made:
         return
+
     race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
         selection_id,
         market_ids,
