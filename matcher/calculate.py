@@ -373,10 +373,8 @@ def minimize_calculate_profits(
 def get_min_stake(win_odds, place_odds):
     win_min_stake = 10 / (win_odds - 1)
     place_min_stake = 10 / (place_odds - 1)
-    if win_min_stake > 2:
-        win_min_stake = 2
-    if place_min_stake > 2:
-        place_min_stake = 2
+    win_min_stake = min(win_min_stake, 2)
+    place_min_stake = min(place_min_stake, 2)
     return round(win_min_stake, 2), round(place_min_stake, 2)
 
 
