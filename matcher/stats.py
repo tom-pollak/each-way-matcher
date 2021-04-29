@@ -3,7 +3,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 import pandas as pd
 
-from .calculate import custom_date_parser
+# from .exceptions import MatcherError
+# from .calculate import custom_date_parser
 
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -125,21 +126,36 @@ def plot_bal_time_series_graph():
     print("Generated graph at: %s" % BALANCE_PNG)
 
 
-try:
-    df = pd.read_csv(
-        RETURNS_CSV,
-        header=0,
-        parse_dates=[19, 0],
-        index_col=19,
-        date_parser=custom_date_parser,
-        squeeze=True,
-    )
+def custom_date_parser(x):
+    if "/" not in x:
+        return datetime(*(strptime(x, "%d %b %H:%M %Y")[0:6]))
+    return datetime(*(strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
+
+
+def read_csv():
+    try:
+        df = pd.read_csv(
+            RETURNS_CSV,
+            header=0,
+            parse_dates=[0, 1],
+            index_col=0,
+            date_parser=custom_date_parser,
+            squeeze=True,
+        )
+    except (IndexError, FileNotFoundError):
+        return None
+    return df
+
+
+df = read_csv()
+if df is None:
+    raise MatcherError("returns.csv not found!")
+
+if len(df) == 0:
+    STARTING_BALANCE = 0
+else:
     STARTING_BALANCE = (
         df["bookie_balance"].values[0]
         + df["betfair_balance"].values[0]
         + calc_unfinished_races(0)
     )
-except FileNotFoundError:
-    print("No returns.csv found!")
-except IndexError:
-    pass

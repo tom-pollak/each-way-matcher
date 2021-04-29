@@ -7,10 +7,11 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
+from .stats import read_csv
+
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
-RETURNS_CSV = os.environ.get("RETURNS_CSV")
 COMMISSION = float(os.environ.get("COMMISSION"))
 MIN_PERCENTAGE_BALANCE = float(os.environ.get("MIN_PERCENTAGE_BALANCE"))
 
@@ -36,17 +37,8 @@ def custom_date_parser(x):
 
 def check_repeat_bets(horse_name, date_of_race, venue):
     date_of_race = custom_date_parser(date_of_race)
-    try:
-        df = pd.read_csv(
-            RETURNS_CSV,
-            header=0,
-            parse_dates=[19, 0],
-            index_col=19,
-            date_parser=custom_date_parser,
-            squeeze=True,
-        )
-        print(df)
-    except IndexError:
+    df = read_csv()
+    if df is None:
         return [], 1
     horses = df.query(
         "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Arb Punt')"
