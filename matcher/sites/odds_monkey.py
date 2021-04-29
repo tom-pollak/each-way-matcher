@@ -37,6 +37,9 @@ def login(driver):
         raise MatcherError("Couldn't login to Oddsmonkey")
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(PASS)
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
+    WebDriverWait(driver, 60).until(
+        EC.visibility_of_element_located((By.XPATH, '//*[@id="mainTitle"]'))
+    )
     # sleep(2)
 
     driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")

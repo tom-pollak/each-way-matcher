@@ -2,7 +2,6 @@ import os
 import sys
 import shutil
 from datetime import datetime
-from time import sleep
 from dotenv import load_dotenv
 from selenium import webdriver
 
