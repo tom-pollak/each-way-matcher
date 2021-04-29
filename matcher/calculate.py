@@ -284,6 +284,27 @@ def calculate_stakes(
     return True, bookie_stake, win_stake, place_stake
 
 
+def calculate_expected_return(
+    total_balance, win_odds, place_odds, win_profit, place_profit, lose_profit
+):
+    win_prob = 1 / win_odds
+    place_prob = 1 / place_odds - win_prob
+    lose_prob = 1 - win_prob - place_prob
+
+    exp_growth = (1 + win_profit / total_balance) ** win_prob * (
+        1 + place_profit / total_balance
+    ) ** place_prob * (1 + lose_profit / total_balance) ** lose_prob - 1
+    exp_value = (
+        win_prob * win_profit + place_prob * place_profit + lose_prob * lose_profit
+    )
+    if isinstance(exp_growth, complex):
+        print(
+            "ERROR: exp_growth complex - a profit loses more than is in total_balance"
+        )
+        return exp_value, 0, 0
+    return exp_value, exp_growth, exp_growth * total_balance
+
+
 def round_odd(odd):
     if odd is None:
         return None

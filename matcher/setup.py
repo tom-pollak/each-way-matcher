@@ -72,7 +72,7 @@ def reset_csv():
     if not os.path.isfile(".env"):
         shutil.copyfile(".env.template", ".env")
     now = datetime.now().strftime("%d-%m-%Y")
-    RETURNS_HEADER = "date_of_race,horse_name,bookie_odds,venue,bookie_stake,balance,rating,expected_value,expected_return,win_stake,place_stake,win_odds,place_odds,betfair_balance,max_profit,bet_type,arbritrage_profit,place_payout,balance_in_betfair,current_time\n"
+    RETURNS_HEADER = "current_time,date_of_race,venue,horse_name,exp_value,exp_growth,exp_return,bookie_stake,bookie_odds,win_stake,win_odds,place_stake,place_odds,bookie_balance,betfair_balance,win_profit,place_profit,lose_profit,bet_type,place_payout\n"
     RETURNS_BAK = os.path.join(BASEDIR, "stats/returns-%s.csv" % now)
     create_new_returns = "y"
 

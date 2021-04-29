@@ -14,6 +14,7 @@ from .setup import setup_selenium, check_vars
 from .calculate import (
     calculate_stakes,
     calculate_profit,
+    calculate_expected_return,
     kelly_criterion,
     check_repeat_bets,
     minimize_loss,
@@ -118,7 +119,7 @@ def evaluate_arb(driver, race):
         race["win_stake"],
         race["place_stake"],
     ) = calculate_stakes(
-        race["balance"],
+        race["bookie_balance"],
         race["betfair_balance"],
         race["bookie_stake"],
         race["win_stake"],
@@ -147,7 +148,7 @@ def evaluate_arb(driver, race):
         if "Lay Punt" in bet_types:
             return
         stake_proportion = maximize_arb(
-            race["balance"],
+            race["bookie_balance"],
             race["betfair_balance"],
             race["win_odds"],
             race["place_odds"],
@@ -161,7 +162,7 @@ def evaluate_arb(driver, race):
         race["win_stake"] = race["win_stake"] * stake_proportion
         race["place_stake"] = race["place_stake"] * stake_proportion
         stakes_ok = check_stakes(
-            race["balance"],
+            race["bookie_balance"],
             race["betfair_balance"],
             race["bookie_stake"],
             race["win_stake"],
@@ -192,34 +193,58 @@ def evaluate_arb(driver, race):
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
-    elif bet_made:
-        race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
-            selection_id,
-            market_ids,
-            race["bookie_stake"],
-            race["bookie_odds"],
-            race["win_stake"],
-            race["win_odds"],
-            race["place_stake"],
-            race["place_odds"],
-            race["place_payout"],
-        )
-        (
-            race["win_stake"],
-            race["win_odds"],
-            race["place_stake"],
-            race["place_odds"],
-        ) = betfair.get_bets_by_race(market_ids["win"], market_ids["place"])
-        race["betfair_balance"] = betfair.get_balance()
-        race["balance"] = sporting_index.get_balance(driver)
-        min_profit = min(race["win_profit"], race["place_profit"], race["lose_profit"])
+    elif not bet_made:
+        return
+    race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
+        selection_id,
+        market_ids,
+        race["bookie_stake"],
+        race["bookie_odds"],
+        race["win_stake"],
+        race["win_odds"],
+        race["place_stake"],
+        race["place_odds"],
+        race["place_payout"],
+    )
+    (
+        race["win_stake"],
+        race["win_odds"],
+        race["place_stake"],
+        race["place_odds"],
+    ) = betfair.get_bets_by_race(market_ids["win"], market_ids["place"])
+    (
+        race["exp_value"],
+        race["exp_growth"],
+        race["exp_return"],
+    ) = calculate_expected_return(
+        race["bookie_balance"] + race["betfair_balance"],
+        race["win_odds"],
+        race["place_odds"],
+        race["win_profit"],
+        race["place_profit"],
+        race["lose_profit"],
+    )
+    race["betfair_balance"] = betfair.get_balance()
+    race["bookie_balance"] = sporting_index.get_balance(driver)
+    (
+        race["exp_value"],
+        race["exp_growth"],
+        race["exp_return"],
+    ) = calculate_expected_return(
+        race["bookie_balance"] + race["betfair_balance"],
+        race["win_odds"],
+        race["place_odds"],
+        race["win_profit"],
+        race["place_profit"],
+        race["lose_profit"],
+    )
 
-        output_lay_ew(race, min_profit)
-        update_csv_betfair(race, min_profit)
+    output_lay_ew(race)
+    update_csv_betfair(race)
 
 
 def scrape_arb_races(driver):
-    race = {"balance": sporting_index.get_balance(driver)}
+    race = {"bookie_balance": sporting_index.get_balance(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[2])
     odds_monkey.refresh(driver, betfair=True)
@@ -256,7 +281,7 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["win_odds"] * win_odds_proportion,
         race["place_odds"],
         race["place_payout"],
-        race["balance"],
+        race["bookie_balance"],
     )
 
     if race["bookie_stake"] < 0.1:
@@ -273,7 +298,30 @@ def evaluate_punt(driver, race, win_odds_proportion):
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
         return False
+    race["win_profit"], race["place_profit"], race["lose_profit"] = calculate_profit(
+        race["bookie_odds"],
+        race["bookie_stake"],
+        race["win_odds"],
+        race["win_stake"],
+        race["place_odds"],
+        race["place_stake"],
+        race["place_payout"],
+    )
+    (
+        race["exp_value"],
+        race["exp_growth"],
+        race["exp_return"],
+    ) = calculate_expected_return(
+        race["bookie_balance"] + race["betfair_balance"],
+        race["win_odds"],
+        race["place_odds"],
+        race["win_profit"],
+        race["place_profit"],
+        race["lose_profit"],
+    )
     if bet_made:
+        race["bookie_balance"] = sporting_index.get_balance(driver)
+        race["betfair_balance"] = betfair.get_balance()
         output_race(driver, race)
         update_csv_sporting_index(driver, race)
         return True
@@ -281,7 +329,7 @@ def evaluate_punt(driver, race, win_odds_proportion):
 
 
 def scrape_punt_races(driver):
-    race = {"balance": sporting_index.get_balance(driver)}
+    race = {"bookie_balance": sporting_index.get_balance(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     odds_monkey.refresh(driver)

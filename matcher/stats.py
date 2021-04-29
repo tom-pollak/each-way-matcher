@@ -32,7 +32,7 @@ def get_today_starting_balance():
     num_races = df[:today_first_bet].shape[0] - 1
 
     return (
-        df.loc[datetime.now().strftime("%Y-%m-%d")]["balance"].values[0]
+        df.loc[datetime.now().strftime("%Y-%m-%d")]["bookie_balance"].values[0]
         + df.loc[datetime.now().strftime("%Y-%m-%d")]["betfair_balance"].values[0]
         + calc_unfinished_races(num_races)
     )
@@ -41,7 +41,7 @@ def get_today_starting_balance():
 def calculate_returns():
     today_starting_balance = get_today_starting_balance()
 
-    current_sporting_index_balance = df["balance"].values[-1]
+    current_sporting_index_balance = df["bookie_balance"].values[-1]
     current_betfair_balance = df["betfair_balance"].values[-1]
     in_bet_balance = calc_unfinished_races()
     current_balance = (
@@ -77,7 +77,7 @@ def output_profit():
         total_percentage_profit,
         today_percentage_profit,
     ) = calculate_returns()
-    current_sporting_index_balance = df["balance"].values[-1]
+    current_sporting_index_balance = df["bookie_balance"].values[-1]
     current_betfair_balance = df["betfair_balance"].values[-1]
     in_bet_balance = format(calc_unfinished_races(), ".2f")
     print(f"Total profit: £{total_profit} ({total_percentage_profit}%)")
@@ -95,7 +95,7 @@ def plot_bal_time_series_graph():
     date_fmt = DateFormatter("%d/%m")
     ax.xaxis.set_major_formatter(date_fmt)
 
-    balance = df["balance"] + df["betfair_balance"]
+    balance = df["bookie_balance"] + df["betfair_balance"]
     # ax.plot(balance, label="Withdrawable")
 
     for i, _ in enumerate(balance):
@@ -137,7 +137,7 @@ try:
         squeeze=True,
     )
     STARTING_BALANCE = (
-        df["balance"].values[0]
+        df["bookie_balance"].values[0]
         + df["betfair_balance"].values[0]
         + calc_unfinished_races(0)
     )

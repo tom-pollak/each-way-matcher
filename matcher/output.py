@@ -40,18 +40,18 @@ def output_race(driver, race):
     print(f"\tLay win: {race['win_odds']} Lay place: {race['place_odds']}")
     try:
         print(
-            f"\tExpected value: {race['expected_value']}, Expected return: £{format(race['expected_return'], '.2f')}"
+            f"\tExpected value: {race['exp_value']}, Expected return: £{format(race['exp_return'], '.2f')}, Expected Growth: {round(race['exp_growth'], 2 * 100)}"
         )
     except KeyError:
         print("Key Error in output_race")
     print(
-        f"\tCurrent balance: £{format(balance, '.2f')}, stake: £{format(race['bookie_stake'], '.2f')}\n"
+        f"\tCurrent balance: £{format(race['bookie_balance'], '.2f')}, stake: £{format(race['bookie_stake'], '.2f')}\n"
     )
 
 
-def output_lay_ew(race, profit):
+def output_lay_ew(race):
     print(
-        f"\n{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
+        f"\n{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(race['exp_return'], '.2f')}"
     )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(
@@ -61,36 +61,35 @@ def output_lay_ew(race, profit):
         f"\tWin profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}"
     )
     print(
+        f"Expected Value: {race['exp_value']}, Expected Growth: {round(race['exp_growth'], 2 * 100)}%"
+    )
+    print(
         f"Current balance: £{format(race['balance'], '.2f')}, betfair balance: £{format(race['betfair_balance'], '.2f')}\n"
     )
 
 
 def update_csv_sporting_index(driver, race):
-    race["arbritrage_profit"] = 0
-    race["balance"] = sporting_index.get_balance(driver)
-    race["betfair_balance"] = betfair.get_balance()
-    race["balance_in_betfair"] = betfair.get_balance_in_bets()
     csv_columns = [
-        "date_of_race",
-        "horse_name",
-        "bookie_odds",
-        "venue",
-        "bookie_stake",
-        "balance",
-        "rating",
-        "expected_value",
-        "expected_return",
-        "win_stake",
-        "place_stake",
-        "win_odds",
-        "place_odds",
-        "betfair_balance",
-        "max_profit",
-        "bet_type",
-        "arbritrage_profit",
-        "place_payout",
-        "balance_in_betfair",
         "current_time",
+        "date_of_race",
+        "venue",
+        "horse_name",
+        "exp_value",
+        "exp_growth",
+        "exp_return",
+        "bookie_stake",
+        "bookie_odds",
+        "win_stake",
+        "win_odds",
+        "place_stake",
+        "place_odds",
+        "bookie_balance",
+        "betfair_balance",
+        "win_profit",
+        "place_profit",
+        "lose_profit",
+        "bet_type",
+        "place_payout",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
         csv_writer = DictWriter(
@@ -99,31 +98,28 @@ def update_csv_sporting_index(driver, race):
         csv_writer.writerow(race)
 
 
-def update_csv_betfair(race, arbritrage_profit):
-    race["arbritrage_profit"] = arbritrage_profit
-    race["expected_value"] = race["expected_return"] = 0
-    race["balance_in_betfair"] = betfair.get_balance_in_bets()
+def update_csv_betfair(race):
     csv_columns = [
-        "date_of_race",
-        "horse_name",
-        "bookie_odds",
-        "venue",
-        "bookie_stake",
-        "balance",
-        "rating",
-        "expected_value",
-        "expected_return",
-        "win_stake",
-        "place_stake",
-        "win_odds",
-        "place_odds",
-        "betfair_balance",
-        "max_profit",
-        "bet_type",
-        "arbritrage_profit",
-        "place_payout",
-        "balance_in_betfair",
         "current_time",
+        "date_of_race",
+        "venue",
+        "horse_name",
+        "exp_value",
+        "exp_growth",
+        "exp_return",
+        "bookie_stake",
+        "bookie_odds",
+        "win_stake",
+        "win_odds",
+        "place_stake",
+        "place_odds",
+        "bookie_balance",
+        "betfair_balance",
+        "win_profit",
+        "place_profit",
+        "lose_profit",
+        "bet_type",
+        "place_payout",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
         csv_writer = DictWriter(
