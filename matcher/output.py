@@ -51,7 +51,7 @@ def output_race(driver, race):
 
 def output_lay_ew(race, profit):
     print(
-        f"\n{race["bet_type"]} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
+        f"\n{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
     )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(
