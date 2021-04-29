@@ -273,6 +273,7 @@ def scrape_arb_races(driver):
 
 
 def evaluate_punt(driver, race, win_odds_proportion):
+    race["bet_type"] = "Punt"
     (
         race["bookie_stake"],
         race["expected_return"],
@@ -288,7 +289,6 @@ def evaluate_punt(driver, race, win_odds_proportion):
     if race["bookie_stake"] < 0.1:
         return False
 
-    race["bet_type"] = "Punt"
     _, _, _, race["horse_name"] = betfair.get_race_ids(
         race["date_of_race"], race["venue"], race["horse_name"]
     )
@@ -303,9 +303,9 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["bookie_odds"],
         race["bookie_stake"],
         race["win_odds"],
-        race["win_stake"],
+        0,
         race["place_odds"],
-        race["place_stake"],
+        0,
         race["place_payout"],
     )
     (

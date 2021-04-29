@@ -68,6 +68,7 @@ def output_lay_ew(race):
 
 
 def update_csv_sporting_index(race):
+    race["win_stake"] = race["place_stake"] = 0
     csv_columns = [
         "current_time",
         "date_of_race",
