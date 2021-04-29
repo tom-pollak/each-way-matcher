@@ -1,13 +1,10 @@
 import os
 import math
 from datetime import datetime
-from time import strptime
 from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-
-from .stats import read_csv
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -31,8 +28,8 @@ price_increments = {
 
 def custom_date_parser(x):
     if "/" not in x:
-        return datetime(*(strptime(x, "%d %b %H:%M %Y")[0:6]))
-    return datetime(*(strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
+        return datetime(*(datetime.strptime(x, "%d %b %H:%M %Y")[0:6]))
+    return datetime(*(datetime.strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
 
 
 def check_repeat_bets(horse_name, date_of_race, venue):
@@ -47,6 +44,21 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     bet_types = horse_races["bet_type"].unique()
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
     return bet_types, win_odds_proportion
+
+
+def read_csv():
+    try:
+        df = pd.read_csv(
+            RETURNS_CSV,
+            header=0,
+            parse_dates=[0, 1],
+            index_col=0,
+            date_parser=custom_date_parser,
+            squeeze=True,
+        )
+    except (IndexError, FileNotFoundError):
+        return None
+    return df
 
 
 # N.B bookie_stake is half actual stake
@@ -99,7 +111,7 @@ def check_stakes(
     if (
         (total_stake > betfair_balance)
         or (win_stake < win_min_stake)
-        or (place_min_stake < place_stakee)
+        or (place_min_stake < place_stake)
         or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
     ):
         return False

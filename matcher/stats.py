@@ -1,10 +1,9 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-import pandas as pd
 
-# from .exceptions import MatcherError
-# from .calculate import custom_date_parser
+from .exceptions import MatcherError
+from .calculate import read_csv
 
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -126,30 +125,9 @@ def plot_bal_time_series_graph():
     print("Generated graph at: %s" % BALANCE_PNG)
 
 
-def custom_date_parser(x):
-    if "/" not in x:
-        return datetime(*(strptime(x, "%d %b %H:%M %Y")[0:6]))
-    return datetime(*(strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
-
-
-def read_csv():
-    try:
-        df = pd.read_csv(
-            RETURNS_CSV,
-            header=0,
-            parse_dates=[0, 1],
-            index_col=0,
-            date_parser=custom_date_parser,
-            squeeze=True,
-        )
-    except (IndexError, FileNotFoundError):
-        return None
-    return df
-
-
 df = read_csv()
 if df is None:
-    raise MatcherError("returns.csv not found!")
+    print("returns.csv not found!")
 
 if len(df) == 0:
     STARTING_BALANCE = 0
