@@ -10,8 +10,7 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
 RETURNS_CSV = os.environ.get("RETURNS_CSV")
-BALANCE_PNG = os.environ.get("BALANCE_PNG")
-BALANCE_PNG = os.path.join(BASEDIR, BALANCE_PNG)
+BALANCE_PNG = os.path.join(BASEDIR, os.environ.get("BALANCE_PNG"))
 
 
 def calc_unfinished_races(index=-1):
