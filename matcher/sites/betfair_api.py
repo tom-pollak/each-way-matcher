@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from json.decoder import JSONDecodeError
 
 from matcher.exceptions import MatcherError
-from matcher.calculate import round_stake
+from matcher.calculate import round_odd
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -317,7 +317,7 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
     win_dict = place_dict = {"matched": True, "bet_id": None}
     if win_stake is not None:
         lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(
-            markets_ids["win"], selection_id, round_stake(win_odds), win_stake
+            markets_ids["win"], selection_id, round_odd(win_odds), win_stake
         )
         win_dict = {
             "success": lay_win,
@@ -338,7 +338,7 @@ def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_od
         ) = lay_bets(
             markets_ids["place"],
             selection_id,
-            round_stake(place_odds),
+            round_odd(place_odds),
             place_stake,
         )
         place_dict = {

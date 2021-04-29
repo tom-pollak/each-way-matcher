@@ -255,7 +255,7 @@ def calculate_stakes(
     return True, bookie_stake, win_stake, place_stake
 
 
-def round_stake(odd):
+def round_odd(odd):
     if odd is None:
         return None
     for price in price_increments:
@@ -377,7 +377,10 @@ def get_min_stake(win_odds, place_odds):
         win_min_stake = 2
     if place_min_stake > 2:
         place_min_stake = 2
-    return round_stake(win_min_stake), round_stake(place_min_stake)
+    return round(win_min_stake, 2), round(place_min_stake, 2)
+
+
+print(get_min_stake(2, 20))
 
 
 def minimize_loss(
@@ -406,7 +409,7 @@ def minimize_loss(
         win_stake = None
     if place_stake < place_min_stake:
         place_stake = None
-    return round_stake(win_stake), round_stake(place_stake)
+    return round(win_stake, 2), round(place_stake, 2)
 
 
 # print(maximize_arb(100, 200, 3, 1.925, -19, -13, 20))
