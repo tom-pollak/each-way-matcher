@@ -9,7 +9,6 @@ from .calculate import read_csv
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
-RETURNS_CSV = os.environ.get("RETURNS_CSV")
 BALANCE_PNG = os.path.join(BASEDIR, os.environ.get("BALANCE_PNG"))
 
 

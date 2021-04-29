@@ -9,6 +9,7 @@ from scipy.optimize import minimize
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
+RETURNS_CSV = os.environ.get("RETURNS_CSV")
 COMMISSION = float(os.environ.get("COMMISSION"))
 MIN_PERCENTAGE_BALANCE = float(os.environ.get("MIN_PERCENTAGE_BALANCE"))
 

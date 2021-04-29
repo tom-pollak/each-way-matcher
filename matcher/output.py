@@ -31,7 +31,7 @@ def show_info(count, START_TIME):
         raise KeyboardInterrupt
 
 
-def output_race(driver, race):
+def output_race(race):
     print(
         f"\nNo Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}"
     )
