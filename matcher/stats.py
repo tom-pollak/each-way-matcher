@@ -21,7 +21,7 @@ def calc_unfinished_races(index=-1):
     races = df.loc[mask]
     for _, row in races.iterrows():
         in_bet_balance += row["bookie_stake"] * 2
-    return round(in_bet_balance + df.iloc[index].balance_in_betfair, 2)
+    return round(in_bet_balance + df.iloc[index]["betfair_in_bet_balance"], 2)
 
 
 def get_today_starting_balance():
@@ -119,8 +119,6 @@ def plot_bal_time_series_graph():
         today_percentage_profit,
     ) = calculate_returns()
     profit_string = f"Total profit: £{total_profit} ({total_percentage_profit}%) \nProfit today: £{profit_today} ({today_percentage_profit}%)"
-    # at = AnchoredText(profit_string, frameon=True, loc="lower right")
-    # ax.add_artist(at)
     plt.gcf().text(0.55, 0.92, profit_string)
 
     plt.savefig(BALANCE_PNG)
