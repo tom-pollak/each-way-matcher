@@ -45,15 +45,14 @@ def check_repeat_bets(horse_name, date_of_race, venue):
             date_parser=custom_date_parser,
             squeeze=True,
         )
+        print(df)
     except IndexError:
-        return True, 1
+        return [], 1
     horses = df.query(
-        "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' or bet_type == 'Arb Punt')"
+        "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Arb Punt')"
     )
     horse_races = horses.loc[horses["horse_name"] == horse_name]
     bet_types = horse_races["bet_type"].unique()
-    if horse_name in horses.horse_name.values:
-        return bet_types, 0
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
     return bet_types, win_odds_proportion
 
