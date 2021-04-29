@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from csv import DictWriter
 
 import matcher.sites.betfair as betfair
-from matcher.sites.sporting_index import get_balance_sporting_index
+import matcher.sites.sporting_index as sporting_index
+
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -31,7 +32,7 @@ def show_info(count, START_TIME):
 
 
 def output_race(driver, race):
-    balance = get_balance_sporting_index(driver)
+    balance = sporting_index.get_balance(driver)
     print(
         f"\nNo Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}"
     )
@@ -67,7 +68,7 @@ def output_lay_ew(race, profit):
 def update_csv_sporting_index(driver, race):
     race["is_lay"] = False
     race["arbritrage_profit"] = 0
-    race["balance"] = get_balance_sporting_index(driver)
+    race["balance"] = sporting_index.get_balance(driver)
     race["betfair_balance"] = betfair.get_balance()
     race["balance_in_betfair"] = betfair.get_balance_in_bets()
     csv_columns = [

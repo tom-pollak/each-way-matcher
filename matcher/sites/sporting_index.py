@@ -12,7 +12,7 @@ from selenium.common.exceptions import (
 
 from matcher.exceptions import MatcherError
 from matcher.calculate import check_odds_changes
-import .betfair as betfair
+import matcher.sites.betfair as betfair
 
 
 def change_to_decimal(driver):
@@ -24,7 +24,7 @@ def change_to_decimal(driver):
     ).click()
 
 
-def get_balance_sporting_index(driver):
+def get_balance(driver):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
     for _ in range(10):
@@ -44,7 +44,7 @@ def get_balance_sporting_index(driver):
     raise MatcherError("Couldn't get balance")
 
 
-def refresh_sporting_index(driver):
+def refresh(driver):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
     WebDriverWait(driver, 60).until(
@@ -66,7 +66,7 @@ def click_betslip(driver):
     ).click()
 
 
-def make_sporting_index_bet(driver, race):
+def submit_bet(driver, race):
     try:
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "ng-pristine"))
@@ -87,7 +87,7 @@ def make_sporting_index_bet(driver, race):
         return False
 
 
-def get_sporting_index_page(driver, race):
+def get_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.get(race["bookie_exchange"])
     WebDriverWait(driver, 60).until(
@@ -97,7 +97,7 @@ def get_sporting_index_page(driver, race):
     )
 
 
-def sporting_index_bet(driver, race, market_ids=None, betfair=False):
+def make_bet(driver, race, market_ids=None, betfair=False):
     def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):
@@ -144,7 +144,7 @@ def sporting_index_bet(driver, race, market_ids=None, betfair=False):
         except TimeoutException:
             pass
 
-    get_sporting_index_page(driver, race)
+    get_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
     if cur_odd_price is None:
         return race, None
@@ -161,12 +161,12 @@ def sporting_index_bet(driver, race, market_ids=None, betfair=False):
             place_horse_odds = betfair.get_odds(market_ids["place"])
             if check_odds_changes(race, win_horse_odds, place_horse_odds):
                 return race, False
-        bet_made = make_sporting_index_bet(driver, race)
+        bet_made = submit_bet(driver, race)
         if bet_made:
             return race, True
         close_bet(driver)
     return race, False
 
 
-def setup_sporting_index(driver):
+def setup(driver):
     driver.get("https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar")

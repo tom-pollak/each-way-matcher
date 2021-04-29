@@ -34,12 +34,7 @@ from matcher.sites.odds_monkey import (
     get_no_rows,
 )
 import matcher.sites.betfair as betfair
-from matcher.sites.sporting_index import (
-    setup_sporting_index,
-    sporting_index_bet,
-    refresh_sporting_index,
-    get_balance_sporting_index,
-)
+import matcher.sites.sporting_index as sporting_index
 
 REFRESH_TIME = 60
 
@@ -186,7 +181,7 @@ def betfair_bet(driver, race):
     place_horse_odds = betfair.get_odds(market_ids["place"])
     check_odds_changes(race, win_horse_odds, place_horse_odds)
 
-    race, bet_made = sporting_index_bet(driver, race, market_ids, betfair=True)
+    race, bet_made = sporting_index.make_bet(driver, race, market_ids, betfair=True)
     if bet_made is None:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
@@ -210,7 +205,7 @@ def betfair_bet(driver, race):
             race["place_odds"],
         ) = betfair.get_bets_by_race(market_ids["win"], market_ids["place"])
         race["betfair_balance"] = betfair.get_balance()
-        race["balance"] = get_balance_sporting_index(driver)
+        race["balance"] = sporting_index.get_balance(driver)
         min_profit = min(race["win_profit"], race["place_profit"], race["lose_profit"])
 
         output_lay_ew(
@@ -257,7 +252,7 @@ def evaluate_sporting_index_bet(driver, race, win_odds_proportion):
 
 
 def start_sporting_index(driver):
-    race = {"balance": get_balance_sporting_index(driver)}
+    race = {"balance": sporting_index.get_balance(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     refresh_odds_monkey(driver)
@@ -290,7 +285,7 @@ def start_sporting_index(driver):
 
 
 def start_betfair(driver):
-    race = {"balance": get_balance_sporting_index(driver)}
+    race = {"balance": sporting_index.get_balance(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[2])
     refresh_odds_monkey(driver, betfair=True)
@@ -319,7 +314,7 @@ def start_betfair(driver):
 
 def start_matcher(driver, lay):
     START_TIME = time()
-    setup_sporting_index(driver)
+    sporting_index.setup(driver)
     open_betfair_oddsmonkey(driver)
     count = 0
     driver.switch_to.window(driver.window_handles[0])
@@ -327,7 +322,7 @@ def start_matcher(driver, lay):
         loop_time = time()
         # So sporting index dosent logout
         if count % 4 == 0:
-            refresh_sporting_index(driver)
+            sporting_index.refresh(driver)
         if count % 10 == 0:
             show_info(count, START_TIME)
 
