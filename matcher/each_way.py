@@ -232,14 +232,14 @@ def betfair_bet(driver, race):
         )
 
 
-def evaluate_sporting_index_bet(driver, race):
+def evaluate_sporting_index_bet(driver, race, win_odds_proportion):
     (
         race["bookie_stake"],
         race["expected_return"],
         race["expected_value"],
     ) = kelly_criterion(
         race["bookie_odds"],
-        race["win_odds"],
+        race["win_odds"] * win_odds_proportion,
         race["place_odds"],
         race["place_payout"],
         race["balance"],
@@ -287,10 +287,11 @@ def start_sporting_index(driver):
             if horse_name not in processed_horses:
                 race.update(find_races(driver, row, 0))
                 processed_horses.append(race["horse_name"])
-                if check_repeat_bets(
+                horse_ok, win_odds_proportion = check_repeat_bets(
                     race["horse_name"], race["date_of_race"], race["venue"]
-                ):
-                    evaluate_sporting_index_bet(driver, race)
+                )
+                if horse_ok:
+                    evaluate_sporting_index_bet(driver, race, win_odds_proportion)
 
             driver.switch_to.window(driver.window_handles[0])
             driver.switch_to.default_content()
