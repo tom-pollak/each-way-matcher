@@ -122,12 +122,12 @@ def plot_bal_time_series_graph():
     plt.gcf().text(0.55, 0.92, profit_string)
 
     plt.savefig(BALANCE_PNG)
-    print("Generated graph at: %s" % BALANCE_PNG)
+    # print("Generated graph at: %s" % BALANCE_PNG)
 
 
 df = read_csv()
 if df is None:
-    print("returns.csv not found!")
+    raise MatcherError("returns.csv not found!")
 
 if len(df) == 0:
     STARTING_BALANCE = 0
