@@ -110,6 +110,7 @@ def betfair_bet(driver, race):
 
     if not check_start_time():
         return
+    race["bet_type"] = "Arb"
     race["betfair_balance"] = betfair.get_balance()
     (
         stakes_ok,
@@ -139,6 +140,12 @@ def betfair_bet(driver, race):
         race["place_payout"],
     )
     if min(*profits) < 0:
+        race["bet_type"] = "Lay Punt"
+        bet_types, _ = check_repeat_bets(
+            race["horse_name"], race["date_of_race"], race["venue"]
+        )
+        if "Lay Punt" in bet_types:
+            return
         stake_proportion = maximize_arb(
             race["balance"],
             race["betfair_balance"],
@@ -233,6 +240,7 @@ def evaluate_sporting_index_bet(driver, race, win_odds_proportion):
     if race["bookie_stake"] < 0.1:
         return False
 
+    race["bet_type"] = "Punt"
     _, _, _, race["horse_name"] = betfair.get_race_ids(
         race["date_of_race"], race["venue"], race["horse_name"]
     )
@@ -272,10 +280,10 @@ def start_sporting_index(driver):
             if horse_name not in processed_horses:
                 race.update(odds_monkey.find_races(driver, row, 0))
                 processed_horses.append(race["horse_name"])
-                horse_ok, win_odds_proportion = check_repeat_bets(
+                bet_types, win_odds_proportion = check_repeat_bets(
                     race["horse_name"], race["date_of_race"], race["venue"]
                 )
-                if horse_ok:
+                if "Punt" not in bet_types:
                     evaluate_sporting_index_bet(driver, race, win_odds_proportion)
 
             driver.switch_to.window(driver.window_handles[0])

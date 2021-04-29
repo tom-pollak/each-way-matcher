@@ -51,7 +51,7 @@ def output_race(driver, race):
 
 def output_lay_ew(race, profit):
     print(
-        f"\nArb bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
+        f"\n{race["bet_type"]} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(profit, '.2f')}"
     )
     print(f"\t{race['date_of_race']} - {race['venue']}")
     print(
@@ -66,7 +66,6 @@ def output_lay_ew(race, profit):
 
 
 def update_csv_sporting_index(driver, race):
-    race["is_lay"] = False
     race["arbritrage_profit"] = 0
     race["balance"] = sporting_index.get_balance(driver)
     race["betfair_balance"] = betfair.get_balance()
@@ -87,7 +86,7 @@ def update_csv_sporting_index(driver, race):
         "place_odds",
         "betfair_balance",
         "max_profit",
-        "is_lay",
+        "bet_type",
         "arbritrage_profit",
         "place_payout",
         "balance_in_betfair",
@@ -100,11 +99,7 @@ def update_csv_sporting_index(driver, race):
         csv_writer.writerow(race)
 
 
-def update_csv_betfair(
-    race,
-    arbritrage_profit,
-):
-    race["is_lay"] = True
+def update_csv_betfair(race, arbritrage_profit):
     race["arbritrage_profit"] = arbritrage_profit
     race["expected_value"] = race["expected_return"] = 0
     race["balance_in_betfair"] = betfair.get_balance_in_bets()
@@ -124,7 +119,7 @@ def update_csv_betfair(
         "place_odds",
         "betfair_balance",
         "max_profit",
-        "is_lay",
+        "bet_type",
         "arbritrage_profit",
         "place_payout",
         "balance_in_betfair",
