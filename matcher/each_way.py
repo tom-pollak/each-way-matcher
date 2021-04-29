@@ -273,7 +273,6 @@ def scrape_arb_races(driver):
 
 
 def evaluate_punt(driver, race, win_odds_proportion):
-    race["bet_type"] = "Punt"
     (
         race["bookie_stake"],
         race["expected_return"],
@@ -331,7 +330,7 @@ def evaluate_punt(driver, race, win_odds_proportion):
 
 
 def scrape_punt_races(driver):
-    race = {"bookie_balance": sporting_index.get_balance(driver)}
+    race = {"bookie_balance": sporting_index.get_balance(driver), "bet_type": "Punt"}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     odds_monkey.refresh(driver)
