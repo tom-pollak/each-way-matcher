@@ -35,7 +35,7 @@ import matcher.sites.betfair as betfair
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
-REFRESH_TIME = os.environ.get("REFRESH_TIME")
+REFRESH_TIME = float(os.environ.get("REFRESH_TIME"))
 
 
 def place_arb(
@@ -98,7 +98,7 @@ def place_arb(
     return profits
 
 
-def betfair_bet(driver, race):
+def evaluate_arb(driver, race):
     def check_start_time():
         minutes_until_race = (
             datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
@@ -214,17 +214,39 @@ def betfair_bet(driver, race):
         race["balance"] = sporting_index.get_balance(driver)
         min_profit = min(race["win_profit"], race["place_profit"], race["lose_profit"])
 
-        output_lay_ew(
-            race,
-            min_profit,
-        )
-        update_csv_betfair(
-            race,
-            min_profit,
-        )
+        output_lay_ew(race, min_profit)
+        update_csv_betfair(race, min_profit)
 
 
-def evaluate_sporting_index_bet(driver, race, win_odds_proportion):
+def scrape_arb_races(driver):
+    race = {"balance": sporting_index.get_balance(driver)}
+    processed_horses = []
+    driver.switch_to.window(driver.window_handles[2])
+    odds_monkey.refresh(driver, betfair=True)
+    if not driver.find_elements_by_class_name("rgNoRecords"):
+        for row in range(odds_monkey.get_no_rows(driver)):
+            horse_name = (
+                WebDriverWait(driver, 60)
+                .until(
+                    EC.visibility_of_element_located(
+                        (
+                            By.XPATH,
+                            f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]',
+                        )
+                    )
+                )
+                .text.title()
+            )
+            if horse_name not in processed_horses:
+                race.update(odds_monkey.find_races(driver, row, 2))
+                processed_horses.append(race["horse_name"])
+                evaluate_arb(driver, race)
+            driver.switch_to.window(driver.window_handles[2])
+            driver.switch_to.default_content()
+            sys.stdout.flush()
+
+
+def evaluate_punt(driver, race, win_odds_proportion):
     (
         race["bookie_stake"],
         race["expected_return"],
@@ -258,7 +280,7 @@ def evaluate_sporting_index_bet(driver, race, win_odds_proportion):
     return False
 
 
-def start_sporting_index(driver):
+def scrape_punt_races(driver):
     race = {"balance": sporting_index.get_balance(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
@@ -284,37 +306,9 @@ def start_sporting_index(driver):
                     race["horse_name"], race["date_of_race"], race["venue"]
                 )
                 if "Punt" not in bet_types:
-                    evaluate_sporting_index_bet(driver, race, win_odds_proportion)
+                    evaluate_punt(driver, race, win_odds_proportion)
 
             driver.switch_to.window(driver.window_handles[0])
-            driver.switch_to.default_content()
-            sys.stdout.flush()
-
-
-def start_betfair(driver):
-    race = {"balance": sporting_index.get_balance(driver)}
-    processed_horses = []
-    driver.switch_to.window(driver.window_handles[2])
-    odds_monkey.refresh(driver, betfair=True)
-    if not driver.find_elements_by_class_name("rgNoRecords"):
-        for row in range(odds_monkey.get_no_rows(driver)):
-            horse_name = (
-                WebDriverWait(driver, 60)
-                .until(
-                    EC.visibility_of_element_located(
-                        (
-                            By.XPATH,
-                            f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]',
-                        )
-                    )
-                )
-                .text.title()
-            )
-            if horse_name not in processed_horses:
-                race.update(odds_monkey.find_races(driver, row, 2))
-                processed_horses.append(race["horse_name"])
-                betfair_bet(driver, race)
-            driver.switch_to.window(driver.window_handles[2])
             driver.switch_to.default_content()
             sys.stdout.flush()
 
@@ -334,8 +328,8 @@ def start_matcher(driver, lay):
             show_info(count, START_TIME)
 
         if lay:
-            start_betfair(driver)
-        start_sporting_index(driver)
+            scrape_arb_races(driver)
+        scrape_punt_races(driver)
         sys.stdout.flush()
         diff = time() - loop_time
         if diff < REFRESH_TIME:

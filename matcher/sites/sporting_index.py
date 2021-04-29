@@ -91,7 +91,7 @@ def click_betslip(driver):
     ).click()
 
 
-def submit_bet(driver, race):
+def place_bet(driver, race):
     try:
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "ng-pristine"))
@@ -186,7 +186,7 @@ def make_bet(driver, race, market_ids=None, lay=False):
             place_horse_odds = betfair.get_odds(market_ids["place"])
             if check_odds_changes(race, win_horse_odds, place_horse_odds):
                 return race, False
-        bet_made = submit_bet(driver, race)
+        bet_made = place_bet(driver, race)
         if bet_made:
             return race, True
         close_bet(driver)

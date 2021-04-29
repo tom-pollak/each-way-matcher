@@ -58,6 +58,42 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     return bet_types, win_odds_proportion
 
 
+# N.B bookie_stake is half actual stake
+def calculate_profit(
+    bookie_odds,
+    bookie_stake,
+    win_odds,
+    win_stake,
+    place_odds,
+    place_stake,
+    place_payout,
+    round_profit=True,
+):
+    win_profit = place_profit = lose_profit = 0
+    commission_lose = (win_stake + place_stake) * COMMISSION
+    commission_place = win_stake * COMMISSION
+
+    if bookie_odds is not None and bookie_stake is not None:
+        place_profit = bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
+        win_profit = bookie_stake * (bookie_odds - 1) + place_profit + bookie_stake
+        lose_profit = -bookie_stake * 2
+
+    win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
+    place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
+    lose_profit += win_stake + place_stake - commission_lose
+    if round_profit:
+        return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
+    return win_profit, place_profit, lose_profit
+
+
+def get_min_stake(win_odds, place_odds):
+    win_min_stake = 10 / (win_odds - 1)
+    win_min_stake = min(win_min_stake, 2)
+    place_min_stake = 10 / (place_odds - 1)
+    place_min_stake = min(place_min_stake, 2)
+    return round(win_min_stake, 2), round(place_min_stake, 2)
+
+
 def check_stakes(
     bookie_balance,
     betfair_balance,
@@ -66,28 +102,15 @@ def check_stakes(
     win_odds,
     place_stake,
     place_odds,
-    output=True,
 ):
-    total_stake = 0
-    if win_stake is not None:
-        total_stake += win_stake * (win_odds - 1)
-    if place_stake is not None:
-        total_stake += place_stake * (place_odds - 1)
+    total_stake = win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
+    win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
     if (
         (total_stake > betfair_balance)
-        or (win_stake is not None and win_stake < 2 and win_stake * (win_odds - 1) < 10)
-        or (
-            place_stake is not None
-            and place_stake < 2
-            and place_stake * (place_odds - 1) < 10
-        )
+        or (win_stake < win_min_stake)
+        or (place_min_stake < place_min_stake)
         or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
     ):
-        if output:
-            print("Arb stakes not bettable:")
-            print(
-                f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
-            )
         return False
     return True
 
@@ -252,6 +275,10 @@ def calculate_stakes(
         place_odds,
     )
     if not stakes_ok:
+        print("Arb stakes not bettable:")
+        print(
+            f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
+        )
         return False, 0, 0, 0
 
     return True, bookie_stake, win_stake, place_stake
@@ -276,34 +303,6 @@ def get_next_odd_increment(odd):
         if odd < price:
             return round(odd + price_increments[price], 2)
     return None
-
-
-# N.B bookie_stake is half actual stake
-def calculate_profit(
-    bookie_odds,
-    bookie_stake,
-    win_odds,
-    win_stake,
-    place_odds,
-    place_stake,
-    place_payout,
-    round_profit=True,
-):
-    win_profit = place_profit = lose_profit = 0
-    commission_lose = (win_stake + place_stake) * COMMISSION
-    commission_place = win_stake * COMMISSION
-
-    if bookie_odds is not None and bookie_stake is not None:
-        place_profit = bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
-        win_profit = bookie_stake * (bookie_odds - 1) + place_profit + bookie_stake
-        lose_profit = -bookie_stake * 2
-
-    win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
-    place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
-    lose_profit += win_stake + place_stake - commission_lose
-    if round_profit:
-        return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
-    return win_profit, place_profit, lose_profit
 
 
 def check_odds_changes(race, win_horse_odds, place_horse_odds):
@@ -351,7 +350,6 @@ def minimize_calculate_profits(
             win_odds,
             stakes[1],
             place_odds,
-            output=False,
         ):
             return (stakes[0] + stakes[1]) * 1000
 
@@ -369,14 +367,6 @@ def minimize_calculate_profits(
         return -min(min_profits)
 
     return make_minimize
-
-
-def get_min_stake(win_odds, place_odds):
-    win_min_stake = 10 / (win_odds - 1)
-    place_min_stake = 10 / (place_odds - 1)
-    win_min_stake = min(win_min_stake, 2)
-    place_min_stake = min(place_min_stake, 2)
-    return round(win_min_stake, 2), round(place_min_stake, 2)
 
 
 def minimize_loss(
