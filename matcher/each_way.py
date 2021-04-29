@@ -186,7 +186,8 @@ def evaluate_arb(driver, race):
 
     win_horse_odds = betfair.get_odds(market_ids["win"])
     place_horse_odds = betfair.get_odds(market_ids["place"])
-    check_odds_changes(race, win_horse_odds, place_horse_odds)
+    if check_odds_changes(race, win_horse_odds, place_horse_odds):
+        return
 
     race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
     if bet_made is None:
