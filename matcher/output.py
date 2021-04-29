@@ -32,7 +32,6 @@ def show_info(count, START_TIME):
 
 
 def output_race(driver, race):
-    balance = sporting_index.get_balance(driver)
     print(
         f"\nNo Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}"
     )
@@ -64,7 +63,7 @@ def output_lay_ew(race):
         f"Expected Value: {race['exp_value']}, Expected Growth: {round(race['exp_growth'], 2 * 100)}%"
     )
     print(
-        f"Current balance: £{format(race['balance'], '.2f')}, betfair balance: £{format(race['betfair_balance'], '.2f')}\n"
+        f"Current balance: £{format(race['bookie_balance'], '.2f')}, betfair balance: £{format(race['betfair_balance'], '.2f')}\n"
     )
 
 
