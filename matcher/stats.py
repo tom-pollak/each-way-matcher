@@ -38,6 +38,8 @@ def get_today_starting_balance():
 
 
 def calculate_returns():
+    if len(df) == 0:
+        return 0, 0, 0, 0
     today_starting_balance = get_today_starting_balance()
 
     current_sporting_index_balance = df["bookie_balance"].values[-1]
@@ -76,9 +78,14 @@ def output_profit():
         total_percentage_profit,
         today_percentage_profit,
     ) = calculate_returns()
-    current_sporting_index_balance = df["bookie_balance"].values[-1]
-    current_betfair_balance = df["betfair_balance"].values[-1]
-    in_bet_balance = format(calc_unfinished_races(), ".2f")
+    if len(df) == 0:
+        current_sporting_index_balance = 0
+        current_betfair_balance = 0
+        in_bet_balance = 0
+    else:
+        current_sporting_index_balance = df["bookie_balance"].values[-1]
+        current_betfair_balance = df["betfair_balance"].values[-1]
+        in_bet_balance = format(calc_unfinished_races(), ".2f")
     print(f"Total profit: £{total_profit} ({total_percentage_profit}%)")
     print(f"Profit today: £{profit_today} ({today_percentage_profit}%)")
     print(
@@ -125,8 +132,8 @@ def plot_bal_time_series_graph():
 
 
 df = read_csv()
-if df is None:
-    raise MatcherError("returns.csv not found!")
+if len(df) == 0:
+    print("returns.csv not found!")
 
 if len(df) == 0:
     STARTING_BALANCE = 0

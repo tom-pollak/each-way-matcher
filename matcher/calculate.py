@@ -36,7 +36,7 @@ def custom_date_parser(x):
 def check_repeat_bets(horse_name, date_of_race, venue):
     date_of_race = custom_date_parser(date_of_race)
     df = read_csv()
-    if df is None:
+    if len(df) == 0:
         return [], 1
     horses = df.query(
         "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Arb Punt')"
@@ -58,7 +58,7 @@ def read_csv():
             squeeze=True,
         )
     except (IndexError, FileNotFoundError):
-        return None
+        return []
     return df
 
 
