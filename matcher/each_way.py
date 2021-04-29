@@ -236,7 +236,7 @@ def evaluate_sporting_index_bet(driver, race, win_odds_proportion):
         race["date_of_race"], race["venue"], race["horse_name"]
     )
 
-    race, bet_made = sporting_index_bet(driver, race)
+    race, bet_made = sporting_index.make_bet(driver, race)
     if bet_made is None:  # horse not found
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
