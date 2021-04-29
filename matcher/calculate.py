@@ -364,7 +364,6 @@ def minimize_calculate_profits(
             round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
-        print(stakes, min_profits, -min(min_profits))
         return -min(min_profits)
 
     return make_minimize
@@ -376,9 +375,6 @@ def get_min_stake(win_odds, place_odds):
     win_min_stake = min(win_min_stake, 2)
     place_min_stake = min(place_min_stake, 2)
     return round(win_min_stake, 2), round(place_min_stake, 2)
-
-
-print(get_min_stake(2, 20))
 
 
 def minimize_loss(
@@ -402,13 +398,8 @@ def minimize_loss(
         x0=x0,
         bounds=bnds,
     ).x
-    print(win_stake, place_stake)
     if win_stake < win_min_stake:
         win_stake = None
     if place_stake < place_min_stake:
         place_stake = None
     return round(win_stake, 2), round(place_stake, 2)
-
-
-# print(maximize_arb(100, 200, 3, 1.925, -19, -13, 20))
-# print(minimize_loss(4, 8, (300, -70, -200), 200))
