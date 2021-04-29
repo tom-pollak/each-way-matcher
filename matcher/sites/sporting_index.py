@@ -1,5 +1,7 @@
-from time import sleep
+import sys
+import os
 
+from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,6 +15,11 @@ from selenium.common.exceptions import (
 from matcher.exceptions import MatcherError
 from matcher.calculate import check_odds_changes
 import matcher.sites.betfair as betfair
+
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
+load_dotenv(os.path.join(BASEDIR, ".env"))
+S_INDEX_USER = os.environ.get("S_INDEX_USER")
+S_INDEX_PASS = os.environ.get("S_INDEX_PASS")
 
 
 def login(driver):
@@ -29,7 +36,6 @@ def login(driver):
         raise MatcherError("Couldn't login to Sporting Index")
     driver.find_element_by_id("passwordCompact").send_keys(S_INDEX_PASS)
     driver.find_element_by_id("submitLogin").click()
-    sleep(5)
     print("Logged in")
     sys.stdout.flush()
 
@@ -116,7 +122,7 @@ def get_page(driver, race):
     )
 
 
-def make_bet(driver, race, market_ids=None, betfair=False):
+def make_bet(driver, race, market_ids=None, lay=False):
     def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         for _ in range(5):

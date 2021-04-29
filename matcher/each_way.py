@@ -4,6 +4,7 @@ import traceback
 from time import sleep, time
 from datetime import datetime
 
+from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -179,7 +180,7 @@ def betfair_bet(driver, race):
     place_horse_odds = betfair.get_odds(market_ids["place"])
     check_odds_changes(race, win_horse_odds, place_horse_odds)
 
-    race, bet_made = sporting_index.make_bet(driver, race, market_ids, betfair=True)
+    race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
     if bet_made is None:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
@@ -302,7 +303,7 @@ def start_betfair(driver):
                 .text.title()
             )
             if horse_name not in processed_horses:
-                race.update(find_races(driver, row, 2))
+                race.update(odds_monkey.find_races(driver, row, 2))
                 processed_horses.append(race["horse_name"])
                 betfair_bet(driver, race)
             driver.switch_to.window(driver.window_handles[2])

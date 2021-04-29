@@ -1,6 +1,8 @@
+import os
 from time import sleep
 from datetime import datetime
 
+from dotenv import load_dotenv
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,6 +17,12 @@ from selenium.common.exceptions import (
 )
 
 from matcher.exceptions import MatcherError
+
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
+load_dotenv(os.path.join(BASEDIR, ".env"))
+
+ODD_M_USER = os.environ.get("ODD_M_USER")
+ODD_M_PASS = os.environ.get("ODD_M_PASS")
 
 
 def login(driver):
@@ -31,7 +39,7 @@ def login(driver):
         ODD_M_PASS
     )
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
-    sleep(2)
+    # sleep(2)
 
     driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
     try:
@@ -99,7 +107,7 @@ def find_races(driver, row=0, window=0):
     except ElementNotInteractableException:
         raise MatcherError("Couldn't click calculator button")
 
-    sleep(2)
+    # sleep(2)
     try:
         driver.switch_to.frame("RadWindow2")
     except NoSuchFrameException:
@@ -211,7 +219,7 @@ def trigger_betfair_options(driver):
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="headingFour"]/h4/a'))
     ).click()
-    sleep(0.5)
+    # sleep(0.5)
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_rlbExchanges"]/div/div/label/input'
     ).click()
@@ -222,7 +230,7 @@ def trigger_betfair_options(driver):
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_ModuleContent"]/div[10]/div[1]/a'
     ).click()
-    sleep(0.5)
+    # sleep(0.5)
 
 
 def refresh(driver, betfair=False):

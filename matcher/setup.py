@@ -19,10 +19,6 @@ from .exceptions import MatcherError
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
-ODD_M_USER = os.environ.get("ODD_M_USER")
-ODD_M_PASS = os.environ.get("ODD_M_PASS")
-S_INDEX_USER = os.environ.get("S_INDEX_USER")
-S_INDEX_PASS = os.environ.get("S_INDEX_PASS")
 RETURNS_CSV = os.environ.get("RETURNS_CSV")
 
 
