@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from matcher.exceptions import MatcherError
-from matcher.sites.betfair import login_betfair, get_horses
+import matcher.sites.betfair as betfair
 
 
 def get_extra_place_races():
@@ -77,7 +77,7 @@ def create_race_df(races):
             datetime.date.today(), datetime.time(int(hour), int(mins))
         )
         try:
-            market_ids, _ = get_horses(race["venue"], time)
+            market_ids, _ = betfair.get_horses(race["venue"], time)
             win_market_id = market_ids["win"]
             place_market_id = market_ids["place"]
         except MatcherError:
@@ -118,7 +118,7 @@ def create_odds_df(races_df, races):
     for race in races_df.iterrows():
         key = race[0]
         try:
-            for horse in get_horses(key[0], key[1])[1]["runners"]:
+            for horse in betfair.get_horses(key[0], key[1])[1]["runners"]:
                 indexes.append((key[0], key[1], horse["runnerName"], None))
                 horse_ids[horse["runnerName"]] = horse["selectionId"]
         except MatcherError:

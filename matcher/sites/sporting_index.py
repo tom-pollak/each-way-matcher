@@ -12,7 +12,7 @@ from selenium.common.exceptions import (
 
 from matcher.exceptions import MatcherError
 from matcher.calculate import check_odds_changes
-from .betfair import get_race_odds
+import .betfair as betfair
 
 
 def change_to_decimal(driver):
@@ -157,8 +157,8 @@ def sporting_index_bet(driver, race, market_ids=None, betfair=False):
         if betfair:
             if market_ids is None:
                 raise MatcherError("market_ids are None")
-            win_horse_odds = get_race_odds(market_ids["win"])
-            place_horse_odds = get_race_odds(market_ids["place"])
+            win_horse_odds = betfair.get_odds(market_ids["win"])
+            place_horse_odds = betfair.get_odds(market_ids["place"])
             if check_odds_changes(race, win_horse_odds, place_horse_odds):
                 return race, False
         bet_made = make_sporting_index_bet(driver, race)

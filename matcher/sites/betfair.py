@@ -29,7 +29,7 @@ if None in (USERNAME, PASSWORD, APP_KEY):
     raise Exception("betfair env vars not set")
 
 
-def login_betfair():
+def login():
     payload = f"username={USERNAME}&password={PASSWORD}"
     login_headers = {
         "X-Application": APP_KEY,
@@ -56,7 +56,7 @@ def login_betfair():
     raise MatcherError("Can't login")
 
 
-def get_race_odds(market_id):
+def get_odds(market_id):
     horses = {}
     resp = requests.get(
         f"https://www.betfair.com/www/sports/exchange/readonly/v1/bymarket?_ak=nzIFcwyWhrlwYMrh&alt=json&currencyCode=GBP&locale=en_GB&marketIds={market_id}&rollupLimit=10&rollupModel=STAKE&types=EVENT,RUNNER_DESCRIPTION,%20RUNNER_EXCHANGE_PRICES_BEST"
@@ -99,7 +99,7 @@ def get_race_odds(market_id):
 
 
 def call_api(jsonrpc_req, url=betting_url):
-    headers = login_betfair()
+    headers = login()
     try:
         if url.lower().startswith("http"):
             req = request.Request(url, jsonrpc_req.encode("utf-8"), headers)
@@ -116,7 +116,7 @@ def call_api(jsonrpc_req, url=betting_url):
     raise MatcherError("API request failed")
 
 
-def get_betfair_balance_in_bets():
+def get_balance_in_bets():
     balance_in_bets = 0
     order_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders"}'
     res = call_api(order_req)
@@ -294,7 +294,7 @@ def lay_bets(market_id, selection_id, price, stake):
     return bet_made, matched_price, matched, stake_matched, bet_id
 
 
-def get_betfair_balance():
+def get_balance():
     account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
     balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
     balance_res = call_api(balance_req, url=account_url)
@@ -302,7 +302,7 @@ def get_betfair_balance():
     return balance
 
 
-def get_race(race_time, venue, horse):
+def get_race_ids(race_time, venue, horse):
     race_time = datetime.datetime.strptime(race_time, "%d %b %H:%M %Y")
     markets_ids, horses = get_horses(venue, race_time)
     selection_id, target_horse = get_horse_id(horses, horse)
@@ -313,7 +313,7 @@ def get_race(race_time, venue, horse):
     return markets_ids, selection_id, got_horse, target_horse
 
 
-def lay_ew(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
+def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
     win_dict = place_dict = {"matched": True, "bet_id": None}
     if win_stake is not None:
         lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(

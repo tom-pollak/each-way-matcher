@@ -4,11 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from csv import DictWriter
 
-from matcher.sites.betfair import (
-    get_betfair_balance,
-    login_betfair,
-    get_betfair_balance_in_bets,
-)
+import matcher.sites.betfair as betfair
 from matcher.sites.sporting_index import get_balance_sporting_index
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -72,8 +68,8 @@ def update_csv_sporting_index(driver, race):
     race["is_lay"] = False
     race["arbritrage_profit"] = 0
     race["balance"] = get_balance_sporting_index(driver)
-    race["betfair_balance"] = get_betfair_balance()
-    race["balance_in_betfair"] = get_betfair_balance_in_bets()
+    race["betfair_balance"] = betfair.get_balance()
+    race["balance_in_betfair"] = betfair.get_balance_in_bets()
     csv_columns = [
         "date_of_race",
         "horse_name",
@@ -110,7 +106,7 @@ def update_csv_betfair(
     race["is_lay"] = True
     race["arbritrage_profit"] = arbritrage_profit
     race["expected_value"] = race["expected_return"] = 0
-    race["balance_in_betfair"] = get_betfair_balance_in_bets()
+    race["balance_in_betfair"] = betfair.get_balance_in_bets()
     csv_columns = [
         "date_of_race",
         "horse_name",
