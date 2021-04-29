@@ -12,7 +12,7 @@ from selenium.common.exceptions import (
 
 from matcher.exceptions import MatcherError
 from matcher.calculate import check_odds_changes
-from .betfair_api import get_race_odds
+from .betfair import get_race_odds
 
 
 def change_to_decimal(driver):

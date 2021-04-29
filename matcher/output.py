@@ -4,7 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from csv import DictWriter
 
-from matcher.sites.betfair_api import (
+from matcher.sites.betfair import (
     get_betfair_balance,
     login_betfair,
     get_betfair_balance_in_bets,

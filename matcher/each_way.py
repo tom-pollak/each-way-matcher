@@ -33,7 +33,7 @@ from matcher.sites.odds_monkey import (
     open_betfair_oddsmonkey,
     get_no_rows,
 )
-from matcher.sites.betfair_api import (
+from matcher.sites.betfair import (
     lay_ew,
     get_betfair_balance,
     login_betfair,
