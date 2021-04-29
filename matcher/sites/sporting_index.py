@@ -18,8 +18,8 @@ import matcher.sites.betfair as betfair
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
-S_INDEX_USER = os.environ.get("S_INDEX_USER")
-S_INDEX_PASS = os.environ.get("S_INDEX_PASS")
+USERNAME = os.environ.get("S_INDEX_USER")
+PASS = os.environ.get("S_INDEX_PASS")
 
 
 def login(driver):
@@ -31,10 +31,10 @@ def login(driver):
     try:
         WebDriverWait(driver, 60).until(
             EC.visibility_of_element_located((By.ID, "usernameCompact"))
-        ).send_keys(S_INDEX_USER)
+        ).send_keys(USERNAME)
     except TimeoutException:
         raise MatcherError("Couldn't login to Sporting Index")
-    driver.find_element_by_id("passwordCompact").send_keys(S_INDEX_PASS)
+    driver.find_element_by_id("passwordCompact").send_keys(PASS)
     driver.find_element_by_id("submitLogin").click()
     print("Logged in")
     sys.stdout.flush()
@@ -179,7 +179,7 @@ def make_bet(driver, race, market_ids=None, lay=False):
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
 
     if float(cur_odd_price) == float(race["bookie_odds"]):
-        if betfair:
+        if lay:
             if market_ids is None:
                 raise MatcherError("market_ids are None")
             win_horse_odds = betfair.get_odds(market_ids["win"])

@@ -21,8 +21,8 @@ from matcher.exceptions import MatcherError
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
-ODD_M_USER = os.environ.get("ODD_M_USER")
-ODD_M_PASS = os.environ.get("ODD_M_PASS")
+USERNAME = os.environ.get("ODD_M_USER")
+PASS = os.environ.get("ODD_M_PASS")
 
 
 def login(driver):
@@ -32,12 +32,10 @@ def login(driver):
             EC.visibility_of_element_located(
                 (By.ID, "dnn_ctr433_Login_Login_DNN_txtUsername")
             )
-        ).send_keys(ODD_M_USER)
+        ).send_keys(USERNAME)
     except TimeoutException:
         raise MatcherError("Couldn't login to Oddsmonkey")
-    driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(
-        ODD_M_PASS
-    )
+    driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(PASS)
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
     # sleep(2)
 

@@ -20,16 +20,31 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
 RETURNS_CSV = os.environ.get("RETURNS_CSV")
+ODD_M_USER = os.environ.get("ODD_M_USER")
+ODD_M_PASS = os.environ.get("ODD_M_PASS")
+APP_KEY = os.environ.get("APP_KEY")
+BETFAIR_USR = os.environ.get("BETFAIR_USR")
+BETFAIR_PASS = os.environ.get("BETFAIR_PASS")
+BETFAIR_CERT = os.path.join(BASEDIR, "client-2048.crt")
+BETFAIR_KEY = os.path.join(BASEDIR, "client-2048.key")
+S_INDEX_USER = os.environ.get("S_INDEX_USER")
+S_INDEX_PASS = os.environ.get("S_INDEX_PASS")
 
 
 def check_vars():
-    if None in (ODD_M_USER, ODD_M_PASS, S_INDEX_USER, S_INDEX_PASS):
-        print("ERROR: SportingIndex or Oddsmonkey env variables not set")
-        raise Exception
-
-    if not os.path.isfile("client-2048.crt") or not os.path.isfile("client-2048.key"):
-        print("client-2048 certificates not found")
-        raise Exception
+    if None in (
+        ODD_M_USER,
+        ODD_M_PASS,
+        S_INDEX_USER,
+        S_INDEX_PASS,
+        BETFAIR_USR,
+        BETFAIR_PASS,
+        BETFAIR_CERT,
+        BETFAIR_KEY,
+    ):
+        raise Exception(
+            "ERROR: Oddsmonkey, SportingIndex or BetFair env variables not set"
+        )
 
 
 def setup_selenium():
