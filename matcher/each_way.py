@@ -325,7 +325,7 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["betfair_balance"] = betfair.get_balance()
         race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
         output_race(driver, race)
-        update_csv_sporting_index(driver, race)
+        update_csv_sporting_index(race)
         return True
     return False
 

@@ -108,7 +108,7 @@ def check_stakes(
     if (
         (total_stake > betfair_balance)
         or (win_stake < win_min_stake)
-        or (place_min_stake < place_min_stake)
+        or (place_min_stake < place_stakee)
         or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
     ):
         return False

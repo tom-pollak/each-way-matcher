@@ -67,7 +67,7 @@ def output_lay_ew(race):
     )
 
 
-def update_csv_sporting_index(driver, race):
+def update_csv_sporting_index(race):
     csv_columns = [
         "current_time",
         "date_of_race",
