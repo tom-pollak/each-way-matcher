@@ -15,6 +15,25 @@ from matcher.calculate import check_odds_changes
 import matcher.sites.betfair as betfair
 
 
+def login(driver):
+    driver.execute_script(
+        """window.open("https://www.sportingindex.com/fixed-odds","_blank");"""
+    )
+
+    driver.switch_to.window(driver.window_handles[1])
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located((By.ID, "usernameCompact"))
+        ).send_keys(S_INDEX_USER)
+    except TimeoutException:
+        raise MatcherError("Couldn't login to Sporting Index")
+    driver.find_element_by_id("passwordCompact").send_keys(S_INDEX_PASS)
+    driver.find_element_by_id("submitLogin").click()
+    sleep(5)
+    print("Logged in")
+    sys.stdout.flush()
+
+
 def change_to_decimal(driver):
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((By.XPATH, '//a[@class="btn-my-account"]'))

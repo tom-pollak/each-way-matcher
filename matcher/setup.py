@@ -56,58 +56,6 @@ def setup_selenium():
     return webdriver.Chrome(options=chrome_options)
 
 
-def login(driver):
-    driver.get("https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f")
-    try:
-        WebDriverWait(driver, 60).until(
-            EC.visibility_of_element_located(
-                (By.ID, "dnn_ctr433_Login_Login_DNN_txtUsername")
-            )
-        ).send_keys(ODD_M_USER)
-    except TimeoutException:
-        raise MatcherError("Couldn't login to Oddsmonkey")
-    driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(
-        ODD_M_PASS
-    )
-    driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
-    sleep(2)
-
-    driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
-    try:
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a',
-                )
-            )
-        ).click()
-    except TimeoutException:
-        print("Need Oddsmonkey premium membership (OM12FOR1)")
-        raise KeyboardInterrupt
-    except ElementClickInterceptedException:
-        print("Dismiss one time pop-up boxes and setup oddsmonkey")
-        raise KeyboardInterrupt
-
-    driver.execute_script(
-        """window.open("https://www.sportingindex.com/fixed-odds","_blank");"""
-    )
-    sleep(2)
-
-    driver.switch_to.window(driver.window_handles[1])
-    try:
-        WebDriverWait(driver, 60).until(
-            EC.visibility_of_element_located((By.ID, "usernameCompact"))
-        ).send_keys(S_INDEX_USER)
-    except TimeoutException:
-        raise MatcherError("Couldn't login to Sporting Index")
-    driver.find_element_by_id("passwordCompact").send_keys(S_INDEX_PASS)
-    driver.find_element_by_id("submitLogin").click()
-    sleep(5)
-    print("Logged in")
-    sys.stdout.flush()
-
-
 def reset_csv():
     if not os.path.isdir("stats"):
         os.mkdir("stats")

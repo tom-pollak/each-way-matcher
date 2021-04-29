@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 from time import sleep, time
@@ -8,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException
 
-from .setup import setup_selenium, login, check_vars
+from .setup import setup_selenium, check_vars
 from .calculate import (
     calculate_stakes,
     calculate_profit,
@@ -27,16 +28,13 @@ from .output import (
     output_race,
 )
 from .exceptions import MatcherError
-from matcher.sites.odds_monkey import (
-    find_races,
-    refresh_odds_monkey,
-    open_betfair_oddsmonkey,
-    get_no_rows,
-)
-import matcher.sites.betfair as betfair
+import matcher.sites.odds_monkey as odds_monkey
 import matcher.sites.sporting_index as sporting_index
+import matcher.sites.betfair as betfair
 
-REFRESH_TIME = 60
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
+load_dotenv(os.path.join(BASEDIR, ".env"))
+REFRESH_TIME = os.environ.get("REFRESH_TIME")
 
 
 def place_arb(
@@ -255,9 +253,9 @@ def start_sporting_index(driver):
     race = {"balance": sporting_index.get_balance(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
-    refresh_odds_monkey(driver)
+    odds_monkey.refresh(driver)
     if not driver.find_elements_by_class_name("rgNoRecords"):
-        for row in range(get_no_rows(driver)):
+        for row in range(odds_monkey.get_no_rows(driver)):
             horse_name = (
                 WebDriverWait(driver, 60)
                 .until(
@@ -271,7 +269,7 @@ def start_sporting_index(driver):
                 .text.title()
             )
             if horse_name not in processed_horses:
-                race.update(find_races(driver, row, 0))
+                race.update(odds_monkey.find_races(driver, row, 0))
                 processed_horses.append(race["horse_name"])
                 horse_ok, win_odds_proportion = check_repeat_bets(
                     race["horse_name"], race["date_of_race"], race["venue"]
@@ -288,9 +286,9 @@ def start_betfair(driver):
     race = {"balance": sporting_index.get_balance(driver)}
     processed_horses = []
     driver.switch_to.window(driver.window_handles[2])
-    refresh_odds_monkey(driver, betfair=True)
+    odds_monkey.refresh(driver, betfair=True)
     if not driver.find_elements_by_class_name("rgNoRecords"):
-        for row in range(get_no_rows(driver)):
+        for row in range(odds_monkey.get_no_rows(driver)):
             horse_name = (
                 WebDriverWait(driver, 60)
                 .until(
@@ -315,7 +313,7 @@ def start_betfair(driver):
 def start_matcher(driver, lay):
     START_TIME = time()
     sporting_index.setup(driver)
-    open_betfair_oddsmonkey(driver)
+    odds_monkey.open_betfair_page(driver)
     count = 0
     driver.switch_to.window(driver.window_handles[0])
     while True:
@@ -347,7 +345,8 @@ def run_each_way(lay):
         driver = setup_selenium()
         sys.stdout.flush()
         try:
-            login(driver)
+            odds_monkey.login(driver)
+            sporting_index.login(driver)
             start_matcher(driver, lay)
         except MatcherError as e:
             print(e)

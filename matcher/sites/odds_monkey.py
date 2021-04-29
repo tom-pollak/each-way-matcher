@@ -17,6 +17,40 @@ from selenium.common.exceptions import (
 from matcher.exceptions import MatcherError
 
 
+def login(driver):
+    driver.get("https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f")
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(
+                (By.ID, "dnn_ctr433_Login_Login_DNN_txtUsername")
+            )
+        ).send_keys(ODD_M_USER)
+    except TimeoutException:
+        raise MatcherError("Couldn't login to Oddsmonkey")
+    driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(
+        ODD_M_PASS
+    )
+    driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
+    sleep(2)
+
+    driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a',
+                )
+            )
+        ).click()
+    except TimeoutException:
+        print("Need Oddsmonkey premium membership (OM12FOR1)")
+        raise KeyboardInterrupt
+    except ElementClickInterceptedException:
+        print("Dismiss one time pop-up boxes and setup oddsmonkey")
+        raise KeyboardInterrupt
+
+
 def find_races(driver, row=0, window=0):
     driver.switch_to.window(driver.window_handles[window])
     driver.switch_to.default_content()
@@ -191,7 +225,7 @@ def trigger_betfair_options(driver):
     sleep(0.5)
 
 
-def refresh_odds_monkey(driver, betfair=False):
+def refresh(driver, betfair=False):
     for _ in range(3):
         driver.switch_to.default_content()
         try:
@@ -242,7 +276,7 @@ def refresh_odds_monkey(driver, betfair=False):
     raise MatcherError("Couldn't refresh Oddsmonkey")
 
 
-def open_betfair_oddsmonkey(driver):
+def open_betfair_page(driver):
     driver.execute_script(
         """window.open("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx","_blank");"""
     )
