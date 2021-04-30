@@ -109,7 +109,7 @@ def plot_bal_time_series_graph():
 
     ax.plot(balance, "g", label="Profit")
 
-    df.iloc[[0]]["exp_return"] += STARTING_BALANCE
+    df.loc[:, ["exp_return"]].iloc[[0]] += STARTING_BALANCE
     df["exp_return"].cumsum().plot(color="r", label="Minimum expected return")
 
     fig.autofmt_xdate()
