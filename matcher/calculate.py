@@ -33,7 +33,7 @@ def custom_date_parser(x):
     return datetime(*(datetime.strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
 
 
-def check_start_time():
+def check_start_time(race):
     minutes_until_race = (
         datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
     ).total_seconds() / 60
