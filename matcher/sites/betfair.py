@@ -137,7 +137,6 @@ def get_bets_by_race(win_market_id, place_market_id):
         % (win_market_id, place_market_id)
     )
     bets = call_api(order_req)["result"]["currentOrders"]
-    print(bets)
     for bet in bets:
         odds = bet["averagePriceMatched"]
         stake = bet["sizeMatched"]

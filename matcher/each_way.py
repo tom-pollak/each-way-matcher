@@ -60,27 +60,25 @@ def place_arb(
         place_stake,
         place_odds,
     )
+    bet_info = {
+        "win": {"odds": 0, "stake": 0},
+        "place": {"odds": 0, "stake": 0},
+    }
+    bet_info.update(betfair.get_bets_by_bet_id(lay_win["bet_id"], lay_place["bet_id"]))
+    new_profits = calculate_profit(
+        bookie_odds,
+        bookie_stake,
+        bet_info["win"]["odds"],
+        bet_info["win"]["stake"],
+        bet_info["place"]["odds"],
+        bet_info["place"]["stake"],
+        place_payout,
+    )
+    profits = tuple(map(sum, zip(profits, new_profits)))
 
     if not lay_win["matched"] or not lay_place["matched"]:
         print("bets not matched:", lay_win, lay_place)
         betfair.cancel_unmatched_bets()
-        bet_info = {
-            "win": {"odds": 0, "stake": 0},
-            "place": {"odds": 0, "stake": 0},
-        }
-        bet_info.update(
-            betfair.get_bets_by_bet_id(lay_win["bet_id"], lay_place["bet_id"])
-        )
-        new_profits = calculate_profit(
-            bookie_odds,
-            bookie_stake,
-            bet_info["win"]["odds"],
-            bet_info["win"]["stake"],
-            bet_info["place"]["odds"],
-            bet_info["place"]["stake"],
-            place_payout,
-        )
-        profits = tuple(map(sum, zip(profits, new_profits)))
 
         win_odds = betfair.get_odds(market_ids["win"])["lay_odds_1"]
         place_odds = betfair.get_odds(market_ids["place"])["lay_odds_1"]
@@ -206,6 +204,7 @@ def evaluate_arb(driver, race):
         return
     print("arb sporting index bet took", time() - sporting_index_start)  # debug
 
+    place_arb_start = time()  # debug
     race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
         selection_id,
         market_ids,
@@ -217,6 +216,8 @@ def evaluate_arb(driver, race):
         race["place_odds"],
         race["place_payout"],
     )
+    print("betfair bet took", time() - place_arb)  # debug
+
     (
         race["win_stake"],
         race["win_odds"],
