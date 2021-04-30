@@ -160,7 +160,7 @@ def evaluate_arb(driver, race):
             *profits,
         )
         if stake_proportion == 0:
-            print(f"Arb bet not profitable: {profits} - {stake_proportionn}")
+            print(f"Arb bet not profitable: {profits} - {stake_proportion}")
             print(race["bookie_odds"], race["win_odds"], race["place_odds"])
             return
 
@@ -177,7 +177,7 @@ def evaluate_arb(driver, race):
             race["place_odds"],
         )
         if not stakes_ok:
-            print(f"Arb bet not profitable: {profits} - {stake_proportionn}")
+            print(f"Arb bet not profitable: {profits} - {stake_proportion}")
             print(race["bookie_odds"], race["win_odds"], race["place_odds"])
             return
 
