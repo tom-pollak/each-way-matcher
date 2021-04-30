@@ -152,6 +152,13 @@ def evaluate_arb(driver, race):
         )
         if "Lay Punt" in bet_types:
             return
+        print(
+            race["bookie_balance"],
+            race["betfair_balance"],
+            race["win_odds"],
+            race["place_odds"],
+            *profits,
+        )
         stake_proportion = maximize_arb(
             race["bookie_balance"],
             race["betfair_balance"],
@@ -159,14 +166,9 @@ def evaluate_arb(driver, race):
             race["place_odds"],
             *profits,
         )
-        if stake_proportion == 0:
-            print(f"Arb bet not profitable: {profits} - {stake_proportion}")
-            print(race["bookie_odds"], race["win_odds"], race["place_odds"])
-            return
-
-        race["bookie_stake"] = race["bookie_stake"] * stake_proportion
-        race["win_stake"] = race["win_stake"] * stake_proportion
-        race["place_stake"] = race["place_stake"] * stake_proportion
+        race["bookie_stake"] *= stake_proportion
+        race["win_stake"] *= stake_proportion
+        race["place_stake"] *= stake_proportionn
         stakes_ok = check_stakes(
             race["bookie_balance"],
             race["betfair_balance"],
