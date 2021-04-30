@@ -193,7 +193,9 @@ def evaluate_arb(driver, race):
     win_horse_odds = betfair.get_odds(market_ids["win"])
     place_horse_odds = betfair.get_odds(market_ids["place"])
     if not check_odds(race, win_horse_odds, place_horse_odds):
-        return
+        race["win_odds"] = win_horse_odds
+        race["place_odds"] = place_horse_odds
+        return evaluate_arb(driver, race)
 
     sporting_index_start = time()  # debug
     race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
