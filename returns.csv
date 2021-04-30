@@ -1,2 +1,3 @@
 current_time,date_of_race,venue,horse_name,exp_value,exp_growth,exp_return,bookie_stake,bookie_odds,win_stake,win_odds,place_stake,place_odds,bookie_balance,betfair_balance,betfair_in_bet_balance,win_profit,place_profit,lose_profit,bet_type,place_payout
 30/04/2021 12:16:07,30 Apr 18:50 2021,Newcastle,Ranchero,0.0,0.0,0.0,2.0,2.5,2.0,2.52,2.2,1.23,103.59,255.83,3.5460000000000003,0,0,0,Arb,5.0
+30/04/2021 13:41:54,30 Apr 14:30 2021,Musselburgh,Bouncing Bobby,0.025918367346938864,6.200247860976837e-05,0.02203320079876729,0.46,9.5,0,9.8,0,2.48,99.53,255.83,3.5460000000000003,4.69,0.32,-0.92,Punt,5.0
