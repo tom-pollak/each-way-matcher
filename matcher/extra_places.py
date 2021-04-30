@@ -3,13 +3,11 @@ import pandas as pd
 from .setup import setup_selenium
 from matcher.sites.scrape_extra_places import generate_df
 import matcher.sites.betfair as betfair
-from matcher.sites.william_hill import get_william_hill_page, scrape_odds_william_hill
+import matcher.sites.william_hill as william_hill
 
 
 idx = pd.IndexSlice
-enabled_sites = {
-    "William Hill": {"get": get_william_hill_page, "scrape": scrape_odds_william_hill}
-}
+enabled_sites = {"William Hill": william_hill}
 
 # bookies = {
 #     "Betfair Exchange Win": {"get": get_betfair_page, "scrape": scrape_odds_betfair}
@@ -51,24 +49,10 @@ def setup_sites(driver, races_df, odds_df, bookies_df):
             if site in bookies_df.loc[index].index.get_level_values("bookies")
         ]
         if sites:
-            tab = create_tab_id(
-                driver, bookies_df, index[0], index[1], "Betfair Exchange Win", tab
-            )
-            # get_betfair_page(driver, race.win_market_id, tab)
-            # horses = scrape_odds_betfair(driver, tab)
-            update_odds_df(odds_df, horses, "Betfair Exchange Win")
-
-            tab = create_tab_id(
-                driver, bookies_df, index[0], index[1], "Betfair Exchange Place", tab
-            )
-            # get_betfair_page(driver, race.place_market_id, tab)
-            # horses = scrape_odds_betfair(driver, tab)
-            update_odds_df(odds_df, horses, "Betfair Exchange Place")
-
             for site in sites:
                 tab = create_tab_id(driver, bookies_df, index[0], index[1], site, tab)
-                enabled_sites[site]["get"](driver, index[0], index[1], tab)
-                horses = enabled_sites[site]["scrape"](driver, tab)
+                enabled_sites[site].get_page(driver, index[0], index[1], tab)
+                horses = enabled_sites[site].scrape(driver, tab)
                 update_odds_df(odds_df, horses, site)
 
     driver.switch_to.window(driver.window_handles[0])
@@ -90,10 +74,22 @@ def get_odds(driver, odds_df, bookies_df, tab):
         row = tabs.where(tabs == i).dropna(how="all").dropna(how="all", axis=1)
         site = row.columns.get_level_values("bookies")[0]
         if site in enabled_sites:
-            horses = enabled_sites[site]["scrape"](driver, i)
-        # else:
-        # horses = scrape_odds_betfair(driver, i)
+            horses = enabled_sites[site].scrape(driver, i)
         update_odds_df(odds_df, horses, site)
+
+
+def get_betair_odds(races_df, odds_df):
+    for _, race in (
+        races_df.query("time > @datetime.now()")
+        .sort_values("time", ascending=True)
+        .sort_index(level=1)
+        .iterrows()
+    ):
+        horses = betfair.get_odds(race.win_market_id)
+        update_odds_df(odds_df, horses, "Betfair Exchange Win")
+
+        horses = betfair.get_odds(race.place_market_id)
+        update_odds_df(odds_df, horses, "Betfair Exchange Place")
 
 
 def close_races(driver, races_df, bookies_df):
@@ -103,11 +99,11 @@ def close_races(driver, races_df, bookies_df):
 def run_extra_places():
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
     driver = setup_selenium()
-    # setup_scrape_betfair(driver, tab=0)
     tab = setup_sites(driver, races_df, odds_df, bookies_df)
     odds_df.sort_index(0, inplace=True)
     while True:
         get_odds(driver, odds_df, bookies_df, tab)
+        get_betair_odds(races_df, odds_df)
 
         # debug
         odds_df.sort_index(0, inplace=True)

@@ -5,7 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def get_william_hill_page(driver, venue, time, tab):
+def get_page(driver, venue, time, tab):
     driver.switch_to.window(driver.window_handles[tab])
     driver.get(
         "https://sports.williamhill.com/betting/en-gb/horse-racing/meetings/all/today"
@@ -37,46 +37,15 @@ def get_william_hill_page(driver, venue, time, tab):
                     return
 
 
-def scrape_odds_william_hill(driver, tab):
+def scrape(driver, tab):
     driver.switch_to.window(driver.window_handles[tab])
     horses = {}
     soup = BeautifulSoup(driver.page_source, "html.parser")
     table = soup.select("tbody[role='rowgroup']")
     rows = table.select("tr[role='row']")
-    # table = WebDriverWait(driver, 60).until(
-    #     EC.visibility_of_element_located((By.CSS_SELECTOR, 'tbody[role="rowgroup"]'))
-    # )
-    # rows = table.find_elements_by_css_selector("tr[role='row']")
     for row in rows:
         name = row.find("span", class_="selection__title")
         odds = row.find("button", class_="sp-betbutton")
-        # for _ in range(5):
-        #     try:
-        #         name = (
-        #             WebDriverWait(
-        #                 row, 60, ignored_exceptions=(StaleElementReferenceException,)
-        #             )
-        #             .until(
-        #                 EC.visibility_of_element_located(
-        #                     (By.CLASS_NAME, "selection__title")
-        #                 )
-        #             )
-        #             .text
-        #         )
-        #         odds = (
-        #             WebDriverWait(
-        #                 row, 60, ignored_exceptions=(StaleElementReferenceException,)
-        #             )
-        #             .until(
-        #                 EC.visibility_of_element_located(
-        #                     (By.CLASS_NAME, "sp-betbutton")
-        #                 )
-        #             )
-        #             .text.split("/")
-        #         )
-        #         break
-        #     except StaleElementReferenceException:
-        #         pass
         if odds[0] == "EVS":
             odds = 1
         else:
