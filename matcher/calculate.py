@@ -363,7 +363,7 @@ def get_next_odd_increment(odd):
     return None
 
 
-def minimize_calculate_profits(
+def minimize_calculate_profit(
     win_odds,
     place_odds,
     profits,
@@ -413,7 +413,7 @@ def minimize_loss(
     x0 = (win_min_stake, place_min_stake)
     bnds = ((0, None), (0, None))
     win_stake, place_stake = minimize(
-        minimize_calculate_profits(
+        minimize_calculate_profit(
             win_odds,
             place_odds,
             profits,
