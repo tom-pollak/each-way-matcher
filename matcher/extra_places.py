@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import pandas as pd
 from .setup import setup_selenium
 from matcher.sites.scrape_extra_places import generate_df
@@ -17,7 +17,7 @@ enabled_sites = {
 
 
 def update_odds_df(odds_df, horses, bookie):
-    current_time = datetime.datetime.now()
+    current_time = datetime.now()
     for horse in horses:
         data = horses[horse]
         values_index = pd.MultiIndex.from_product(
@@ -40,7 +40,7 @@ def update_odds_df(odds_df, horses, bookie):
 def setup_sites(driver, races_df, odds_df, bookies_df):
     tab = 0
     for index, race in (
-        races_df.query("time > @datetime.datetime.now()")
+        races_df.query("time > @datetime.now()")
         .sort_values("time", ascending=True)
         .sort_index(level=1)
         .iterrows()

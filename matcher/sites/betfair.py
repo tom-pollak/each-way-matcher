@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import json
 import os
 import difflib
@@ -214,11 +214,11 @@ def get_horses(venue, race_time):
     try:
         market_type = markets_response["result"]
         for market in market_type:
-            start_time = datetime.datetime.strptime(
+            start_time = datetime.strptime(
                 market["marketStartTime"], "%Y-%m-%dT%H:%M:%S.000Z"
             )
             if bool(time.localtime().tm_isdst):
-                start_time += datetime.timedelta(0, 0, 0, 0, 0, 1)
+                start_time += timedelta(0, 0, 0, 0, 0, 1)
             if race_time == start_time:
                 markets.append(market)
         if len(markets) < 2:
@@ -303,7 +303,7 @@ def get_balance():
 
 
 def get_race_ids(race_time, venue, horse):
-    race_time = datetime.datetime.strptime(race_time, "%d %b %H:%M %Y")
+    race_time = datetime.strptime(race_time, "%d %b %H:%M %Y")
     markets_ids, horses = get_horses(venue, race_time)
     selection_id, target_horse = get_horse_id(horses, horse)
     if selection_id is None:
