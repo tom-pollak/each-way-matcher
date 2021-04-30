@@ -13,7 +13,7 @@ RETURNS_CSV = os.environ.get("RETURNS_CSV")
 COMMISSION = float(os.environ.get("COMMISSION"))
 MIN_PERCENTAGE_BALANCE = float(os.environ.get("MIN_PERCENTAGE_BALANCE"))
 
-price_increments = {
+odds_increments = {
     2: 0.01,
     3: 0.02,
     4: 0.05,
@@ -145,7 +145,7 @@ def check_stakes(
     if (
         (total_stake > betfair_balance)
         or (win_stake < win_min_stake)
-        or (place_min_stake < place_stake)
+        or (place_stake < place_min_stake)
         or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
     ):
         return False
@@ -345,11 +345,11 @@ def calculate_expected_return(
 def round_odd(odd):
     if odd is None:
         return None
-    for price in price_increments:
+    for price in odds_increments:
         if odd < price:
             return (
                 math.ceil(
-                    round(odd / price_increments[price]) * price_increments[price] * 100
+                    round(odd / odds_increments[price]) * odds_increments[price] * 100
                 )
                 / 100
             )
@@ -357,9 +357,9 @@ def round_odd(odd):
 
 
 def get_next_odd_increment(odd):
-    for price in price_increments:
+    for price in odds_increments:
         if odd < price:
-            return round(odd + price_increments[price], 2)
+            return round(odd + odds_increments[price], 2)
     return None
 
 
