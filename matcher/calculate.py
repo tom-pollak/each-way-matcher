@@ -11,7 +11,7 @@ load_dotenv(os.path.join(BASEDIR, ".env"))
 
 RETURNS_CSV = os.environ.get("RETURNS_CSV")
 COMMISSION = float(os.environ.get("COMMISSION"))
-MIN_PERCENTAGE_BALANCE = float(os.environ.get("MIN_PERCENTAGE_BALANCE"))
+PERCENTAGE_BALANCE = float(os.environ.get("PERCENTAGE_BALANCE"))
 
 odds_increments = {
     2: 0.01,
@@ -291,7 +291,7 @@ def calculate_stakes(
     min_stake = stake_proporiton * max_stake
 
     # attempt to create stakes that are 20% the size of our total balance
-    min_balance_staked = MIN_PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
+    min_balance_staked = PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > max_stake:
         stake_proporiton = 1
     elif min_balance_staked > min_stake:
