@@ -239,9 +239,6 @@ def maximize_arb(
     return result.x[0]
 
 
-# print(maximize_arb(100, 200, 8.2, 2.24, *(-0.04, -0, 0.08)))
-
-
 def calculate_stakes(
     bookie_balance,
     betfair_balance,

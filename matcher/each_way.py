@@ -168,7 +168,7 @@ def evaluate_arb(driver, race):
         )
         race["bookie_stake"] *= stake_proportion
         race["win_stake"] *= stake_proportion
-        race["place_stake"] *= stake_proportionn
+        race["place_stake"] *= stake_proportion
         stakes_ok = check_stakes(
             race["bookie_balance"],
             race["betfair_balance"],
