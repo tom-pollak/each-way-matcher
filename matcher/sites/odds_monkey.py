@@ -1,5 +1,4 @@
 import os
-from time import sleep
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -40,7 +39,6 @@ def login(driver):
     WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((By.XPATH, '//*[@id="mainTitle"]'))
     )
-    # sleep(2)
 
     driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
     try:
@@ -108,7 +106,6 @@ def find_races(driver, row=0, window=0):
     except ElementNotInteractableException:
         raise MatcherError("Couldn't click calculator button")
 
-    # sleep(2)
     try:
         driver.switch_to.frame("RadWindow2")
     except NoSuchFrameException:
@@ -220,7 +217,6 @@ def trigger_betfair_options(driver):
     WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="headingFour"]/h4/a'))
     ).click()
-    # sleep(0.5)
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_View_rlbExchanges"]/div/div/label/input'
     ).click()
@@ -231,7 +227,6 @@ def trigger_betfair_options(driver):
     driver.find_element_by_xpath(
         '//*[@id="dnn_ctr1157_ModuleContent"]/div[10]/div[1]/a'
     ).click()
-    # sleep(0.5)
 
 
 def refresh(driver, betfair=False):

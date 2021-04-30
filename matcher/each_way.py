@@ -301,7 +301,7 @@ def evaluate_punt(driver, race, win_odds_proportion):
     )
 
     if race["bookie_stake"] < 0.1:
-        return False
+        return
 
     _, _, _, race["horse_name"] = betfair.get_race_ids(
         race["date_of_race"], race["venue"], race["horse_name"]
@@ -312,7 +312,7 @@ def evaluate_punt(driver, race, win_odds_proportion):
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
-        return False
+        return
     race["win_profit"], race["place_profit"], race["lose_profit"] = calculate_profit(
         race["bookie_odds"],
         race["bookie_stake"],
@@ -340,8 +340,6 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
         output_race(race)
         update_csv_sporting_index(race)
-        return True
-    return False
 
 
 def scrape_punt_races(driver):
