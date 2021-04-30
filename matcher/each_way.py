@@ -19,8 +19,9 @@ from .calculate import (
     check_repeat_bets,
     minimize_loss,
     check_stakes,
-    check_odds_changes,
+    check_odds,
     maximize_arb,
+    check_start_time,
 )
 from .output import (
     update_csv_sporting_index,
@@ -113,15 +114,8 @@ def place_arb(
 
 
 def evaluate_arb(driver, race):
-    def check_start_time():
-        minutes_until_race = (
-            datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
-        ).total_seconds() / 60
-        if minutes_until_race <= 2:
-            print("Race too close to start time: %s" % minutes_until_race)
-            return False
-        return True
 
+    eval_start = time()  # debug
     if not check_start_time():
         return
     race["bet_type"] = "Arb"
@@ -199,9 +193,10 @@ def evaluate_arb(driver, race):
 
     win_horse_odds = betfair.get_odds(market_ids["win"])
     place_horse_odds = betfair.get_odds(market_ids["place"])
-    if check_odds_changes(race, win_horse_odds, place_horse_odds):
+    if not check_odds(race, win_horse_odds, place_horse_odds):
         return
 
+    sporting_index_start = time()  # debug
     race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
     if bet_made is None:
         print(
@@ -209,6 +204,7 @@ def evaluate_arb(driver, race):
         )
     elif not bet_made:
         return
+    print("arb sporting index bet took", time() - sporting_index_start)  # debug
 
     race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
         selection_id,
@@ -257,6 +253,7 @@ def evaluate_arb(driver, race):
 
     output_lay_ew(race)
     update_csv_betfair(race)
+    print("Betfair arb took", time() - eval_start)  # debug
 
 
 def scrape_arb_races(driver):
@@ -307,12 +304,16 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["date_of_race"], race["venue"], race["horse_name"]
     )
 
+    sporting_index_start = time()  # debug
     race, bet_made = sporting_index.make_bet(driver, race)
     if bet_made is None:  # horse not found
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
         return
+    if not bet_made:
+        return
+    print("punt sporting index bet took", time() - sporting_index_start)  # debug
     race["win_profit"], race["place_profit"], race["lose_profit"] = calculate_profit(
         race["bookie_odds"],
         race["bookie_stake"],
@@ -334,12 +335,11 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["place_profit"],
         race["lose_profit"],
     )
-    if bet_made:
-        race["bookie_balance"] = sporting_index.get_balance(driver)
-        race["betfair_balance"] = betfair.get_balance()
-        race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
-        output_race(race)
-        update_csv_sporting_index(race)
+    race["bookie_balance"] = sporting_index.get_balance(driver)
+    race["betfair_balance"] = betfair.get_balance()
+    race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
+    output_race(race)
+    update_csv_sporting_index(race)
 
 
 def scrape_punt_races(driver):

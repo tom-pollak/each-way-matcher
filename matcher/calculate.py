@@ -33,6 +33,16 @@ def custom_date_parser(x):
     return datetime(*(datetime.strptime(x, "%d/%m/%Y %H:%M:%S")[0:6]))
 
 
+def check_start_time():
+    minutes_until_race = (
+        datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
+    ).total_seconds() / 60
+    if minutes_until_race <= 2:
+        print("Race too close to start time: %s" % minutes_until_race)
+        return False
+    return True
+
+
 def check_repeat_bets(horse_name, date_of_race, venue):
     date_of_race = custom_date_parser(date_of_race)
     df = read_csv()
@@ -45,6 +55,30 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     bet_types = horse_races["bet_type"].unique()
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
     return bet_types, win_odds_proportion
+
+
+def check_odds(race, win_horse_odds, place_horse_odds):
+    try:
+        if (
+            win_horse_odds[race["horse_name"]]["lay_odds_1"] <= race["win_odds"]
+            and place_horse_odds[race["horse_name"]]["lay_odds_1"] <= race["place_odds"]
+            and win_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+            >= race["win_stake"]
+            and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
+            >= race["place_stake"]
+        ):
+            return True
+    except KeyError:
+        print("ERROR scraping betfair")
+        print(win_horse_odds)
+        print(place_horse_odds)
+    print(
+        f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
+    )
+    print(
+        f"\t\t      {race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
+    )
+    return False
 
 
 def read_csv():
@@ -327,30 +361,6 @@ def get_next_odd_increment(odd):
         if odd < price:
             return round(odd + price_increments[price], 2)
     return None
-
-
-def check_odds_changes(race, win_horse_odds, place_horse_odds):
-    try:
-        if not (
-            win_horse_odds[race["horse_name"]]["lay_odds_1"] > race["win_odds"]
-            and place_horse_odds[race["horse_name"]]["lay_odds_1"] > race["place_odds"]
-            and win_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-            < race["win_stake"]
-            and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-            < race["place_stake"]
-        ):
-            return False
-        print(
-            f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
-        )
-        print(
-            f"\t\t      {race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
-        )
-    except KeyError:
-        print("ERROR scraping betfair")
-        print(win_horse_odds)
-        print(place_horse_odds)
-    return True
 
 
 def minimize_calculate_profits(

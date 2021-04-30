@@ -13,7 +13,7 @@ from selenium.common.exceptions import (
 )
 
 from matcher.exceptions import MatcherError
-from matcher.calculate import check_odds_changes
+from matcher.calculate import check_odds, check_start_time
 import matcher.sites.betfair as betfair
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -184,7 +184,10 @@ def make_bet(driver, race, market_ids=None, lay=False):
                 raise MatcherError("market_ids are None")
             win_horse_odds = betfair.get_odds(market_ids["win"])
             place_horse_odds = betfair.get_odds(market_ids["place"])
-            if check_odds_changes(race, win_horse_odds, place_horse_odds):
+            if (
+                not check_odds(race, win_horse_odds, place_horse_odds)
+                or not check_start_time()
+            ):
                 return race, False
         bet_made = place_bet(driver, race)
         if bet_made:
