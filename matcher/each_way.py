@@ -89,7 +89,7 @@ def place_arb(
             win_odds, place_odds, place_payout, profits, betfair_balance
         )
         if not check_stakes(
-            None,
+            0,
             betfair_balance,
             0,
             win_stake,

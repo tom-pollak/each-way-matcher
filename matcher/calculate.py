@@ -146,7 +146,7 @@ def check_stakes(
         (total_stake > betfair_balance)
         or (win_stake < win_min_stake)
         or (place_stake < place_min_stake)
-        or (bookie_balance is not None and bookie_stake * 2 > bookie_balance)
+        or (bookie_stake * 2 > bookie_balance)
     ):
         return False
     return True
@@ -377,9 +377,9 @@ def minimize_calculate_profits(
         if stakes[1] < place_min_stake:
             stakes[1] = 0
         if not check_stakes(
-            None,
+            0,
             betfair_balance,
-            None,
+            0,
             stakes[0],
             win_odds,
             stakes[1],
@@ -388,13 +388,13 @@ def minimize_calculate_profits(
             return (stakes[0] + stakes[1]) * 1000
 
         min_profits = calculate_profit(
-            None,
-            None,
+            0,
+            0,
             win_odds,
             stakes[0],
             place_odds,
             stakes[1],
-            None,
+            5,
             round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
