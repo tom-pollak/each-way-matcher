@@ -346,14 +346,10 @@ def round_odd(odd):
     if odd is None:
         return None
     for price in odds_increments:
-        if odd < price:
-            return (
-                math.ceil(
-                    round(odd / odds_increments[price]) * odds_increments[price] * 100
-                )
-                / 100
-            )
-    return odd
+        if odd > price:
+            odd = odds_increments[price] * round(odd / odds_increments[price])
+
+    return round(odd, 2)
 
 
 def get_next_odd_increment(odd):

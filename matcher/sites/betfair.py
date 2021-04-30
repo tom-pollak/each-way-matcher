@@ -169,7 +169,7 @@ def get_bets_by_bet_id(win_bet_id, place_bet_id):
         temp = {"odds": odds, "stake": stake}
         if bet["betId"] == win_bet_id:
             bet_info["win"] = temp
-        elif bet["bet_id"] == place_bet_id:
+        elif bet["betId"] == place_bet_id:
             bet_info["place"] = temp
     return bet_info
 
