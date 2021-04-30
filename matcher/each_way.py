@@ -324,6 +324,8 @@ def evaluate_punt(driver, race, win_odds_proportion):
         0,
         race["place_payout"],
     )
+    race["bookie_balance"] = sporting_index.get_balance(driver)
+    race["betfair_balance"] = betfair.get_balance()
     (
         race["exp_value"],
         race["exp_growth"],
@@ -336,8 +338,6 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["place_profit"],
         race["lose_profit"],
     )
-    race["bookie_balance"] = sporting_index.get_balance(driver)
-    race["betfair_balance"] = betfair.get_balance()
     race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
     output_race(race)
     update_csv_sporting_index(race)
