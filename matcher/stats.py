@@ -109,7 +109,7 @@ def plot_bal_time_series_graph():
 
     ax.plot(balance, "g", label="Profit")
 
-    expected_return = df["expected_return"] + df["arbritrage_profit"]
+    expected_return = df["expected_return"]
     expected_return[0] += STARTING_BALANCE
     expected_return.cumsum().plot(color="r", label="Minimum expected return")
 
