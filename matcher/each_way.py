@@ -112,7 +112,6 @@ def place_arb(
 
 
 def evaluate_arb(driver, race):
-
     eval_start = time()  # debug
     if not check_start_time(race, mins=1):
         return
@@ -419,7 +418,6 @@ def run_each_way(lay):
             start_matcher(driver, lay)
         except MatcherError as e:
             print(e)
-            # print(traceback.format_exc())
         except KeyboardInterrupt:
             break
         except WebDriverException as e:
