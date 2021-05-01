@@ -1,8 +1,4 @@
-current_time,date_of_race,venue,horse_name,exp_value,exp_growth,exp_return,bookie_stake,bookie_odds,win_stake,win_odds,place_stake,place_odds,bookie_balance,betfair_balan
-ce,betfair_in_bet_balance,win_profit,place_profit,lose_profit,bet_type,place_payout
-01/05/2021 08:34:05,01 May 16:00 2021,Punchestown,Quilixios,0.002750533049040521,7.2065497060957995e-06,0.00261331111992152,0.17,3.25,0,3.35,0,1.4,98.22,264.41,0,0.46,-0.
-09,-0.34,Punt,5.0
-01/05/2021 09:47:10,01 May 18:25 2021,Hexham,Shoeshine Boy,1.454327485380118,0.003280886105793357,1.1737370043475734,2.44,29.0,0,38.0,0,3.6,93.34,264.41,0,81.98,11.22,-4.
-88,Punt,5.0
-01/05/2021 10:46:27,01 May 15:20 2021,Punchestown,Minella Melody,0.012895927601809964,3.118874420171558e-05,0.01114217886606289,0.25,15.0,0,17.0,0,3.25,92.84,264.41,0,4.2
-,0.45,-0.5,Punt,5.0
+current_time,date_of_race,venue,horse_name,exp_value,exp_growth,exp_return,bookie_stake,bookie_odds,win_stake,win_odds,place_stake,place_odds,bookie_balance,betfair_balance,betfair_in_bet_balance,win_profit,place_profit,lose_profit,bet_type,place_payout
+01/05/2021 08:34:05,01 May 16:00 2021,Punchestown,Quilixios,0.002750533049040521,7.2065497060957995e-06,0.00261331111992152,0.17,3.25,0,3.35,0,1.4,98.22,264.41,0,0.46,-0.09,-0.34,Punt,5.0
+01/05/2021 09:47:10,01 May 18:25 2021,Hexham,Shoeshine Boy,1.454327485380118,0.003280886105793357,1.1737370043475734,2.44,29.0,0,38.0,0,3.6,93.34,264.41,0,81.98,11.22,-4.88,Punt,5.0
+01/05/2021 10:46:27,01 May 15:20 2021,Punchestown,Minella Melody,0.012895927601809964,3.118874420171558e-05,0.01114217886606289,0.25,15.0,0,17.0,0,3.25,92.84,264.41,0,4.2,0.45,-0.5,Punt,5.0
