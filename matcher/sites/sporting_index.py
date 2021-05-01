@@ -109,6 +109,7 @@ def place_bet(driver, race):
         return True
 
     except WebDriverException:
+        print("coulnd't make sportingindex bet")
         return False
 
 
@@ -172,8 +173,10 @@ def make_bet(driver, race, market_ids=None, lay=False):
     get_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
     if cur_odd_price is None:
+        print("couldn't find horse")
         return race, None
     if not cur_odd_price:
+        print("couldn't click horse")
         return race, False
     cur_odd_price_frac = cur_odd_price.split("/")
     cur_odd_price = int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1
@@ -187,6 +190,7 @@ def make_bet(driver, race, market_ids=None, lay=False):
             if not check_odds(
                 race, win_horse_odds, place_horse_odds
             ) or not check_start_time(race, mins=0.5):
+                print("odds have changed or start time too close")
                 return race, False
         bet_made = place_bet(driver, race)
         if bet_made:
