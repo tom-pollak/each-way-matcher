@@ -289,11 +289,7 @@ def scrape_arb_races(driver):
 
 
 def evaluate_punt(driver, race, win_odds_proportion):
-    (
-        race["bookie_stake"],
-        race["expected_return"],
-        race["expected_value"],
-    ) = kelly_criterion(
+    race["bookie_stake"] = kelly_criterion(
         race["bookie_odds"],
         race["win_odds"] * win_odds_proportion,
         race["place_odds"],
