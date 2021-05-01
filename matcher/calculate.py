@@ -209,7 +209,6 @@ def arb_kelly_criterion(
             )
         ]
     )
-    print(proportion, stake_proporiton)
     return stake_proporiton
 
 
