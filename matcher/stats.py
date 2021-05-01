@@ -134,7 +134,7 @@ def plot_bal_time_series_graph():
 
 df = read_csv()
 if len(df) == 0:
-    print("returns.csv is empty/ not found!")
+    print("returns.csv is empty/not found!")
     STARTING_BALANCE = 0
 else:
     STARTING_BALANCE = (

@@ -58,26 +58,25 @@ def check_repeat_bets(horse_name, date_of_race, venue):
 
 
 def check_odds(race, win_horse_odds, place_horse_odds):
+    horse_name = get_valid_horse_name(win_horse_odds.keys(), race["horse_name"])
     try:
         if (
-            win_horse_odds[race["horse_name"]]["lay_odds_1"] <= race["win_odds"]
-            and place_horse_odds[race["horse_name"]]["lay_odds_1"] <= race["place_odds"]
-            and win_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-            >= race["win_stake"]
-            and place_horse_odds[race["horse_name"]]["lay_avaliable_1"]
-            >= race["place_stake"]
+            win_horse_odds[horse_name]["lay_odds_1"] <= race["win_odds"]
+            and place_horse_odds[horse_name]["lay_odds_1"] <= race["place_odds"]
+            and win_horse_odds[horse_name]["lay_avaliable_1"] >= race["win_stake"]
+            and place_horse_odds[horse_name]["lay_avaliable_1"] >= race["place_stake"]
         ):
             return True
+        print(
+            f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[horse_name]['lay_odds_1'] }"
+        )
+        print(
+            f"\t\t      {race['place_odds']} -> {place_horse_odds[horse_name]['lay_odds_1'] }"
+        )
     except KeyError:
         print("ERROR scraping betfair")
         print(win_horse_odds)
         print(place_horse_odds)
-    print(
-        f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[race['horse_name']]['lay_odds_1'] }"
-    )
-    print(
-        f"\t\t      {race['place_odds']} -> {place_horse_odds[race['horse_name']]['lay_odds_1'] }"
-    )
     return False
 
 
@@ -209,6 +208,7 @@ def arb_kelly_criterion(
             )
         ]
     )
+    print(proportion, stake_proporiton)
     return stake_proporiton
 
 
@@ -223,7 +223,7 @@ def maximize_arb(
 ):
     result = minimize(
         arb_kelly_criterion,
-        x0=0,
+        x0=1,
         args=(
             bookie_balance + betfair_balance,
             win_profit,
@@ -234,8 +234,6 @@ def maximize_arb(
         ),
         bounds=((0, 1),),
     )
-    # if result.fun == 9999:
-    #     return 0
     return result.x[0]
 
 
@@ -357,6 +355,22 @@ def get_next_odd_increment(odd):
         if odd < price:
             return round(odd + odds_increments[price], 2)
     return None
+
+
+def get_valid_horse_name(horses, target_horse):
+    for horse in horses:
+        if horse.lower() == target_horse.lower():
+            horse, True
+
+    # sometimes runnerName is 1. horse_name
+    for horse in horses["runners"]:
+        if target_horse.lower() in horse.lower():
+            return horse, False  # as 1. is not the valid horse name
+
+    # for horses with punctuation taken out by oddsmonkey
+    close_horse = difflib.get_close_matches(target_horse, horses, n=1)[0]
+    print("Close horse found: %s (%s)" % (close_horse, target_horse))
+    return close_horse, True
 
 
 def minimize_calculate_profit(

@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from json.decoder import JSONDecodeError
 
 from matcher.exceptions import MatcherError
-from matcher.calculate import round_odd
+from matcher.calculate import round_odd, get_valid_horse_name
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -175,25 +175,16 @@ def get_bets_by_bet_id(win_bet_id, place_bet_id):
 
 
 def get_horse_id(horses, target_horse):
-    for horse in horses["runners"]:
-        if horse["runnerName"].lower() == target_horse.lower():
-            return horse["selectionId"], horse["runnerName"]
+    horse_names = [horse["runnerName"] in horses["runners"]]
+    betfair_horse_name, is_valid_name = get_valid_horse_name(horse_names, target_horse)
+    if is_valid_name:
+        horse_name = betfair_horse_name
+    else:
+        horse_name = target_horse
 
-    # sometimes runnerName is 1. horse_name
     for horse in horses["runners"]:
-        if target_horse.lower() in horse["runnerName"].lower():
-            return (
-                horse["selectionId"],
-                target_horse,
-            )  # as 1. is not the valid horse name
-
-    # for horses with punctuation taken out by oddsmonkey
-    horses_list = [horse["runnerName"] for horse in horses["runners"]]
-    close_horse = difflib.get_close_matches(target_horse, horses_list, n=1)[0]
-    print("Close horse found: %s" % close_horse)
-    for horse in horses["runners"]:
-        if horse["runnerName"] == close_horse:
-            return horse["selectionId"], horse["runnerName"]
+        if horse["runnerName"] == betfair_horse_name:
+            return horse["selectionId"], horse_name
 
     print("ERROR couldn't find horse selection_id")
     return None, target_horse

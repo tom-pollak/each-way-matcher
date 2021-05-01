@@ -52,7 +52,7 @@ def login(driver):
         ).click()
     except TimeoutException:
         print("Need Oddsmonkey premium membership (OM12FOR1)")
-        raise KeyboardInterrupt
+        raise MatcherError("Couldn't access each way matcher")
     except ElementClickInterceptedException:
         print("Dismiss one time pop-up boxes and setup oddsmonkey")
         raise KeyboardInterrupt
