@@ -59,7 +59,7 @@ def check_repeat_bets(horse_name, date_of_race, venue):
 
 
 def check_odds(race, win_horse_odds, place_horse_odds):
-    horse_name = get_valid_horse_name(win_horse_odds.keys(), race["horse_name"])
+    horse_name, _ = get_valid_horse_name(win_horse_odds.keys(), race["horse_name"])
     try:
         if (
             win_horse_odds[horse_name]["lay_odds_1"] <= race["win_odds"]
@@ -74,8 +74,8 @@ def check_odds(race, win_horse_odds, place_horse_odds):
         print(
             f"\t\t      {race['place_odds']} -> {place_horse_odds[horse_name]['lay_odds_1'] }"
         )
-    except KeyError:
-        print("ERROR scraping betfair")
+    except KeyError as e:
+        print("ERROR scraping betfair %s" % e)
         print(win_horse_odds)
         print(place_horse_odds)
     return False
@@ -366,7 +366,7 @@ def get_valid_horse_name(horses, target_horse):
     # sometimes runnerName is 1. horse_name
     for horse in horses["runners"]:
         if target_horse.lower() in horse.lower():
-            return horse, False  # as 1. is not the valid horse name
+            return horse, False
 
     # for horses with punctuation taken out by oddsmonkey
     close_horse = difflib.get_close_matches(target_horse, horses, n=1)[0]
