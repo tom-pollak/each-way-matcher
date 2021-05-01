@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 import json
 import os
-import difflib
 import requests
 import time
 

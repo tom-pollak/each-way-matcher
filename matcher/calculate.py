@@ -1,5 +1,6 @@
 import os
 import math
+import difflib
 from datetime import datetime
 from dotenv import load_dotenv
 import numpy as np
@@ -360,7 +361,7 @@ def get_next_odd_increment(odd):
 def get_valid_horse_name(horses, target_horse):
     for horse in horses:
         if horse.lower() == target_horse.lower():
-            horse, True
+            return horse, True
 
     # sometimes runnerName is 1. horse_name
     for horse in horses["runners"]:
