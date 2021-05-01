@@ -15,16 +15,16 @@ COMMISSION = float(os.environ.get("COMMISSION"))
 PERCENTAGE_BALANCE = float(os.environ.get("PERCENTAGE_BALANCE"))
 
 odds_increments = {
-    2: 0.01,
-    3: 0.02,
-    4: 0.05,
-    6: 0.1,
-    10: 0.2,
-    20: 0.5,
-    30: 1,
-    50: 2,
-    100: 5,
-    1000: 10,
+    1: 0.01,
+    2: 0.02,
+    3: 0.05,
+    4: 0.1,
+    6: 0.2,
+    10: 0.5,
+    20: 1,
+    30: 2,
+    50: 5,
+    100: 10,
 }
 
 

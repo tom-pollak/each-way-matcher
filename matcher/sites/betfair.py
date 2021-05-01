@@ -156,6 +156,9 @@ def get_bets_by_race(win_market_id, place_market_id):
 
 
 def get_bets_by_bet_id(win_bet_id, place_bet_id):
+    if None in (win_bet_id, place_bet_id):
+        print("Couldn't get bet ids")
+        return {}
     bet_info = {}
     order_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"betIds": ["%s", "%s"]}, "id": 1}'
@@ -246,6 +249,7 @@ def lay_bets(market_id, selection_id, price, stake):
     bet_made = False
     stake_matched = 0
     matched_price = 0
+    bet_id = None
     bet_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/placeOrders", \
         "params": {"marketId": "%s", "instructions": [{"selectionId": "%s", \
