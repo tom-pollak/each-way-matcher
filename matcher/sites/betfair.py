@@ -175,7 +175,7 @@ def get_bets_by_bet_id(win_bet_id, place_bet_id):
 
 
 def get_horse_id(horses, target_horse):
-    horse_names = [horse["runnerName"] in horses["runners"]]
+    horse_names = [horse["runnerName"] for horse in horses["runners"]]
     betfair_horse_name, is_valid_name = get_valid_horse_name(horse_names, target_horse)
     if is_valid_name:
         horse_name = betfair_horse_name
