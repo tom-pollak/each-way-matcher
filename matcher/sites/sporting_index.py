@@ -129,13 +129,14 @@ def make_bet(driver, race, market_ids=None, lay=False):
         for _ in range(5):
             try:
                 horse_button = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, horse_name_xpath))
+                    EC.element_to_be_clickable((By.XPATH, horse_name_xpath))
                 )
                 cur_odd_price = horse_button.text
                 if cur_odd_price not in ["", "SUSP"]:
                     horse_button.click()
                     return cur_odd_price
-            except (StaleElementReferenceException, TimeoutException):
+            except (StaleElementReferenceException, TimeoutException) as e:
+                print("ERROR clicking horse", e)
                 driver.refresh()
             except NoSuchElementException:
                 return None

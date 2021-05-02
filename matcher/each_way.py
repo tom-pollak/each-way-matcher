@@ -204,7 +204,6 @@ def evaluate_arb(driver, race):
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
         )
     elif not bet_made:
-        print("Sporting index bet not made")
         return
     print("arb sporting index bet took", time() - sporting_index_start)  # debug
 
