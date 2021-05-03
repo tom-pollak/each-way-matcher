@@ -139,7 +139,6 @@ def make_bet(driver, race, market_ids=None, lay=False):
                     print(f"clicked on {i}th time")
                     return cur_odd_price
             except (StaleElementReferenceException, TimeoutException) as e:
-                print(traceback.format_exc())  # debug
                 driver.refresh()
             except NoSuchElementException:
                 return None
