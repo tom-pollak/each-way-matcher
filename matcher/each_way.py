@@ -153,13 +153,6 @@ def evaluate_arb(driver, race):
         )
         if "Lay Punt" in bet_types:
             return
-        print(
-            race["bookie_balance"],
-            race["betfair_balance"],
-            race["win_odds"],
-            race["place_odds"],
-            *profits,
-        )
         stake_proportion = maximize_arb(
             race["bookie_balance"],
             race["betfair_balance"],
