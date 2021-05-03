@@ -128,20 +128,18 @@ def get_page(driver, race):
 def make_bet(driver, race, market_ids=None, lay=False):
     def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
-        for i in range(5):
-            try:
-                horse_button = WebDriverWait(driver, 30).until(
-                    EC.element_to_be_clickable((By.XPATH, horse_name_xpath))
-                )
-                cur_odd_price = horse_button.text
-                if cur_odd_price not in ["", "SUSP"]:
-                    horse_button.click()
-                    print(f"clicked on {i}th time")
-                    return cur_odd_price
-            except (StaleElementReferenceException, TimeoutException):
-                driver.refresh()
-            except NoSuchElementException:
-                return None
+        try:
+            horse_button = WebDriverWait(driver, 30).until(
+                EC.element_to_be_clickable((By.XPATH, horse_name_xpath))
+            )
+            cur_odd_price = horse_button.text
+            if cur_odd_price not in ["", "SUSP"]:
+                horse_button.click()
+                return cur_odd_price
+        except NoSuchElementException:
+            return None
+        except (StaleElementReferenceException, TimeoutException):
+            pass
         return False
 
     def close_bet(driver):
