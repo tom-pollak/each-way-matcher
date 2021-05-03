@@ -41,9 +41,8 @@ def check_vars():
         BETFAIR_CERT,
         BETFAIR_KEY,
     ):
-        raise Exception(
-            "ERROR: Oddsmonkey, SportingIndex or BetFair env variables not set"
-        )
+        print("ERROR: Oddsmonkey, SportingIndex or BetFair env variables not set")
+        sys.exit()
 
 
 def setup_selenium():

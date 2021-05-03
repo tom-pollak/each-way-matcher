@@ -399,12 +399,10 @@ def run_each_way(lay):
         print("\nMatcher started too early (before 7am)")
         return
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
-
     check_vars()
     while True:
-        driver = setup_selenium()
-        sys.stdout.flush()
         try:
+            driver = setup_selenium()
             odds_monkey.login(driver)
             sporting_index.login(driver)
             start_matcher(driver, lay)
