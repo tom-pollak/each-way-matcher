@@ -152,7 +152,7 @@ def get_bets_by_race(win_market_id, place_market_id):
         place_odds += place_bet["stake"] * place_bet["odds"]
     win_odds /= win_stake
     place_odds /= place_stake
-    return win_stake, win_odds, place_stake, place_odds
+    return win_stake, round(win_odds, 2), place_stake, round(place_odds, 2)
 
 
 def get_bets_by_bet_id(win_bet_id, place_bet_id):

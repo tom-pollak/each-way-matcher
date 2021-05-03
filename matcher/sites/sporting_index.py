@@ -111,7 +111,7 @@ def place_bet(driver, race):
         return True
 
     except WebDriverException:
-        print("coulnd't make sportingindex bet")
+        print("couldn't make sportingindex bet")
         return False
 
 

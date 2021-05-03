@@ -14,6 +14,7 @@ from .setup import setup_selenium, check_vars
 from .calculate import (
     calculate_stakes,
     calculate_profit,
+    calcualte_stakes_from_profit,
     calculate_expected_return,
     kelly_criterion,
     check_repeat_bets,
@@ -216,12 +217,16 @@ def evaluate_arb(driver, race):
     )
     print("betfair bet took", time() - place_arb_start)  # debug
 
-    (
-        race["win_stake"],
-        race["win_odds"],
-        race["place_stake"],
+    race["win_odds"] = betfair.get_odds(market_ids["win"])
+    race["place_odds"] = betfair.get_odds(market_ids["place"])
+    race["win_stake"], race["place_stake"] = calcualte_stakes_from_profit(
+        race["place_profit"],
+        race["lose_profit"],
+        race["bookie_stake"],
+        race["bookie_odds"],
         race["place_odds"],
-    ) = betfair.get_bets_by_race(market_ids["win"], market_ids["place"])
+        race["place_payout"],
+    )
     (
         race["exp_value"],
         race["exp_growth"],

@@ -50,8 +50,9 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     if len(df) == 0:
         return [], 1
     horses = df.query(
-        "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Arb Punt')"
+        "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Lay Punt')"
     )
+    print(horses)
     horse_races = horses.loc[horses["horse_name"] == horse_name]
     bet_types = horse_races["bet_type"].unique()
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
@@ -123,6 +124,23 @@ def calculate_profit(
     return win_profit, place_profit, lose_profit
 
 
+# N.B bookie_stake is half actual stake
+def calcualte_stakes_from_profit(
+    place_profit,
+    lose_profit,
+    bookie_stake,
+    bookie_odds,
+    place_odds,
+    place_payout,
+):
+    place_profit -= bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
+    lose_profit -= -bookie_stake * 2
+
+    place_stake = (place_profit - lose_profit) / (COMMISSION - place_odds)
+    win_stake = lose_profit / (1 - COMMISSION) - place_stake
+    return round(win_stake, 2), round(place_stake, 2)
+
+
 def get_min_stake(win_odds, place_odds):
     win_min_stake = 10 / (win_odds - 1)
     win_min_stake = min(win_min_stake, 2)
@@ -174,7 +192,7 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
     try:
         stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
     except ZeroDivisionError:  # if the profit from place is 0 then 0 division
-        return 0, 0, "0%"
+        return 0
     bookie_stake = stake_proportion * balance
     return round(bookie_stake, 2)
 
