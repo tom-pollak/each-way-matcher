@@ -399,6 +399,7 @@ def run_each_way(lay):
         print("\nMatcher started too early (before 7am)")
         return
     print(f'Started at: {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}')
+    sys.stdout.flush()
     check_vars()
     while True:
         try:
