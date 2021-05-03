@@ -1,6 +1,5 @@
 import sys
 import os
-import traceback  # debug
 from time import time
 
 from dotenv import load_dotenv

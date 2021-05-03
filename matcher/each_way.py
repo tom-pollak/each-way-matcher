@@ -217,8 +217,12 @@ def evaluate_arb(driver, race):
     )
     print("betfair bet took", time() - place_arb_start)  # debug
 
-    race["win_odds"] = betfair.get_odds(market_ids["win"])
-    race["place_odds"] = betfair.get_odds(market_ids["place"])
+    race["win_odds"] = betfair.get_odds(market_ids["win"])[race["horse_name"]][
+        "lay_odds_1"
+    ]
+    race["place_odds"] = betfair.get_odds(market_ids["place"])[race["horse_name"]][
+        "lay_odds_1"
+    ]
     race["win_stake"], race["place_stake"] = calcualte_stakes_from_profit(
         race["place_profit"],
         race["lose_profit"],

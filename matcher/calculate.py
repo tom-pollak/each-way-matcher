@@ -448,7 +448,7 @@ def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
     win_stake = round(win_stake, 2)
     place_stake = round(place_stake, 2)
     if win_stake < win_min_stake:
-        win_stake = None
+        win_stake = 0
     if place_stake < place_min_stake:
-        place_stake = None
+        place_stake = 0
     return win_stake, place_stake

@@ -309,7 +309,7 @@ def get_race_ids(race_time, venue, horse):
 
 def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
     win_dict = place_dict = {"matched": True, "bet_id": None}
-    if win_stake is not None:
+    if win_stake:
         lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(
             markets_ids["win"], selection_id, round_odd(win_odds), win_stake
         )
@@ -322,7 +322,7 @@ def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place
             "bet_id": win_bet_id,
         }
 
-    if place_stake is not None:
+    if place_stake:
         (
             lay_place,
             place_odds,
