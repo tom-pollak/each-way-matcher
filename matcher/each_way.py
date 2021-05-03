@@ -85,7 +85,7 @@ def place_arb(
         place_odds = betfair.get_odds(market_ids["place"])[horse_name]["lay_odds_1"]
         betfair_balance = betfair.get_balance()
         win_stake, place_stake = minimize_loss(
-            win_odds, place_odds, place_payout, profits, betfair_balance
+            win_odds, place_odds, profits, betfair_balance, place_payout
         )
         if not check_stakes(
             0,

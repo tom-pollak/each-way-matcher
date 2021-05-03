@@ -376,6 +376,7 @@ def minimize_calculate_profit(
     win_min_stake,
     place_min_stake,
     betfair_balance,
+    place_payout,
 ):
     def make_minimize(stakes):
         if stakes[0] < win_min_stake:
@@ -400,7 +401,7 @@ def minimize_calculate_profit(
             stakes[0],
             place_odds,
             stakes[1],
-            5,
+            place_payout,
             round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
@@ -409,12 +410,7 @@ def minimize_calculate_profit(
     return make_minimize
 
 
-def minimize_loss(
-    win_odds,
-    place_odds,
-    profits,
-    betfair_balance,
-):
+def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
     x0 = (win_min_stake, place_min_stake)
     bnds = ((0, None), (0, None))
@@ -426,6 +422,7 @@ def minimize_loss(
             win_min_stake,
             place_min_stake,
             betfair_balance,
+            place_payout,
         ),
         x0=x0,
         bounds=bnds,
