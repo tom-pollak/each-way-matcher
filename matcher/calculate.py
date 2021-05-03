@@ -52,7 +52,6 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     horses = df.query(
         "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Lay Punt')"
     )
-    print(horses)
     horse_races = horses.loc[horses["horse_name"] == horse_name]
     bet_types = horse_races["bet_type"].unique()
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
