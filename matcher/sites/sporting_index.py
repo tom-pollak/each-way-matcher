@@ -1,5 +1,7 @@
 import sys
 import os
+import traceback  # debug
+from time import time
 
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
@@ -136,8 +138,7 @@ def make_bet(driver, race, market_ids=None, lay=False):
                     horse_button.click()
                     return cur_odd_price
             except (StaleElementReferenceException, TimeoutException) as e:
-                print("ERROR clicking horse", e)
-                print(race)
+                print(traceback.format_exc())  # debug
                 driver.refresh()
             except NoSuchElementException:
                 return None
@@ -197,8 +198,10 @@ def make_bet(driver, race, market_ids=None, lay=False):
             ) or not check_start_time(race, mins=0.5):
                 print("odds have changed or start time too close")
                 return race, False
+        place_bet_start = time()
         bet_made = place_bet(driver, race)
         if bet_made:
+            print(f"place bet (sporting index) took {time() - place_bet_start}")
             return race, True
         close_bet(driver)
     return race, False

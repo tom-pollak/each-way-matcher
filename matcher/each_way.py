@@ -43,6 +43,7 @@ REFRESH_TIME = float(os.environ.get("REFRESH_TIME"))
 def place_arb(
     selection_id,
     market_ids,
+    horse_name,
     bookie_stake,
     bookie_odds,
     win_stake,
@@ -80,8 +81,8 @@ def place_arb(
         print("bets not matched:", lay_win, lay_place)
         betfair.cancel_unmatched_bets()
 
-        win_odds = betfair.get_odds(market_ids["win"])["lay_odds_1"]
-        place_odds = betfair.get_odds(market_ids["place"])["lay_odds_1"]
+        win_odds = betfair.get_odds(market_ids["win"])[horse_name]["lay_odds_1"]
+        place_odds = betfair.get_odds(market_ids["place"])[horse_name]["lay_odds_1"]
         betfair_balance = betfair.get_balance()
         win_stake, place_stake = minimize_loss(
             win_odds, place_odds, place_payout, profits, betfair_balance
@@ -99,6 +100,7 @@ def place_arb(
         profits = place_arb(
             selection_id,
             market_ids,
+            horse_name,
             0,
             0,
             win_stake,
@@ -211,6 +213,7 @@ def evaluate_arb(driver, race):
     race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
         selection_id,
         market_ids,
+        race["horse_name"],
         race["bookie_stake"],
         race["bookie_odds"],
         race["win_stake"],
