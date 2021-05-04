@@ -39,7 +39,7 @@ def output_race(race):
     print(f"\tLay win: {race['win_odds']} Lay place: {race['place_odds']}")
     try:
         print(
-            f"\tExpected value: {round(race['exp_value'] * 100, 2)}, Expected return: £{format(race['exp_return'], '.2f')}, Expected Growth: {round(race['exp_growth'] * 100, 2)}%"
+            f"\tExpected value: {round(race['exp_value'] * 100, 2)}%, Expected return: £{format(race['exp_return'], '.2f')}, Expected Growth: {round(race['exp_growth'] * 100, 2)}%"
         )
     except KeyError:
         print("Key Error in output_race")
@@ -60,7 +60,7 @@ def output_lay_ew(race):
         f"\tWin profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}"
     )
     print(
-        f"Expected Value: {round(race['exp_value'] * 100, 2)}, Expected Growth: {round(race['exp_growth'] * 100, 2)}%"
+        f"Expected Value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%"
     )
     print(
         f"Current balance: £{format(race['bookie_balance'], '.2f')}, betfair balance: £{format(race['betfair_balance'], '.2f')}\n"
