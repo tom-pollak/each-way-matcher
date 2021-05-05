@@ -4,8 +4,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 from csv import DictWriter
 
-import matcher.sites.betfair as betfair
-import matcher.sites.sporting_index as sporting_index
 from matcher.stats import calc_unfinished_races
 
 
@@ -32,7 +30,7 @@ def show_info(count, START_TIME):
         raise KeyboardInterrupt
 
 
-def output_race(race):
+def output_punt(race):
     print(
         f"""
     No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']} (£{format(race['exp_return'], '.2f')})
@@ -44,7 +42,7 @@ def output_race(race):
     )
 
 
-def output_lay_ew(race):
+def ouput_lay(race):
     print(
         f"""
     {race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} (£{format(race['exp_return'], '.2f')})

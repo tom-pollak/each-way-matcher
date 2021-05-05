@@ -10,7 +10,6 @@ from scipy.optimize import minimize
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
-RETURNS_CSV = os.environ.get("RETURNS_CSV")
 COMMISSION = float(os.environ.get("COMMISSION"))
 PERCENTAGE_BALANCE = float(os.environ.get("PERCENTAGE_BALANCE"))
 
@@ -28,12 +27,6 @@ odds_increments = {
 }
 
 
-def custom_date_parser(x):
-    if "/" not in x:
-        return datetime.strptime(x, "%d %b %H:%M %Y")
-    return datetime.strptime(x, "%d/%m/%Y %H:%M:%S")
-
-
 def check_start_time(race, mins):
     minutes_until_race = (
         datetime.strptime(race["date_of_race"], "%d %b %H:%M %Y") - datetime.now()
@@ -42,20 +35,6 @@ def check_start_time(race, mins):
         print("Race too close to start time: %s" % minutes_until_race)
         return False
     return True
-
-
-def check_repeat_bets(horse_name, date_of_race, venue):
-    date_of_race = custom_date_parser(date_of_race)
-    df = read_csv()
-    if len(df) == 0:
-        return [], 1
-    horses = df.query(
-        "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Lay Punt')"
-    )
-    horse_races = horses.loc[horses["horse_name"] == horse_name]
-    bet_types = horse_races["bet_type"].unique()
-    win_odds_proportion = 1 - sum(1 / horses.win_odds)
-    return bet_types, win_odds_proportion
 
 
 def check_odds(race, win_horse_odds, place_horse_odds):
@@ -73,21 +52,6 @@ def check_odds(race, win_horse_odds, place_horse_odds):
         print(win_horse_odds)
         print(place_horse_odds)
     return False
-
-
-def read_csv():
-    try:
-        df = pd.read_csv(
-            RETURNS_CSV,
-            header=0,
-            parse_dates=[0, 1],
-            index_col=0,
-            date_parser=custom_date_parser,
-            squeeze=True,
-        )
-    except (IndexError, FileNotFoundError):
-        return []
-    return df
 
 
 # N.B bookie_stake is half actual stake

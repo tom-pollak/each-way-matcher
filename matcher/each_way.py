@@ -17,18 +17,18 @@ from .calculate import (
     calcualte_stakes_from_profit,
     calculate_expected_return,
     kelly_criterion,
-    check_repeat_bets,
     minimize_loss,
     check_stakes,
     check_odds,
     maximize_arb,
     check_start_time,
 )
+from .stats import check_repeat_bets
 from .output import (
     update_csv,
     show_info,
-    output_lay_ew,
-    output_race,
+    ouput_lay,
+    output_punt,
 )
 from .exceptions import MatcherError
 import matcher.sites.odds_monkey as odds_monkey
@@ -257,7 +257,7 @@ def evaluate_arb(driver, race):
         race["lose_profit"],
     )
 
-    output_lay_ew(race)
+    ouput_lay(race)
     update_csv(race)
 
 
@@ -340,7 +340,7 @@ def evaluate_punt(driver, race, win_odds_proportion):
     )
     race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
     race["win_stake"] = race["place_stake"] = 0
-    output_race(race)
+    output_punt(race)
     update_csv(race)
 
 

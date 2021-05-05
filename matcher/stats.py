@@ -2,14 +2,31 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 
-from .exceptions import MatcherError
-from .calculate import read_csv
-
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
+RETURNS_CSV = os.environ.get("RETURNS_CSV")
 BALANCE_PNG = os.path.join(BASEDIR, os.environ.get("BALANCE_PNG"))
+
+
+def custom_date_parser(x):
+    if "/" not in x:
+        return datetime.strptime(x, "%d %b %H:%M %Y")
+    return datetime.strptime(x, "%d/%m/%Y %H:%M:%S")
+
+
+def check_repeat_bets(horse_name, date_of_race, venue):
+    date_of_race = custom_date_parser(date_of_race)
+    if len(df) == 0:
+        return [], 1
+    horses = df.query(
+        "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Lay Punt')"
+    )
+    horse_races = horses.loc[horses["horse_name"] == horse_name]
+    bet_types = horse_races["bet_type"].unique()
+    win_odds_proportion = 1 - sum(1 / horses.win_odds)
+    return bet_types, win_odds_proportion
 
 
 def calc_unfinished_races(index=-1):
@@ -129,12 +146,20 @@ def plot_bal_time_series_graph():
     plt.gcf().text(0.55, 0.92, profit_string)
 
     plt.savefig(BALANCE_PNG)
-    # print("Generated graph at: %s" % BALANCE_PNG)
 
 
-df = read_csv()
+try:
+    df = pd.read_csv(
+        RETURNS_CSV,
+        header=0,
+        parse_dates=[0, 1],
+        index_col=0,
+        date_parser=custom_date_parser,
+        squeeze=True,
+    )
+except (IndexError, FileNotFoundError):
+    df = []
 if len(df) == 0:
-    print("returns.csv is empty/not found!")
     STARTING_BALANCE = 0
 else:
     STARTING_BALANCE = (
