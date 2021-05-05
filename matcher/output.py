@@ -6,6 +6,7 @@ from csv import DictWriter
 
 import matcher.sites.betfair as betfair
 import matcher.sites.sporting_index as sporting_index
+from matcher.stats import calc_unfinished_races
 
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -33,73 +34,30 @@ def show_info(count, START_TIME):
 
 def output_race(race):
     print(
-        f"\nNo Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}"
-    )
-    print(f"\t{race['date_of_race']} - {race['venue']}")
-    print(f"\tLay win: {race['win_odds']} Lay place: {race['place_odds']}")
-    try:
-        print(
-            f"\tExpected value: {round(race['exp_value'] * 100, 2)}%, Expected return: £{format(race['exp_return'], '.2f')}, Expected Growth: {round(race['exp_growth'] * 100, 2)}%"
-        )
-    except KeyError:
-        print("Key Error in output_race")
-    print(
-        f"\tCurrent balance: £{format(race['bookie_balance'], '.2f')}, stake: £{format(race['bookie_stake'], '.2f')}\n"
+        f"""
+    No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']} (£{format(race['exp_return'], '.2f')})
+        {race['date_of_race']} - {race['venue']}
+        Win odds: {race['win_odds']} Place odds: {race['place_odds']}
+        Expected value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%
+        Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, stake: £{format(race['bookie_stake'], '.2f')}
+    """
     )
 
 
 def output_lay_ew(race):
     print(
-        f"\n{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - profit: £{format(race['exp_return'], '.2f')}"
-    )
-    print(f"\t{race['date_of_race']} - {race['venue']}")
-    print(
-        f"\tBack bookie: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}"
-    )
-    print(
-        f"\tWin profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}"
-    )
-    print(
-        f"Expected Value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%"
-    )
-    print(
-        f"Current balance: £{format(race['bookie_balance'], '.2f')}, betfair balance: £{format(race['betfair_balance'], '.2f')}\n"
+        f"""
+    {race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} (£{format(race['exp_return'], '.2f')})
+        {race['date_of_race']} - {race['venue']}
+        Bookie odds: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}
+        Win profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}
+        Expected Value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%
+        Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, Betfair balance: £{format(race['betfair_balance'], '.2f')} In bet balance: {format(calc_unfinished_races(), '.2f')}
+    """
     )
 
 
-def update_csv_sporting_index(race):
-    race["win_stake"] = race["place_stake"] = 0
-    csv_columns = [
-        "current_time",
-        "date_of_race",
-        "venue",
-        "horse_name",
-        "exp_value",
-        "exp_growth",
-        "exp_return",
-        "bookie_stake",
-        "bookie_odds",
-        "win_stake",
-        "win_odds",
-        "place_stake",
-        "place_odds",
-        "bookie_balance",
-        "betfair_balance",
-        "betfair_in_bet_balance",
-        "win_profit",
-        "place_profit",
-        "lose_profit",
-        "bet_type",
-        "place_payout",
-    ]
-    with open(RETURNS_CSV, "a+", newline="") as returns_csv:
-        csv_writer = DictWriter(
-            returns_csv, fieldnames=csv_columns, extrasaction="ignore"
-        )
-        csv_writer.writerow(race)
-
-
-def update_csv_betfair(race):
+def update_csv(race):
     csv_columns = [
         "current_time",
         "date_of_race",

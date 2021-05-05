@@ -25,8 +25,7 @@ from .calculate import (
     check_start_time,
 )
 from .output import (
-    update_csv_sporting_index,
-    update_csv_betfair,
+    update_csv,
     show_info,
     output_lay_ew,
     output_race,
@@ -259,7 +258,7 @@ def evaluate_arb(driver, race):
     )
 
     output_lay_ew(race)
-    update_csv_betfair(race)
+    update_csv(race)
 
 
 def scrape_arb_races(driver):
@@ -340,8 +339,9 @@ def evaluate_punt(driver, race, win_odds_proportion):
         race["lose_profit"],
     )
     race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
+    race["win_stake"] = race["place_stake"] = 0
     output_race(race)
-    update_csv_sporting_index(race)
+    update_csv(race)
 
 
 def scrape_punt_races(driver):
