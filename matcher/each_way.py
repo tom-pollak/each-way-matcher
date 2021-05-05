@@ -192,7 +192,7 @@ def evaluate_arb(driver, race):
         evaluate_arb(driver, race)
         return
 
-    sporting_index_start = time()  # debug
+    print("up to place arb took", time() - eval_start)  # debug
     race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
     if bet_made is None:
         print(
@@ -200,7 +200,6 @@ def evaluate_arb(driver, race):
         )
     elif not bet_made:
         return
-    print("arb sporting index bet took", time() - sporting_index_start)  # debug
 
     place_arb_start = time()  # debug
     race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
@@ -261,7 +260,6 @@ def evaluate_arb(driver, race):
 
     output_lay_ew(race)
     update_csv_betfair(race)
-    print("Betfair arb took", time() - eval_start)  # debug
 
 
 def scrape_arb_races(driver):
