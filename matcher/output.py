@@ -4,7 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from csv import DictWriter
 
-from matcher.stats import calc_unfinished_races
+from matcher.stats import calc_unfinished_races, output_profit
 
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -27,6 +27,7 @@ def show_info(count, START_TIME):
     if datetime.now().hour >= 18:
         print("\nFinished matching today")
         print("---------------------------------------------")
+        output_profit()
         raise KeyboardInterrupt
 
 
