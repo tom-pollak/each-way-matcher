@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+import pandas as pd
 
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")

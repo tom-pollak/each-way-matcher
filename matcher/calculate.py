@@ -4,7 +4,6 @@ import difflib
 from datetime import datetime
 from dotenv import load_dotenv
 import numpy as np
-import pandas as pd
 from scipy.optimize import minimize
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
