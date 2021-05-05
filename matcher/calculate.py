@@ -190,7 +190,10 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
 
     try:
         stake_proportion = (B + math.sqrt(B ** 2 + 4 * A * C)) / (4 * A)
-    except ZeroDivisionError:  # if the profit from place is 0 then 0 division
+    except (
+        ZeroDivisionError,
+        ValueError,
+    ):  # if the profit from place is 0 then 0 division
         return 0
     bookie_stake = stake_proportion * balance
     return round(bookie_stake, 2)
@@ -376,7 +379,7 @@ def get_valid_horse_name(horses, target_horse):
             return horse, True
 
     # sometimes runnerName is 1. horse_name
-    for horse in horses["runners"]:
+    for horse in horses:
         if target_horse.lower() in horse.lower():
             return horse, False
 
