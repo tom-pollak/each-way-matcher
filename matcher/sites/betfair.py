@@ -236,7 +236,6 @@ def cancel_unmatched_bets():
     cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
     try:
         cancel_res = call_api(cancel_req)
-        print(cancel_res)
         if cancel_res["result"]["status"] == "SUCCESS":
             return True
     except (KeyError, MatcherError):
@@ -272,18 +271,14 @@ def lay_bets(market_id, selection_id, price, stake):
                 ),
                 2,
             )
-            if price != matched_price:
-                print("Odds have changed, original price: %s" % (price))
-
         elif bet_res["result"]["status"] == "FAILURE":
             print("Lay bet failed: %s" % bet_res["result"])
 
     except KeyError:
         try:
-            print("Error in bet response: %s" % bet_res["error"])
+            print("Error in bet response: %s\n" % bet_res["error"])
         except KeyError:
-            print("Unknown error making bet: %s" % bet_res)
-            print()
+            print("Unknown error making bet: %s\n" % bet_res)
             print(bet_req)
     return bet_made, matched_price, matched, stake_matched, bet_id
 

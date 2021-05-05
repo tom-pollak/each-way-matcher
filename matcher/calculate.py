@@ -68,12 +68,6 @@ def check_odds(race, win_horse_odds, place_horse_odds):
             and place_horse_odds[horse_name]["lay_avaliable_1"] >= race["place_stake"]
         ):
             return True
-        print(
-            f"Caught odds changing: {race['win_odds']} -> {win_horse_odds[horse_name]['lay_odds_1'] }"
-        )
-        print(
-            f"\t\t      {race['place_odds']} -> {place_horse_odds[horse_name]['lay_odds_1'] }"
-        )
     except KeyError as e:
         print("ERROR scraping betfair %s" % e)
         print(win_horse_odds)
