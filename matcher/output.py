@@ -27,7 +27,6 @@ def show_info(count, START_TIME):
     if datetime.now().hour >= 18:
         print("\nFinished matching today")
         print("---------------------------------------------")
-        output_profit()
         raise KeyboardInterrupt
 
 
