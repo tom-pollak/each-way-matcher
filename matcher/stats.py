@@ -31,15 +31,17 @@ def check_repeat_bets(horse_name, date_of_race, venue):
 
 
 def calc_unfinished_races(index=-1):
-    in_bet_balance = 0
-    mask = (df["date_of_race"] >= df.index.values[index]) & (
-        df.index <= df.index.values[index]
-    )
-    races = df.loc[mask]
-    for _, row in races.iterrows():
-        in_bet_balance += row["bookie_stake"] * 2
-
-    return round(in_bet_balance + df.iloc[index]["betfair_exposure"], 2)
+    try:
+        mask = (df["date_of_race"] >= df.index.values[index]) & (
+            df.index <= df.index.values[index]
+        )
+        races = df.loc[mask]
+        in_bet_balance = (
+            sum(races["bookie_stake"] * 2) + df.iloc[index]["betfair_exposure"]
+        )
+    except IndexError:
+        return 0
+    return round(in_bet_balance, 2)
 
 
 def get_today_starting_balance():
