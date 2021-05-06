@@ -291,6 +291,14 @@ def get_balance():
     return balance
 
 
+def get_exposure():
+    account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
+    exposure_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
+    exposure_res = call_api(balance_req, url=account_url)
+    exposure = balance_res["result"]["exposure"]
+    return exposure
+
+
 def get_race_ids(race_time, venue, horse):
     race_time = datetime.strptime(race_time, "%d %b %H:%M %Y")
     markets_ids, horses = get_horses(venue, race_time)

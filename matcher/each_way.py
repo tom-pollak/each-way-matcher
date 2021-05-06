@@ -241,7 +241,7 @@ def evaluate_arb(driver, race):
     )
     race["betfair_balance"] = betfair.get_balance()
     race["bookie_balance"] = sporting_index.get_balance(driver)
-    race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
+    race["betfair_exposure"] = betfair.get_exposure()
     (
         race["exp_value"],
         race["exp_growth"],
@@ -341,7 +341,7 @@ def evaluate_punt(driver, race):
         race["place_profit"],
         race["lose_profit"],
     )
-    race["betfair_in_bet_balance"] = betfair.get_balance_in_bets()
+    race["betfair_exposure"] = betfair.get_exposure()
     race["win_stake"] = race["place_stake"] = 0
     output_punt(race)
     update_csv(race)

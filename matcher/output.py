@@ -73,7 +73,7 @@ def update_csv(race):
         "place_odds",
         "bookie_balance",
         "betfair_balance",
-        "betfair_in_bet_balance",
+        "betfair_exposure",
         "win_profit",
         "place_profit",
         "lose_profit",
