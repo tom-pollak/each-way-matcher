@@ -78,9 +78,7 @@ def place_arb(
     profits = tuple(map(sum, zip(profits, new_profits)))
 
     if not lay_win["matched"] or not lay_place["matched"]:
-        print("bets not matched:", lay_win, lay_place)
         betfair.cancel_unmatched_bets()
-
         win_odds = betfair.get_odds(market_ids["win"])[horse_name]["lay_odds_1"]
         place_odds = betfair.get_odds(market_ids["place"])[horse_name]["lay_odds_1"]
         betfair_balance = betfair.get_balance()
@@ -289,7 +287,16 @@ def scrape_arb_races(driver):
             sys.stdout.flush()
 
 
-def evaluate_punt(driver, race, win_odds_proportion):
+def evaluate_punt(driver, race):
+    _, _, _, race["horse_name"] = betfair.get_race_ids(
+        race["date_of_race"], race["venue"], race["horse_name"]
+    )
+    bet_types, win_odds_proportion = check_repeat_bets(
+        race["horse_name"], race["date_of_race"], race["venue"]
+    )
+    if "Punt" in bet_types:
+        return
+
     race["bookie_stake"] = kelly_criterion(
         race["bookie_odds"],
         race["win_odds"] * win_odds_proportion,
@@ -300,10 +307,6 @@ def evaluate_punt(driver, race, win_odds_proportion):
 
     if race["bookie_stake"] < 0.1:
         return
-
-    _, _, _, race["horse_name"] = betfair.get_race_ids(
-        race["date_of_race"], race["venue"], race["horse_name"]
-    )
 
     sporting_index_start = time()  # debug
     race, bet_made = sporting_index.make_bet(driver, race)
@@ -366,11 +369,7 @@ def scrape_punt_races(driver):
             if horse_name not in processed_horses:
                 race.update(odds_monkey.find_races(driver, row, 0))
                 processed_horses.append(race["horse_name"])
-                bet_types, win_odds_proportion = check_repeat_bets(
-                    race["horse_name"], race["date_of_race"], race["venue"]
-                )
-                if "Punt" not in bet_types:
-                    evaluate_punt(driver, race, win_odds_proportion)
+                evaluate_punt(driver, race)
 
             driver.switch_to.window(driver.window_handles[0])
             driver.switch_to.default_content()
