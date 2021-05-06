@@ -294,7 +294,7 @@ def get_balance():
 def get_exposure():
     account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
     exposure_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    exposure_res = call_api(balance_req, url=account_url)
+    exposure_res = call_api(exposure_req, url=account_url)
     exposure = balance_res["result"]["exposure"]
     return exposure
 
