@@ -268,9 +268,14 @@ def calculate_stakes(
     elif min_balance_staked > min_stake:
         stake_proporiton = min_balance_staked / max_stake
 
-    bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
-    win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
-    place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
+    if bookie_stake < 3 or win_stake < 3 or place_stake < 3:
+        bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
+        win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
+        place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
+    else:
+        bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
+        win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
+        place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
 
     # postcondition
     stakes_ok = check_stakes(
@@ -411,3 +416,6 @@ def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
     if place_stake < place_min_stake:
         place_stake = 0
     return win_stake, place_stake
+
+
+check_stakes(75.63, 304.07, 37.82, 39.81, 2.14, 39.4, 1.24)
