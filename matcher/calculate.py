@@ -37,13 +37,17 @@ def check_start_time(race, mins):
 
 
 def check_odds(race, win_horse_odds, place_horse_odds):
-    horse_name, _ = get_valid_horse_name(win_horse_odds.keys(), race["horse_name"])
+    horse_name, betfair_horse_name = get_valid_horse_name(
+        win_horse_odds.keys(), race["horse_name"]
+    )
     try:
         if (
-            win_horse_odds[horse_name]["lay_odds_1"] <= race["win_odds"]
-            and place_horse_odds[horse_name]["lay_odds_1"] <= race["place_odds"]
-            and win_horse_odds[horse_name]["lay_avaliable_1"] >= race["win_stake"]
-            and place_horse_odds[horse_name]["lay_avaliable_1"] >= race["place_stake"]
+            win_horse_odds[betfair_horse_name]["lay_odds_1"] <= race["win_odds"]
+            and place_horse_odds[betfair_horse_name]["lay_odds_1"] <= race["place_odds"]
+            and win_horse_odds[betfair_horse_name]["lay_avaliable_1"]
+            >= race["win_stake"]
+            and place_horse_odds[betfair_horse_name]["lay_avaliable_1"]
+            >= race["place_stake"]
         ):
             return True
     except KeyError as e:
@@ -333,17 +337,17 @@ def get_next_odd_increment(odd):
 def get_valid_horse_name(horses, target_horse):
     for horse in horses:
         if horse.lower() == target_horse.lower():
-            return horse, True
+            return horse, horse
 
     # sometimes runnerName is 1. horse_name
     for horse in horses:
         if target_horse.lower() in horse.lower():
-            return horse, False
+            return horse, target_horse
 
     # for horses with punctuation taken out by oddsmonkey
     close_horse = difflib.get_close_matches(target_horse, horses, n=1)[0]
     print("Close horse found: %s (%s)" % (close_horse, target_horse))
-    return close_horse, True
+    return close_horse, close_horsee
 
 
 def minimize_calculate_profit(

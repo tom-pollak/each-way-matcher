@@ -22,6 +22,7 @@ from .calculate import (
     check_odds,
     maximize_arb,
     check_start_time,
+    get_valid_horse_name,
 )
 from .stats import check_repeat_bets
 from .output import (
@@ -174,7 +175,7 @@ def evaluate_arb(driver, race):
             print(f"Arb bet not profitable: {profits} - {stake_proportion}")
             return
 
-    market_ids, selection_id, got_race, race["horse_name"] = betfair.get_race_ids(
+    market_ids, selection_id, got_race = betfair.get_race_ids(
         race["date_of_race"], race["venue"], race["horse_name"]
     )
     if not got_race:
@@ -288,8 +289,9 @@ def scrape_arb_races(driver):
 
 
 def evaluate_punt(driver, race):
-    _, _, _, race["horse_name"] = betfair.get_race_ids(
-        race["date_of_race"], race["venue"], race["horse_name"]
+    # _, horses = betfair.get_horses(race["venue"], race["date_of_race"])
+    race["horse_name"], betfair_horse_name = get_valid_horse_name(
+        horses, race["horse_name"]
     )
     bet_types, win_odds_proportion = check_repeat_bets(
         race["horse_name"], race["date_of_race"], race["venue"]
