@@ -27,6 +27,7 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     horse_races = horses.loc[horses["horse_name"] == horse_name]
     bet_types = horse_races["bet_type"].unique()
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
+    print(f"Checking repeat bets: {horse_name} {date_of_race} {venue} {bet_types}")
     return bet_types, win_odds_proportion
 
 
