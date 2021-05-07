@@ -43,7 +43,7 @@ def check_repeat_bets(horse_name, date_of_race, venue):
     horse_races = horses.loc[horses["horse_name"] == horse_name]
     bet_types = horse_races["bet_type"].unique()
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
-    print(f"Checking repeat bets: {horse_name} {date_of_race} {venue} {bet_types}")
+    # print(f"Checking repeat bets: {horse_name} {date_of_race} {venue} {bet_types}")
     return bet_types, win_odds_proportion
 
 
@@ -63,6 +63,7 @@ def calc_unfinished_races(index=-1):
 
 
 def get_today_starting_balance():
+    df = read_csv()
     try:
         today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[0]
     except KeyError:
@@ -112,6 +113,7 @@ def calculate_returns():
 
 
 def output_profit():
+    df = read_csv()
     (
         total_profit,
         profit_today,
