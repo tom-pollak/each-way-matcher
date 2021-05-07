@@ -17,7 +17,23 @@ def custom_date_parser(x):
     return datetime.strptime(x, "%d/%m/%Y %H:%M:%S")
 
 
+def read_csv():
+    try:
+        df = pd.read_csv(
+            RETURNS_CSV,
+            header=0,
+            parse_dates=[0, 1],
+            index_col=0,
+            date_parser=custom_date_parser,
+            squeeze=True,
+        )
+    except (IndexError, FileNotFoundError):
+        df = []
+    return df
+
+
 def check_repeat_bets(horse_name, date_of_race, venue):
+    df = read_csv()
     date_of_race = custom_date_parser(date_of_race)
     if len(df) == 0:
         return [], 1
@@ -32,6 +48,7 @@ def check_repeat_bets(horse_name, date_of_race, venue):
 
 
 def calc_unfinished_races(index=-1):
+    df = read_csv()
     try:
         mask = (df["date_of_race"] >= df.index.values[index]) & (
             df.index <= df.index.values[index]
@@ -60,6 +77,7 @@ def get_today_starting_balance():
 
 
 def calculate_returns():
+    df = read_csv()
     if len(df) == 0:
         return 0, 0, 0, 0
     today_starting_balance = get_today_starting_balance()
@@ -121,6 +139,7 @@ def plot_bal_time_series_graph():
     import matplotlib.pyplot as plt
     from matplotlib.dates import DateFormatter
 
+    df = read_csv()
     fig, ax = plt.subplots()
     date_fmt = DateFormatter("%d/%m")
     ax.xaxis.set_major_formatter(date_fmt)
@@ -154,17 +173,7 @@ def plot_bal_time_series_graph():
     plt.savefig(BALANCE_PNG)
 
 
-try:
-    df = pd.read_csv(
-        RETURNS_CSV,
-        header=0,
-        parse_dates=[0, 1],
-        index_col=0,
-        date_parser=custom_date_parser,
-        squeeze=True,
-    )
-except (IndexError, FileNotFoundError):
-    df = []
+df = read_csv()
 if len(df) == 0:
     STARTING_BALANCE = 0
 else:
