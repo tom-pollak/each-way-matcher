@@ -113,7 +113,7 @@ def place_arb(
 
 def evaluate_arb(driver, race):
     eval_start = time()  # debug
-    if not check_start_time(race, mins=1):
+    if not check_start_time(race, mins=0.55):
         return
     race["bet_type"] = "Arb"
     race["betfair_balance"] = betfair.get_balance()
