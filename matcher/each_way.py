@@ -312,6 +312,7 @@ def evaluate_punt(driver, race):
     )
 
     if race["bookie_stake"] < 0.1:
+        print("bookie stake less than 0.1")
         return
 
     sporting_index_start = time()  # debug
@@ -322,6 +323,7 @@ def evaluate_punt(driver, race):
         )
         return
     if not bet_made:
+        print("bet not made")
         return
     print("punt sporting index bet took", time() - sporting_index_start)  # debug
     race["win_profit"], race["place_profit"], race["lose_profit"] = calculate_profit(
