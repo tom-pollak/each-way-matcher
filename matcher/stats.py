@@ -17,12 +17,11 @@ def custom_date_parser(x):
     return datetime.strptime(x, "%d/%m/%Y %H:%M:%S")
 
 
-def check_repeat_bets(horse_name, date_of_race, venue):
-    date_of_race = custom_date_parser(date_of_race)
+def check_repeat_bets(horse_name, race_time, venue):
     if len(df) == 0:
         return [], 1
     horses = df.query(
-        "date_of_race == @date_of_race & venue == @venue & (bet_type == 'Punt' | bet_type == 'Lay Punt')"
+        "race_time == @race_time & venue == @venue & (bet_type == 'Punt' | bet_type == 'Lay Punt')"
     )
     horse_races = horses.loc[horses["horse_name"] == horse_name]
     bet_types = horse_races["bet_type"].unique()
@@ -32,7 +31,7 @@ def check_repeat_bets(horse_name, date_of_race, venue):
 
 def calc_unfinished_races(index=-1):
     try:
-        mask = (df["date_of_race"] >= df.index.values[index]) & (
+        mask = (df["race_time"] >= df.index.values[index]) & (
             df.index <= df.index.values[index]
         )
         races = df.loc[mask]
@@ -159,7 +158,6 @@ try:
         header=0,
         parse_dates=[0, 1],
         index_col=0,
-        date_parser=custom_date_parser,
         squeeze=True,
     )
 except (IndexError, FileNotFoundError):

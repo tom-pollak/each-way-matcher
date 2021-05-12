@@ -8,8 +8,8 @@ from urllib import error, request
 from dotenv import load_dotenv
 from json.decoder import JSONDecodeError
 
-# from matcher.exceptions import MatcherError
-# from matcher.calculate import round_odd, get_valid_horse_name
+from matcher.exceptions import MatcherError
+from matcher.calculate import round_odd, get_valid_horse_name
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -176,17 +176,6 @@ def get_bets_by_bet_id(win_bet_id, place_bet_id):
     return bet_info
 
 
-def get_horse_id(horses, target_horse):
-    horse_names = [horse["runnerName"] for horse in horses["runners"]]
-    horse_name, betfair_horse_name = get_valid_horse_name(horse_names, target_horse)
-    for horse in horses["runners"]:
-        if horse["runnerName"] == betfair_horse_name:
-            return horse["selectionId"]
-
-    print("ERROR couldn't find horse selection_id")
-    return None
-
-
 def get_market_id(venue, race_time):
     markets = []
     markets_ids = {}
@@ -223,7 +212,6 @@ def get_market_id(venue, race_time):
             markets_ids["place"] = market["marketId"]
         else:
             markets_ids["win"] = market["marketId"]
-            # horses = market
     return markets_ids
 
 
@@ -290,11 +278,11 @@ def get_exposure():
     account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
     exposure_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
     exposure_res = call_api(exposure_req, url=account_url)
-    exposure = exposure_res["result"]["exposure"]
+    exposure = abs(exposure_res["result"]["exposure"])
     return exposure
 
 
-def get_horse_name(target_horse, venue, race_time):
+def get_horses(venue, race_time):
     market_ids = get_market_id(venue, race_time)
     horses_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
@@ -304,24 +292,15 @@ def get_horse_name(target_horse, venue, race_time):
         % (market_ids["win"])
     )
     horses_res = call_api(horses_req)["result"][0]["runners"]
-    # horses = [horse[]]
-    print(horses_res)
-
-
-from datetime import datetime
-
-get_horse_name("Anti Cool", "Market Rasen", datetime(2021, 5, 7, 15, 35))
+    horses = {horse["runnerName"]: horse["selectionId"] for horse in horses_res}
+    return horses
 
 
 def get_race_ids(race_time, venue, horse):
-    race_time = datetime.strptime(race_time, "%d %b %H:%M %Y")
     markets_ids = get_market_id(venue, race_time)
-    selection_id = get_horse_id(horses, horse)
-    if selection_id is None:
-        got_horse = False
-    else:
-        got_horse = True
-    return markets_ids, selection_id, got_horse
+    horses = get_horses(venue, race_time)
+    selection_id = horses[horse]
+    return markets_ids, selection_id
 
 
 def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
@@ -361,3 +340,6 @@ def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place
             "bet_id": place_bet_id,
         }
     return win_dict, place_dict
+
+
+print(get_horses("Adace", "Bath", datetime(2021, 5, 12, 20, 20)))

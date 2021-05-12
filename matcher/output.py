@@ -34,7 +34,7 @@ def output_punt(race):
     print(
         f"""
 No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']} (£{format(race['exp_return'], '.2f')})
-    {race['date_of_race']} - {race['venue']}
+    {race['race_time']} - {race['venue']}
     Win odds: {race['win_odds']} Place odds: {race['place_odds']}
     Expected value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%
     Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, stake: £{format(race['bookie_stake'], '.2f')}
@@ -46,7 +46,7 @@ def ouput_lay(race):
     print(
         f"""
 {race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} (£{format(race['exp_return'], '.2f')})
-    {race['date_of_race']} - {race['venue']}
+    {race['race_time']} - {race['venue']}
     Bookie odds: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}
     Win profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}
     Expected Value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%
@@ -58,7 +58,7 @@ def ouput_lay(race):
 def update_csv(race):
     csv_columns = [
         "current_time",
-        "date_of_race",
+        "race_time",
         "venue",
         "horse_name",
         "exp_value",

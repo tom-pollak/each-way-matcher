@@ -65,11 +65,10 @@ def find_races(driver, row=0, window=0):
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
     ).text.title()
 
-    date_of_race = driver.find_element_by_xpath(
+    race_time = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[1]'
     ).text
-    race_time = date_of_race[-5:].lower()
-    date_of_race += " %s" % datetime.today().year
+    race_time += " %s" % datetime.today().year
     venue = (
         driver.find_element_by_xpath(
             f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[8]'
@@ -168,14 +167,12 @@ def find_races(driver, row=0, window=0):
     driver.find_element_by_class_name("rwCloseButton").click()
 
     return {
-        "date_of_race": date_of_race,
-        "race_time": race_time,
+        "race_time": datetime.strptime(race_time, "%d %b %H:%M %Y"),
         "horse_name": horse_name,
         "bookie_odds": float(bookie_odds),
         "venue": venue,
         "bookie_exchange": bookie_exchange,
-        "rating": float(rating),
-        "current_time": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "current_time": datetime.now(),
         "win_odds": float(win_odds),
         "place_odds": float(place_odds),
         "places_paid": float(places_paid),
@@ -183,7 +180,6 @@ def find_races(driver, row=0, window=0):
         "bookie_stake": float(bookie_stake),
         "win_stake": float(win_stake),
         "place_stake": float(place_stake),
-        "max_profit": float(max_profit),
     }
 
 

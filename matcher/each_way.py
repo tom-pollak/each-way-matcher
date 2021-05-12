@@ -45,6 +45,7 @@ def place_arb(
     selection_id,
     market_ids,
     horse_name,
+    betfair_horse_name,
     bookie_stake,
     bookie_odds,
     win_stake,
@@ -80,8 +81,10 @@ def place_arb(
 
     if not lay_win["matched"] or not lay_place["matched"]:
         betfair.cancel_unmatched_bets()
-        win_odds = betfair.get_odds(market_ids["win"])[horse_name]["lay_odds_1"]
-        place_odds = betfair.get_odds(market_ids["place"])[horse_name]["lay_odds_1"]
+        win_odds = betfair.get_odds(market_ids["win"])[betfair_horse_name]["lay_odds_1"]
+        place_odds = betfair.get_odds(market_ids["place"])[betfair_horse_name][
+            "lay_odds_1"
+        ]
         betfair_balance = betfair.get_balance()
         win_stake, place_stake = minimize_loss(
             win_odds, place_odds, profits, betfair_balance, place_payout
@@ -100,6 +103,7 @@ def place_arb(
             selection_id,
             market_ids,
             horse_name,
+            betfair_horse_name,
             0,
             0,
             win_stake,
@@ -118,6 +122,11 @@ def evaluate_arb(driver, race):
         return
     race["bet_type"] = "Arb"
     race["betfair_balance"] = betfair.get_balance()
+
+    horses = betfair.get_horses(race["venue"], race["race_time"]).keys()
+    race["horse_name"], betfair_horse_name = get_valid_horse_name(
+        horses, race["horse_name"]
+    )
     (
         stakes_ok,
         race["bookie_stake"],
@@ -148,7 +157,7 @@ def evaluate_arb(driver, race):
     if min(*profits) < 0:
         race["bet_type"] = "Lay Punt"
         bet_types, _ = check_repeat_bets(
-            race["horse_name"], race["date_of_race"], race["venue"]
+            race["horse_name"], race["race_time"], race["venue"]
         )
         if "Lay Punt" in bet_types:
             return
@@ -175,18 +184,15 @@ def evaluate_arb(driver, race):
             print(f"Arb bet not profitable: {profits} - {stake_proportion}")
             return
 
-    market_ids, selection_id, got_race = betfair.get_race_ids(
-        race["date_of_race"], race["venue"], race["horse_name"]
+    market_ids, selection_id = betfair.get_race_ids(
+        race["race_time"], race["venue"], betfair_horse_name
     )
-    if not got_race:
-        print("Couldn't get race")
-        return
 
     win_horse_odds = betfair.get_odds(market_ids["win"])
     place_horse_odds = betfair.get_odds(market_ids["place"])
     if not check_odds(race, win_horse_odds, place_horse_odds):
-        race["win_odds"] = win_horse_odds[race["horse_name"]]["lay_odds_1"]
-        race["place_odds"] = place_horse_odds[race["horse_name"]]["lay_odds_1"]
+        race["win_odds"] = win_horse_odds[betfair_horse_name]["lay_odds_1"]
+        race["place_odds"] = place_horse_odds[betfair_horse_name]["lay_odds_1"]
         evaluate_arb(driver, race)
         return
 
@@ -194,7 +200,7 @@ def evaluate_arb(driver, race):
     race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
     if bet_made is None:
         print(
-            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
+            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
         )
     elif not bet_made:
         return
@@ -204,6 +210,7 @@ def evaluate_arb(driver, race):
         selection_id,
         market_ids,
         race["horse_name"],
+        betfair_horse_name,
         race["bookie_stake"],
         race["bookie_odds"],
         race["win_stake"],
@@ -214,10 +221,10 @@ def evaluate_arb(driver, race):
     )
     print("betfair bet took", time() - place_arb_start)  # debug
 
-    race["win_odds"] = betfair.get_odds(market_ids["win"])[race["horse_name"]][
+    race["win_odds"] = betfair.get_odds(market_ids["win"])[betfair_horse_name][
         "lay_odds_1"
     ]
-    race["place_odds"] = betfair.get_odds(market_ids["place"])[race["horse_name"]][
+    race["place_odds"] = betfair.get_odds(market_ids["place"])[betfair_horse_name][
         "lay_odds_1"
     ]
     race["win_stake"], race["place_stake"] = calcualte_stakes_from_profit(
@@ -289,12 +296,10 @@ def scrape_arb_races(driver):
 
 
 def evaluate_punt(driver, race):
-    # _, horses = betfair.get_horses(race["venue"], race["date_of_race"])
-    race["horse_name"], betfair_horse_name = get_valid_horse_name(
-        horses, race["horse_name"]
-    )
+    horses = betfair.get_horses(race["venue"], race["race_time"]).keys()
+    race["horse_name"], _ = get_valid_horse_name(horses, race["horse_name"])
     bet_types, win_odds_proportion = check_repeat_bets(
-        race["horse_name"], race["date_of_race"], race["venue"]
+        race["horse_name"], race["race_time"], race["venue"]
     )
     if "Punt" in bet_types:
         return
@@ -314,7 +319,7 @@ def evaluate_punt(driver, race):
     race, bet_made = sporting_index.make_bet(driver, race)
     if bet_made is None:  # horse not found
         print(
-            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['date_of_race']}"
+            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
         )
         return
     if not bet_made:
