@@ -117,7 +117,6 @@ def place_arb(
 
 
 def evaluate_arb(driver, race):
-    eval_start = time()  # debug
     if not check_start_time(race, mins=1):
         return
     race["bet_type"] = "Arb"
@@ -188,21 +187,15 @@ def evaluate_arb(driver, race):
         race["race_time"], race["venue"], betfair_horse_name
     )
 
-    win_horse_odds = betfair.get_odds(market_ids["win"])
-    place_horse_odds = betfair.get_odds(market_ids["place"])
+    win_horse_odds = betfair.get_odds(market_ids["win"])[betfair_horse_name][
+        "lay_odds_1"
+    ]
+    place_horse_odds = betfair.get_odds(market_ids["place"])[betfair_horse_name][
+        "lay_odds_1"
+    ]
     if not check_odds(race, win_horse_odds, place_horse_odds):
-        try:
-            race["win_odds"] = win_horse_odds[race["horse_name"]]["lay_odds_1"]
-            race["place_odds"] = place_horse_odds[race["horse_name"]]["lay_odds_1"]
-        except KeyError:
-            print(
-                f"{race['horse_name']} not in horse odds:\n{win_horse_odds}\n{place_horse_odds}"
-            )
-            return
         evaluate_arb(driver, race)
         return
-
-    print("up to place arb took", time() - eval_start)  # debug
     race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
     if bet_made is None:
         print(
@@ -211,7 +204,6 @@ def evaluate_arb(driver, race):
     elif not bet_made:
         return
 
-    place_arb_start = time()  # debug
     race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
         selection_id,
         market_ids,
@@ -225,7 +217,6 @@ def evaluate_arb(driver, race):
         race["place_odds"],
         race["place_payout"],
     )
-    print("betfair bet took", time() - place_arb_start)  # debug
 
     race["win_odds"] = betfair.get_odds(market_ids["win"])[betfair_horse_name][
         "lay_odds_1"
@@ -331,7 +322,6 @@ def evaluate_punt(driver, race):
         )
         return
 
-    sporting_index_start = time()  # debug
     race, bet_made = sporting_index.make_bet(driver, race)
     if bet_made is None:  # horse not found
         print(
@@ -340,7 +330,6 @@ def evaluate_punt(driver, race):
         return
     if not bet_made:
         return
-    print("punt sporting index bet took", time() - sporting_index_start)  # debug
     race["win_profit"], race["place_profit"], race["lose_profit"] = calculate_profit(
         race["bookie_odds"],
         race["bookie_stake"],

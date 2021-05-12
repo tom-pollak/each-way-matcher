@@ -27,9 +27,7 @@ odds_increments = {
 
 
 def check_start_time(race, mins):
-    minutes_until_race = (
-        datetime.strptime(race["race_time"], "%d %b %H:%M %Y") - datetime.now()
-    ).total_seconds() / 60
+    minutes_until_race = (race["race_time"] - datetime.now()).total_seconds() / 60
     if minutes_until_race <= mins:
         print("Race too close to start time: %s" % minutes_until_race)
         return False
@@ -37,7 +35,7 @@ def check_start_time(race, mins):
 
 
 def check_odds(race, win_horse_odds, place_horse_odds):
-    horse_name, betfair_horse_name = get_valid_horse_name(
+    _, betfair_horse_name = get_valid_horse_name(
         win_horse_odds.keys(), race["horse_name"]
     )
     try:
