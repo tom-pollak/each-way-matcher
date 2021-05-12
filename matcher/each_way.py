@@ -305,13 +305,23 @@ def evaluate_punt(driver, race):
 
     race["bookie_stake"] = kelly_criterion(
         race["bookie_odds"],
-        race["win_odds"] * win_odds_proportion,
+        race["win_odds"] / win_odds_proportion,
         race["place_odds"],
         race["place_payout"],
         race["bookie_balance"],
     )
 
     if race["bookie_stake"] < 0.1:
+        return
+    if race["bookie_stake"] > 5:
+        print(f"bookie stake is large: {race['bookie_stake']}")
+        print(
+            win_odds_proportion,
+            race["win_odds"],
+            race["place_odds"],
+            race["place_payout"],
+            race["bookie_balance"],
+        )
         return
 
     sporting_index_start = time()  # debug
