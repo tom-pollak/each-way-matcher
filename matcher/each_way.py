@@ -19,7 +19,6 @@ from .calculate import (
     kelly_criterion,
     minimize_loss,
     check_stakes,
-    check_odds,
     maximize_arb,
     check_start_time,
     get_valid_horse_name,
@@ -187,7 +186,7 @@ def evaluate_arb(driver, race):
         race["race_time"], race["venue"], betfair_horse_name
     )
 
-    if not check_odds(race, market_ids):
+    if not betfair.check_odds(race, market_ids):
         evaluate_arb(driver, race)
         return
     race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
