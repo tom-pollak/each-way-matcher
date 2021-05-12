@@ -34,32 +34,6 @@ def check_start_time(race, mins):
     return True
 
 
-def check_odds(race, market_ids):
-    win_horse_odds = betfair.get_odds(market_ids["win"])[betfair_horse_name][
-        "lay_odds_1"
-    ]
-    place_horse_odds = betfair.get_odds(market_ids["place"])[betfair_horse_name][
-        "lay_odds_1"
-    ]
-    horses = betfair.get_horses(race["venue"], race["race_time"]).keys()
-    _, betfair_horse_name = get_valid_horse_name(horses, race["horse_name"])
-    try:
-        if (
-            win_horse_odds[betfair_horse_name]["lay_odds_1"] <= race["win_odds"]
-            and place_horse_odds[betfair_horse_name]["lay_odds_1"] <= race["place_odds"]
-            and win_horse_odds[betfair_horse_name]["lay_avaliable_1"]
-            >= race["win_stake"]
-            and place_horse_odds[betfair_horse_name]["lay_avaliable_1"]
-            >= race["place_stake"]
-        ):
-            return True
-    except KeyError as e:
-        print("ERROR scraping betfair %s" % e)
-        print(win_horse_odds)
-        print(place_horse_odds)
-    return False
-
-
 # N.B bookie_stake is half actual stake
 def calculate_profit(
     bookie_odds,

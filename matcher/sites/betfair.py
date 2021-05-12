@@ -97,6 +97,26 @@ def get_odds(market_id):
     return horses
 
 
+def check_odds(race, market_ids):
+    horses = get_horses(race["venue"], race["race_time"]).keys()
+    _, betfair_horse_name = get_valid_horse_name(horses, race["horse_name"])
+    win_info = get_odds(market_ids["win"])[betfair_horse_name]
+    place_info = get_odds(market_ids["place"])[betfair_horse_name]
+    try:
+        if (
+            win_info["lay_odds_1"] <= race["win_odds"]
+            and place_info["lay_odds_1"] <= race["place_odds"]
+            and win_info["lay_avaliable_1"] >= race["win_stake"]
+            and place_info["lay_avaliable_1"] >= race["place_stake"]
+        ):
+            return True
+    except KeyError as e:
+        print("ERROR scraping betfair %s" % e)
+        print(win_info)
+        print(place_info)
+    return False
+
+
 def call_api(jsonrpc_req, url=betting_url):
     headers = login()
     try:

@@ -11,12 +11,6 @@ RETURNS_CSV = os.environ.get("RETURNS_CSV")
 BALANCE_PNG = os.path.join(BASEDIR, os.environ.get("BALANCE_PNG"))
 
 
-def custom_date_parser(x):
-    if "/" not in x:
-        return datetime.strptime(x, "%d %b %H:%M %Y")
-    return datetime.strptime(x, "%d/%m/%Y %H:%M:%S")
-
-
 def read_csv():
     try:
         df = pd.read_csv(
@@ -34,7 +28,6 @@ def read_csv():
 
 def check_repeat_bets(horse_name, race_time, venue):
     df = read_csv()
-    # race_time = custom_date_parser(race_time)
     if len(df) == 0:
         return [], 1
     horses = df.query(

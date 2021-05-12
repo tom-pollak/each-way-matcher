@@ -90,14 +90,6 @@ def find_races(driver, row=0, window=0):
         print(bookie_exchange)
         raise KeyboardInterrupt
 
-    rating = driver.find_element_by_xpath(
-        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[17]'
-    ).text
-
-    max_profit = driver.find_element_by_xpath(
-        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[20]'
-    ).text.split("£")[1]
-
     try:
         driver.find_element_by_xpath(
             f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl{"{:02d}".format(2 * row + 4)}_calcButton"]'
