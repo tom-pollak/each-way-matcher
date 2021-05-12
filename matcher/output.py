@@ -24,7 +24,7 @@ def show_info(count, START_TIME):
 
     print(f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}")
     print(f"Refreshes: {count}")
-    if datetime.now().hour >= 18:
+    if datetime.now().hour >= 19:
         print("\nFinished matching today")
         print("---------------------------------------------")
         raise KeyboardInterrupt
