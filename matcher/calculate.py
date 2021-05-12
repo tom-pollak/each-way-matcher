@@ -423,6 +423,3 @@ def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
     if place_stake < place_min_stake:
         place_stake = 0
     return win_stake, place_stake
-
-
-check_stakes(75.63, 304.07, 37.82, 39.81, 2.14, 39.4, 1.24)
