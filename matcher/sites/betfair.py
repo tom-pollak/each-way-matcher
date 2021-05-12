@@ -340,6 +340,3 @@ def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place
             "bet_id": place_bet_id,
         }
     return win_dict, place_dict
-
-
-print(get_horses("Adace", "Bath", datetime(2021, 5, 12, 20, 20)))
