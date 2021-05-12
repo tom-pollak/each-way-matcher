@@ -191,8 +191,14 @@ def evaluate_arb(driver, race):
     win_horse_odds = betfair.get_odds(market_ids["win"])
     place_horse_odds = betfair.get_odds(market_ids["place"])
     if not check_odds(race, win_horse_odds, place_horse_odds):
-        race["win_odds"] = win_horse_odds[betfair_horse_name]["lay_odds_1"]
-        race["place_odds"] = place_horse_odds[betfair_horse_name]["lay_odds_1"]
+        try:
+            race["win_odds"] = win_horse_odds[race["horse_name"]]["lay_odds_1"]
+            race["place_odds"] = place_horse_odds[race["horse_name"]]["lay_odds_1"]
+        except KeyError:
+            print(
+                f"{race['horse_name']} not in horse odds:\n{win_horse_odds}\n{place_horse_odds}"
+            )
+            return
         evaluate_arb(driver, race)
         return
 
@@ -306,13 +312,23 @@ def evaluate_punt(driver, race):
 
     race["bookie_stake"] = kelly_criterion(
         race["bookie_odds"],
-        race["win_odds"] * win_odds_proportion,
+        race["win_odds"] / win_odds_proportion,
         race["place_odds"],
         race["place_payout"],
         race["bookie_balance"],
     )
 
     if race["bookie_stake"] < 0.1:
+        return
+    if race["bookie_stake"] > 5:
+        print(f"bookie stake is large: {race['bookie_stake']}")
+        print(
+            win_odds_proportion,
+            race["win_odds"],
+            race["place_odds"],
+            race["place_payout"],
+            race["bookie_balance"],
+        )
         return
 
     sporting_index_start = time()  # debug

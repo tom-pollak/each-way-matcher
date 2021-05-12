@@ -17,7 +17,24 @@ def custom_date_parser(x):
     return datetime.strptime(x, "%d/%m/%Y %H:%M:%S")
 
 
+def read_csv():
+    try:
+        df = pd.read_csv(
+            RETURNS_CSV,
+            header=0,
+            parse_dates=[0, 1],
+            index_col=0,
+            # date_parser=custom_date_parser,
+            squeeze=True,
+        )
+    except (IndexError, FileNotFoundError):
+        df = []
+    return df
+
+
 def check_repeat_bets(horse_name, race_time, venue):
+    df = read_csv()
+    # race_time = custom_date_parser(race_time)
     if len(df) == 0:
         return [], 1
     horses = df.query(
@@ -26,10 +43,14 @@ def check_repeat_bets(horse_name, race_time, venue):
     horse_races = horses.loc[horses["horse_name"] == horse_name]
     bet_types = horse_races["bet_type"].unique()
     win_odds_proportion = 1 - sum(1 / horses.win_odds)
+    if win_odds_proportion > 1:
+        print(f"win_odds_proportion {win_odds_proportion}")
+        win_odds_proportion = 1
     return bet_types, win_odds_proportion
 
 
 def calc_unfinished_races(index=-1):
+    df = read_csv()
     try:
         mask = (df["race_time"] >= df.index.values[index]) & (
             df.index <= df.index.values[index]
@@ -44,6 +65,7 @@ def calc_unfinished_races(index=-1):
 
 
 def get_today_starting_balance():
+    df = read_csv()
     try:
         today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[0]
     except KeyError:
@@ -58,6 +80,7 @@ def get_today_starting_balance():
 
 
 def calculate_returns():
+    df = read_csv()
     if len(df) == 0:
         return 0, 0, 0, 0
     today_starting_balance = get_today_starting_balance()
@@ -92,6 +115,7 @@ def calculate_returns():
 
 
 def output_profit():
+    df = read_csv()
     (
         total_profit,
         profit_today,
@@ -119,6 +143,7 @@ def plot_bal_time_series_graph():
     import matplotlib.pyplot as plt
     from matplotlib.dates import DateFormatter
 
+    df = read_csv()
     fig, ax = plt.subplots()
     date_fmt = DateFormatter("%d/%m")
     ax.xaxis.set_major_formatter(date_fmt)
@@ -152,16 +177,7 @@ def plot_bal_time_series_graph():
     plt.savefig(BALANCE_PNG)
 
 
-try:
-    df = pd.read_csv(
-        RETURNS_CSV,
-        header=0,
-        parse_dates=[0, 1],
-        index_col=0,
-        squeeze=True,
-    )
-except (IndexError, FileNotFoundError):
-    df = []
+df = read_csv()
 if len(df) == 0:
     STARTING_BALANCE = 0
 else:
