@@ -184,8 +184,14 @@ def evaluate_arb(driver, race):
     win_horse_odds = betfair.get_odds(market_ids["win"])
     place_horse_odds = betfair.get_odds(market_ids["place"])
     if not check_odds(race, win_horse_odds, place_horse_odds):
-        race["win_odds"] = win_horse_odds[race["horse_name"]]["lay_odds_1"]
-        race["place_odds"] = place_horse_odds[race["horse_name"]]["lay_odds_1"]
+        try:
+            race["win_odds"] = win_horse_odds[race["horse_name"]]["lay_odds_1"]
+            race["place_odds"] = place_horse_odds[race["horse_name"]]["lay_odds_1"]
+        except KeyError:
+            print(
+                f"{race['horse_name']} not in horse odds:\n{win_horse_odds}\n{place_horse_odds}"
+            )
+            return
         evaluate_arb(driver, race)
         return
 
