@@ -34,10 +34,15 @@ def check_start_time(race, mins):
     return True
 
 
-def check_odds(race, win_horse_odds, place_horse_odds):
-    _, betfair_horse_name = get_valid_horse_name(
-        win_horse_odds.keys(), race["horse_name"]
-    )
+def check_odds(race, market_ids):
+    win_horse_odds = betfair.get_odds(market_ids["win"])[betfair_horse_name][
+        "lay_odds_1"
+    ]
+    place_horse_odds = betfair.get_odds(market_ids["place"])[betfair_horse_name][
+        "lay_odds_1"
+    ]
+    horses = betfair.get_horses(race["venue"], race["race_time"]).keys()
+    _, betfair_horse_name = get_valid_horse_name(horses, race["horse_name"])
     try:
         if (
             win_horse_odds[betfair_horse_name]["lay_odds_1"] <= race["win_odds"]
@@ -350,7 +355,7 @@ def get_valid_horse_name(horses, target_horse):
     # for horses with punctuation taken out by oddsmonkey
     close_horse = difflib.get_close_matches(target_horse, horses, n=1)[0]
     print("Close horse found: %s (%s)" % (close_horse, target_horse))
-    return close_horse, close_horsee
+    return close_horse, close_horse
 
 
 def minimize_calculate_profit(

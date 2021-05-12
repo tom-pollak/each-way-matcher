@@ -184,11 +184,7 @@ def make_bet(driver, race, market_ids=None, lay=False):
         if lay:
             if market_ids is None:
                 raise MatcherError("market_ids are None")
-            win_horse_odds = betfair.get_odds(market_ids["win"])
-            place_horse_odds = betfair.get_odds(market_ids["place"])
-            if not check_odds(
-                race, win_horse_odds, place_horse_odds
-            ) or not check_start_time(race, mins=0.5):
+            if not check_odds(race, market_ids) or not check_start_time(race, mins=0.5):
                 return race, False
         place_bet_start = time()
         bet_made = place_bet(driver, race)
