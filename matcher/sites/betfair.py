@@ -127,26 +127,12 @@ def call_api(jsonrpc_req, url=betting_url):
         with request.urlopen(req) as response:
             json_res = response.read()
             return json.loads(json_res.decode("utf-8"))
-    except error.HTTPError:
-        print("Not a valid operation " + str(url))
+    except error.HTTPError as e:
+        print(f"Request failed with response: {e.response.status_code}")
+        print(url)
     except error.URLError:
-        print("No service available at " + str(url))
-    print(jsonrpc_req)
-    raise MatcherError("API request failed")
-
-
-def get_balance_in_bets():
-    balance_in_bets = 0
-    order_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders"}'
-    res = call_api(order_req)
-    for race in res["result"]["currentOrders"]:
-        odds = race["averagePriceMatched"]
-        stake = race["sizeMatched"]
-        stake_remaining = race["sizeRemaining"]
-        original_odds = race["priceSize"]["price"]
-
-        balance_in_bets += stake * (odds - 1) + stake_remaining * (original_odds - 1)
-    return balance_in_bets
+        print(f"No service avaliable at {url}")
+    raise MatcherError(f"API request failed:\n{jsonrpc_req}")
 
 
 def get_bets_by_race(win_market_id, place_market_id):
