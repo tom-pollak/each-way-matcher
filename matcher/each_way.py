@@ -383,7 +383,6 @@ def scrape_punt_races(driver):
 
 def start_matcher(driver, lay):
     START_TIME = time()
-    sporting_index.setup(driver)
     odds_monkey.open_betfair_page(driver)
     count = 0
     driver.switch_to.window(driver.window_handles[0])

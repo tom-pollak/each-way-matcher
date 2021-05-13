@@ -195,7 +195,3 @@ def make_bet(driver, race, market_ids=None, lay=False):
             return race, True
         close_bet(driver)
     return race, False
-
-
-def setup(driver):
-    driver.get("https://www.sportingindex.com/fixed-odds/horse-racing/race-calendar")
