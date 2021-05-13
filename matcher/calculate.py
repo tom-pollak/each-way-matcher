@@ -4,7 +4,7 @@ import difflib
 from datetime import datetime
 from dotenv import load_dotenv
 import numpy as np
-from scipy.optimize import minimize
+from scipy import optimize
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -174,8 +174,13 @@ def maximize_arb(
     win_profit,
     place_profit,
     lose_profit,
+    bounds=True,
 ):
-    result = minimize(
+    if bounds:
+        bnds = ((0, 1),)
+    else:
+        bnds = ((None, None),)
+    result = optimize.minimize(
         arb_kelly_criterion,
         x0=1,
         args=(
@@ -186,7 +191,7 @@ def maximize_arb(
             win_odds,
             place_odds,
         ),
-        bounds=((0, 1),),
+        bounds=bnds,
     )
     return result.x[0]
 
@@ -336,29 +341,15 @@ def minimize_calculate_profit(
     win_odds,
     place_odds,
     profits,
-    win_min_stake,
-    place_min_stake,
     betfair_balance,
     place_payout,
 ):
     def make_minimize(stakes):
-        if stakes[0] < win_min_stake:
-            stakes[0] = 0
-        if stakes[1] < place_min_stake:
-            stakes[1] = 0
         if not check_stakes(
-            0,
-            betfair_balance,
-            0,
-            stakes[0],
-            win_odds,
-            stakes[1],
-            place_odds,
+            0, betfair_balance, 0, stakes[0], win_odds, stakes[1], place_odds
         ):
-            print(stakes, (stakes[0] + stakes[1]) * 1000)
-            return (stakes[0] + stakes[1]) * 1000
-
-        min_profits = calculate_profit(
+            return -min(profits)
+        new_profits = calculate_profit(
             0,
             0,
             win_odds,
@@ -368,36 +359,32 @@ def minimize_calculate_profit(
             place_payout,
             round_profit=False,
         )
-        min_profits = np.add(profits, min_profits)
-        print(min_profits, stakes, -min(min_profits))
-        return -min(min_profits)
+        new_profits = np.add(profits, new_profits)
+        print(new_profits)
+        return -min(new_profits)
 
     return make_minimize
 
 
 def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
-    win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
-    x0 = (win_min_stake, place_min_stake)
+    x0 = get_min_stake(win_odds, place_odds)
     bnds = ((0, None), (0, None))
-    win_stake, place_stake = minimize(
+    win_stake, place_stake = optimize.minimize(
         minimize_calculate_profit(
             win_odds,
             place_odds,
             profits,
-            win_min_stake,
-            place_min_stake,
             betfair_balance,
             place_payout,
         ),
         x0=x0,
         bounds=bnds,
-        method="SLSQP",
-        options={"eps": 0.01},
     ).x
-    win_stake = round(win_stake, 2)
-    place_stake = round(place_stake, 2)
-    if win_stake < win_min_stake:
-        win_stake = 0
-    if place_stake < place_min_stake:
-        place_stake = 0
-    return win_stake, place_stake
+    if not check_stakes(
+        0, betfair_balance, 0, win_stake, win_odds, place_stake, place_odds
+    ):
+        return 0, 0
+    return round(win_stake, 2), round(place_stake, 2)
+
+
+print(minimize_loss(3.3, 1.19, (50.59, 24.89, -18.61), 283.48, 5))
