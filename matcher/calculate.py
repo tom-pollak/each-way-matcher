@@ -99,8 +99,8 @@ def check_stakes(
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
     if (
         (total_stake > betfair_balance)
-        or (win_stake < win_min_stake)
-        or (place_stake < place_min_stake)
+        or (win_stake and win_stake < win_min_stake)
+        or (place_stake and place_stake < place_min_stake)
         or (bookie_stake * 2 > bookie_balance)
     ):
         return False
@@ -355,6 +355,7 @@ def minimize_calculate_profit(
             stakes[1],
             place_odds,
         ):
+            print(stakes, (stakes[0] + stakes[1]) * 1000)
             return (stakes[0] + stakes[1]) * 1000
 
         min_profits = calculate_profit(
@@ -368,6 +369,7 @@ def minimize_calculate_profit(
             round_profit=False,
         )
         min_profits = np.add(profits, min_profits)
+        print(min_profits, stakes, -min(min_profits))
         return -min(min_profits)
 
     return make_minimize
@@ -389,6 +391,8 @@ def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
         ),
         x0=x0,
         bounds=bnds,
+        method="SLSQP",
+        options={"eps": 0.01},
     ).x
     win_stake = round(win_stake, 2)
     place_stake = round(place_stake, 2)
