@@ -351,6 +351,3 @@ def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place
             "bet_id": place_bet_id,
         }
     return win_dict, place_dict
-
-
-print(get_race_ids(datetime(2021, 5, 14, 14, 15), "Newmarket", "End Result"))
