@@ -169,7 +169,6 @@ def make_bet(driver, race, market_ids=None, lay=False):
         except TimeoutException:
             pass
 
-    make_bet_start = time()
     get_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
     if cur_odd_price is None:
@@ -186,10 +185,9 @@ def make_bet(driver, race, market_ids=None, lay=False):
             if market_ids is None:
                 raise MatcherError("market_ids are None")
             if not betfair.check_odds(race, market_ids) or not check_start_time(
-                race, mins=0.5
+                race, secs=20
             ):
                 return race, False
-        print(f"up to place bet{time() - make_bet_start}")
         bet_made = place_bet(driver, race)
         if bet_made:
             return race, True

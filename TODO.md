@@ -7,8 +7,3 @@
 
 - optimize sporting index where possible
 - finish each way program
-
-calculations: 3 seconds
-getting bet: ? (maybe 30 seconds?)
-place_bet: 15 seconds
-betfair bet: 5 seconds
