@@ -37,7 +37,7 @@ No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - 
     {race['race_time']} - {race['venue']}
     Win odds: {race['win_odds']} Place odds: {race['place_odds']}
     Expected value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%
-    Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, stake: £{format(race['bookie_stake'], '.2f')}
+    Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, Stake: £{format(race['bookie_stake'], '.2f')}
     """
     )
 

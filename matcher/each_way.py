@@ -292,16 +292,6 @@ def evaluate_punt(driver, race):
 
     if race["bookie_stake"] < 0.1:
         return
-    if race["bookie_stake"] > 5:
-        print(f"bookie stake is large: {race['bookie_stake']}")
-        print(
-            win_odds_proportion,
-            race["win_odds"],
-            race["place_odds"],
-            race["place_payout"],
-            race["bookie_balance"],
-        )
-        return
 
     race, bet_made = sporting_index.make_bet(driver, race)
     if bet_made is None:  # horse not found
