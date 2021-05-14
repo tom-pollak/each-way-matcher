@@ -299,7 +299,6 @@ def get_horses(venue, race_time):
     )
     horses_res = call_api(horses_req)["result"][0]["runners"]
     horses = {horse["runnerName"]: horse["selectionId"] for horse in horses_res}
-    print(horses)
     return horses
 
 
