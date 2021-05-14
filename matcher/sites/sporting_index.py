@@ -169,6 +169,7 @@ def make_bet(driver, race, market_ids=None, lay=False):
         except TimeoutException:
             pass
 
+    make_bet_start = time()
     get_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
     if cur_odd_price is None:
@@ -188,10 +189,9 @@ def make_bet(driver, race, market_ids=None, lay=False):
                 race, mins=0.5
             ):
                 return race, False
-        place_bet_start = time()
+        print(f"up to place bet{time() - make_bet_start}")
         bet_made = place_bet(driver, race)
         if bet_made:
-            print(f"place bet (sporting index) took {time() - place_bet_start}")
             return race, True
         close_bet(driver)
     return race, False
