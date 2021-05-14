@@ -299,13 +299,18 @@ def get_horses(venue, race_time):
     )
     horses_res = call_api(horses_req)["result"][0]["runners"]
     horses = {horse["runnerName"]: horse["selectionId"] for horse in horses_res}
+    print(horses)
     return horses
 
 
 def get_race_ids(race_time, venue, horse):
     markets_ids = get_market_id(venue, race_time)
     horses = get_horses(venue, race_time)
-    selection_id = horses[horse]
+    try:
+        selection_id = horses[horse]
+    except KeyError:
+        print(f"Can't get horse selection id: {horse}\n{horses}")
+        raise MatcherError("Can't get selection id")
     return markets_ids, selection_id
 
 
@@ -346,3 +351,6 @@ def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place
             "bet_id": place_bet_id,
         }
     return win_dict, place_dict
+
+
+print(get_race_ids(datetime(2021, 5, 14, 14, 15), "Newmarket", "End Result"))

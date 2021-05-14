@@ -385,6 +385,3 @@ def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
     ):
         return 0, 0
     return round(win_stake, 2), round(place_stake, 2)
-
-
-print(minimize_loss(3.3, 1.19, (50.59, 24.89, -18.61), 283.48, 5))
