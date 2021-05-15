@@ -247,21 +247,21 @@ def calculate_stakes(
     stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = stake_proporiton * max_stake
 
-    # attempt to create stakes that are 20% the size of our total balance
+    # attempt to create stakes that are PERCENTAGE_BALANCE% the size of our total balance
     min_balance_staked = PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > max_stake:
         stake_proporiton = 1
-    elif min_balance_staked > min_stake:
-        stake_proporiton = min_balance_staked / max_stake
-
-    if bookie_stake < 3 or win_stake < 3 or place_stake < 3:
-        bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
-        win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
-        place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
-    else:
+        # rounds down when possiblility of stakes exceding balance
         bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
         win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
         place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
+    elif min_balance_staked > min_stake:
+        stake_proporiton = min_balance_staked / max_stake
+
+    # rounds up to reach $2 limit and $10 liability (otherwise can have $1.99)
+    bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
+    win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
+    place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
 
     # postcondition
     stakes_ok = check_stakes(
