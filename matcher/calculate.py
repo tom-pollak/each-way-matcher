@@ -329,7 +329,7 @@ def get_valid_horse_name(horses, target_horse):
     # sometimes runnerName is 1. horse_name
     for horse in horses:
         if target_horse.lower() in horse.lower():
-            return horse, target_horse
+            return target_horse, horse
 
     # for horses with punctuation taken out by oddsmonkey
     close_horse = difflib.get_close_matches(target_horse, horses, n=1)[0]
