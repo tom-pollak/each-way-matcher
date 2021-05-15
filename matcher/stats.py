@@ -18,7 +18,6 @@ def read_csv():
             header=0,
             parse_dates=[0, 1],
             index_col=0,
-            # date_parser=custom_date_parser,
             squeeze=True,
         )
     except (IndexError, FileNotFoundError):
@@ -143,7 +142,6 @@ def plot_bal_time_series_graph():
     ax.xaxis.set_major_formatter(date_fmt)
 
     balance = df["bookie_balance"] + df["betfair_balance"]
-    # ax.plot(balance, label="Withdrawable")
 
     for i, _ in enumerate(balance):
         balance[i] += calc_unfinished_races(i)
@@ -171,12 +169,12 @@ def plot_bal_time_series_graph():
     plt.savefig(BALANCE_PNG)
 
 
-df = read_csv()
-if len(df) == 0:
+_df = read_csv()
+if len(_df) == 0:
     STARTING_BALANCE = 0
 else:
     STARTING_BALANCE = (
-        df["bookie_balance"].values[0]
-        + df["betfair_balance"].values[0]
+        _df["bookie_balance"].values[0]
+        + _df["betfair_balance"].values[0]
         + calc_unfinished_races(0)
     )
