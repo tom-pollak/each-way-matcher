@@ -24,12 +24,7 @@ from .calculate import (
     get_valid_horse_name,
 )
 from .stats import check_repeat_bets
-from .output import (
-    update_csv,
-    show_info,
-    ouput_lay,
-    output_punt,
-)
+from .output import update_csv, show_info, ouput_lay, output_punt, alert_low_funds
 from .exceptions import MatcherError
 import matcher.sites.odds_monkey as odds_monkey
 import matcher.sites.sporting_index as sporting_index
@@ -243,6 +238,7 @@ def evaluate_arb(driver, race):
 
     ouput_lay(race)
     update_csv(race)
+    alert_low_funds(race)
 
 
 def scrape_arb_races(driver):
@@ -328,6 +324,7 @@ def evaluate_punt(driver, race):
     )
     output_punt(race)
     update_csv(race)
+    alert_low_funds(race)
 
 
 def scrape_punt_races(driver):

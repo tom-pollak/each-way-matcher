@@ -23,17 +23,34 @@ def show_info(count, START_TIME):
     time_alive = convert_time(diff)
 
     print(f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}")
-    print(f"Refreshes: {count}")
+    print(f"Refreshes: {count}\n")
     if datetime.now().hour >= 19:
         print("\nFinished matching today")
         print("---------------------------------------------")
         raise KeyboardInterrupt
 
 
+def alert_low_funds(race):
+    total_balance = (
+        race["bookie_balance"]
+        + race["betfair_balance"]
+        + race["betfair_exposure"]
+        + calc_unfinished_races()
+    )
+    alerted = False
+    if race["bookie_balance"] < min(0.1 * total_balance, 50):
+        print(f"Bookie balance low: £{format(race['bookie_balance'], '.2f')}")
+        alerted = True
+    if race["betfair_balance"] < min(0.2 * total_balance, 100):
+        print(f"Betfair balance low: £{format(race['betfair_balance'], '.2f')}")
+        alerted = True
+    if alerted:
+        print()
+
+
 def output_punt(race):
     print(
-        f"""
-No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']} (£{format(race['exp_return'], '.2f')})
+        f"""No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']} (£{format(race['exp_return'], '.2f')})
     {race['race_time']} - {race['venue']}
     Win odds: {race['win_odds']} Place odds: {race['place_odds']}
     Expected value: {round(race['exp_value'] * 100, 2)}%, Expected Growth: {round(race['exp_growth'] * 100, 2)}%
@@ -44,8 +61,7 @@ No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - 
 
 def ouput_lay(race):
     print(
-        f"""
-{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} (£{format(race['exp_return'], '.2f')})
+        f"""{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} (£{format(race['exp_return'], '.2f')})
     {race['race_time']} - {race['venue']}
     Bookie odds: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}
     Win profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}
