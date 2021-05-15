@@ -11,6 +11,7 @@ from selenium.common.exceptions import (
     TimeoutException,
     StaleElementReferenceException,
     NoSuchElementException,
+    ElementClickInterceptedException,
 )
 
 from matcher.exceptions import MatcherError
@@ -73,23 +74,29 @@ def get_balance(driver):
 def refresh(driver):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
-    WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
+            )
         )
-    )
+    except TimeoutException:
+        raise MatcherError("Timeout refreshing sporting index")
 
 
 def click_betslip(driver):
     driver.refresh()
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (
-                By.XPATH,
-                "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a",
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a",
+                )
             )
-        )
-    ).click()
+        ).click()
+    except ElementClickInterceptedException:
+        raise MatcherError("Couldn't click betslip")
 
 
 def place_bet(driver, race):
@@ -116,11 +123,14 @@ def place_bet(driver, race):
 def get_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
     driver.get(race["bookie_exchange"])
-    WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
+            )
         )
-    )
+    except TimeoutException:
+        raise MatcherError("Timout getting sporting index page")
 
 
 def make_bet(driver, race, market_ids=None, lay=False):
