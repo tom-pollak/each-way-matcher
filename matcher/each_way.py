@@ -14,7 +14,7 @@ from .setup import setup_selenium, check_vars
 from .calculate import (
     calculate_stakes,
     calculate_profit,
-    calcualte_stakes_from_profit,
+    calculate_stakes_from_profit,
     calculate_expected_return,
     kelly_criterion,
     minimize_loss,
@@ -212,7 +212,7 @@ def evaluate_arb(driver, race):
     race["place_odds"] = betfair.get_odds(market_ids["place"])[betfair_horse_name][
         "lay_odds_1"
     ]
-    race["win_stake"], race["place_stake"] = calcualte_stakes_from_profit(
+    race["win_stake"], race["place_stake"] = calculate_stakes_from_profit(
         race["place_profit"],
         race["lose_profit"],
         race["bookie_stake"],

@@ -62,7 +62,7 @@ def calculate_profit(
 
 
 # N.B bookie_stake is half actual stake
-def calcualte_stakes_from_profit(
+def calculate_stakes_from_profit(
     place_profit,
     lose_profit,
     bookie_stake,
@@ -251,17 +251,18 @@ def calculate_stakes(
     min_balance_staked = PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > max_stake:
         stake_proporiton = 1
-        # rounds down when possiblility of stakes exceding balance
-        bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
-        win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
-        place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
     elif min_balance_staked > min_stake:
         stake_proporiton = min_balance_staked / max_stake
+    else:
+        # rounds up to reach £2 limit and £10 liability (otherwise can have £1.99)
+        bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
+        win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
+        place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
 
-    # rounds up to reach $2 limit and $10 liability (otherwise can have $1.99)
-    bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
-    win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
-    place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
+    # rounds down when possiblility of stakes exceding balance
+    bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
+    win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
+    place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
 
     # postcondition
     stakes_ok = check_stakes(
@@ -276,7 +277,7 @@ def calculate_stakes(
     if not stakes_ok:
         print("Arb stakes not bettable:")
         print(
-            f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake:{bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
+            f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake: {bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
         )
         return False, 0, 0, 0
 
