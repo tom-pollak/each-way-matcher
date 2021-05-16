@@ -107,18 +107,6 @@ def check_stakes(
     return True
 
 
-def calibrate_stakes(win_stake, win_odds, place_stake, place_odds, betfair_balance):
-    total_stake = win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
-    win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
-    if total_stake > betfair_balance:
-        win_stake = place_stake = 0
-    elif win_stake < win_min_stake:
-        win_stake = 0
-    elif place_stake < place_min_stake:
-        place_stake = 0
-    return win_stake, place_stake
-
-
 def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
     place_profit = 0.5 * (bookie_odds - 1) / place_payout - 0.5
     win_profit = 0.5 * (bookie_odds - 1) + place_profit + 0.5
@@ -356,9 +344,14 @@ def minimize_calculate_profit(
 ):
     def make_minimize(*stakes):
         win_stake, place_stake = stakes[0]
-        win_stake, place_stake = calibrate_stakes(
-            win_stake, win_odds, place_stake, place_odds, betfair_balance
-        )
+        total_stake = win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
+        win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
+        if total_stake > betfair_balance:
+            return total_stake * 100
+        elif win_stake < win_min_stake:
+            win_stake = 0
+        elif place_stake < place_min_stake:
+            place_stake = 0
         new_profits = calculate_profit(
             0,
             0,
@@ -376,10 +369,8 @@ def minimize_calculate_profit(
 
 
 def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
-    x0 = get_min_stake(win_odds, place_odds)
-    max_win_stake = betfair_balance / (win_odds - 1) / 2
-    max_place_stake = betfair_balance / (place_odds - 1) / 2
-    bnds = [(0, max_win_stake), (0, max_place_stake)]
+    win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
+    bnds = ((0, betfair_balance), (0, betfair_balance))
     win_stake, place_stake = optimize.differential_evolution(
         minimize_calculate_profit(
             win_odds,
@@ -390,7 +381,8 @@ def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
         ),
         bounds=bnds,
     ).x
-    win_stake, place_stake = calibrate_stakes(
-        win_stake, win_odds, place_stake, place_odds, betfair_balance
-    )
+    if win_stake < win_min_stake:
+        win_stake = 0
+    elif place_stake < place_min_stake:
+        place_stake = 0
     return round(win_stake, 2), round(place_stake, 2)
