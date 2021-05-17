@@ -11,6 +11,7 @@ load_dotenv(os.path.join(BASEDIR, ".env"))
 
 COMMISSION = float(os.environ.get("COMMISSION"))
 PERCENTAGE_BALANCE = float(os.environ.get("PERCENTAGE_BALANCE"))
+PERCENTAGE_AVALIABLE = 0.75
 
 odds_increments = {
     1: 0.01,
@@ -204,9 +205,22 @@ def calculate_stakes(
     win_odds,
     place_stake,
     place_odds,
+    win_availiable,
+    place_avaliable,
 ):
     liabiltity_ratio = 1
     bookie_ratio = bookie_balance / (bookie_stake * 2)
+
+    stake_to_avalaible_ratio = max(
+        win_stake / win_avaliable, place_stake / place_avaliable
+    )
+    print(f"stake_to_avalaible_ratio: {stake_to_avalaible_ratio}")
+    print(f"original 'max stakes': {bookie_stake} {win_stake} {place_stake}")
+    print(f"stakes avaliable: {win_availiable} {place_avaliable}")
+    a = bookie_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
+    b = win_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
+    c = place_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
+    print(f"new 'max_stakes': {a} {b} {c}")
 
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake
