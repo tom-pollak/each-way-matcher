@@ -38,10 +38,10 @@ def alert_low_funds(race):
         + calc_unfinished_races()
     )
     alerted = False
-    if race["bookie_balance"] < min(0.1 * total_balance, 50):
+    if race["bookie_balance"] < 0.1 * total_balance:
         print(f"Bookie balance low: £{format(race['bookie_balance'], '.2f')}")
         alerted = True
-    if race["betfair_balance"] < min(0.2 * total_balance, 100):
+    if race["betfair_balance"] < 0.2 * total_balance:
         print(f"Betfair balance low: £{format(race['betfair_balance'], '.2f')}")
         alerted = True
     if alerted:

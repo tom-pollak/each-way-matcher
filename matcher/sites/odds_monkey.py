@@ -58,8 +58,21 @@ def login(driver):
         raise KeyboardInterrupt
 
 
-def find_races(driver, row=0, window=0):
-    driver.switch_to.window(driver.window_handles[window])
+def avaliable_to_lay(driver, row):
+    win_exchange = driver.find_element_by_xpath(
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[14]/a'
+    ).get_attribute("href")
+
+    place_exchange = driver.find_element_by_xpath(
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[15]/a/img'
+    ).get_attribute("href")
+    if "betfair" in win_exchange and "betfair" in place_exchange:
+        return True
+    return False
+
+
+def find_races(driver, row=0):
+    driver.switch_to.window(driver.window_handles[0])
     driver.switch_to.default_content()
     horse_name = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
@@ -187,37 +200,7 @@ def hide_race(driver, row=0, window=0):
     )
 
 
-def trigger_betfair_options(driver):
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00"]/thead/tr/th[17]/a')
-        )
-    ).click()
-
-    WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located(
-            (
-                By.XPATH,
-                '//*[@id="dnn_ctr1157_View_RadToolBar1"]/div/div/div/ul/li[6]/a/span/span/span/span',
-            )
-        )
-    ).click()
-    WebDriverWait(driver, 60).until(
-        EC.element_to_be_clickable((By.XPATH, '//*[@id="headingFour"]/h4/a'))
-    ).click()
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_rlbExchanges"]/div/div/label/input'
-    ).click()
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_rlbExchanges_i0"]/label/input'
-    ).click()
-    driver.find_element_by_xpath('//*[@id="dnn_ctr1157_View_btnApplyFilter"]').click()
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_ModuleContent"]/div[10]/div[1]/a'
-    ).click()
-
-
-def refresh(driver, betfair=False):
+def refresh(driver):
     for _ in range(3):
         driver.switch_to.default_content()
         try:
@@ -262,18 +245,10 @@ def refresh(driver, betfair=False):
                     (By.XPATH, '//*[@id="dnn_LOGO1_imgLogo"]')
                 )
             )
-            if betfair:
-                trigger_betfair_options(driver)
-                driver.switch_to.default_content()
+            # if betfair:
+            #     trigger_betfair_options(driver)
+            #     driver.switch_to.default_content()
     raise MatcherError("Couldn't refresh Oddsmonkey")
-
-
-def open_betfair_page(driver):
-    driver.execute_script(
-        """window.open("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx","_blank");"""
-    )
-    driver.switch_to.window(driver.window_handles[2])
-    trigger_betfair_options(driver)
 
 
 def get_no_rows(driver):
