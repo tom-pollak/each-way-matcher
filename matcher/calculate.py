@@ -348,7 +348,7 @@ def minimize_calculate_profit(
         win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
         if total_stake > betfair_balance:
             return total_stake * 100
-        elif win_stake < win_min_stake:
+        if win_stake < win_min_stake:
             win_stake = 0
         elif place_stake < place_min_stake:
             place_stake = 0
