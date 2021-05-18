@@ -110,8 +110,6 @@ def get_max_stake(
     win_stake_ratio = bookie_odds / win_odds
     place_stake_ratio = ((bookie_odds - 1) * place_payout + 1) / place_odds
     total_ratio = 1 + win_stake_ratio + place_stake_ratio
-
-    bookie_stake_ratio = 1 / total_ratio
     win_stake_ratio /= total_ratio
     place_stake_ratio /= total_ratio
 
