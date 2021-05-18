@@ -64,7 +64,7 @@ def avaliable_to_lay(driver, row):
     ).get_attribute("href")
 
     place_exchange = driver.find_element_by_xpath(
-        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[15]/a/img'
+        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[15]/a'
     ).get_attribute("href")
     if "betfair" in win_exchange and "betfair" in place_exchange:
         return True
