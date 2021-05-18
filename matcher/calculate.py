@@ -35,6 +35,39 @@ def check_start_time(race, secs):
     return True
 
 
+def round_odd(odd):
+    if odd is None:
+        return None
+    for price in odds_increments:
+        if odd > price:
+            odd = odds_increments[price] * round(odd / odds_increments[price])
+
+    return round(odd, 2)
+
+
+def get_next_odd_increment(odd):
+    for price in odds_increments:
+        if odd < price:
+            return round(odd + odds_increments[price], 2)
+    return None
+
+
+def get_valid_horse_name(horses, target_horse):
+    for horse in horses:
+        if horse.lower() == target_horse.lower():
+            return horse, horse
+
+    # sometimes runnerName is 1. horse_name
+    for horse in horses:
+        if target_horse.lower() in horse.lower():
+            return target_horse, horse
+
+    # for horses with punctuation taken out by oddsmonkey
+    close_horse = difflib.get_close_matches(target_horse, horses, n=1)[0]
+    print("Close horse found: %s (%s)" % (close_horse, target_horse))
+    return close_horse, close_horse
+
+
 # N.B bookie_stake is half actual stake
 def calculate_profit(
     bookie_odds,
@@ -62,29 +95,40 @@ def calculate_profit(
     return win_profit, place_profit, lose_profit
 
 
-# N.B bookie_stake is half actual stake
-def calculate_stakes_from_profit(
-    place_profit,
-    lose_profit,
-    bookie_stake,
-    bookie_odds,
-    place_odds,
-    place_payout,
-):
-    place_profit -= bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
-    lose_profit -= -bookie_stake * 2
-
-    place_stake = (place_profit - lose_profit) / (COMMISSION - place_odds)
-    win_stake = lose_profit / (1 - COMMISSION) - place_stake
-    return round(win_stake, 2), round(place_stake, 2)
-
-
 def get_min_stake(win_odds, place_odds):
     win_min_stake = 10 / (win_odds - 1)
     win_min_stake = min(win_min_stake, 2)
     place_min_stake = 10 / (place_odds - 1)
     place_min_stake = min(place_min_stake, 2)
     return round(win_min_stake, 2), round(place_min_stake, 2)
+
+
+def get_max_stake(
+    bookie_odds, win_odds, place_odds, win_avaliable, place_avaliable, place_payout
+):
+    place_payout = 1 / place_payout
+    win_stake_ratio = bookie_odds / win_odds
+    place_stake_ratio = ((bookie_odds - 1) * place_payout + 1) / place_odds
+    total_ratio = 1 + win_stake_ratio + place_stake_ratio
+
+    bookie_stake_ratio = 1 / total_ratio
+    win_stake_ratio /= total_ratio
+    place_stake_ratio /= total_ratio
+
+    # place_avaliable limiting factor
+    if place_stake_ratio * place_avaliable < win_stake_ratio * win_avaliable:
+        place_stake = place_avaliable
+        bookie_stake = place_stake * place_odds / ((bookie_odds - 1) * place_payout + 1)
+        win_stake = bookie_stake * bookie_odds / win_odds
+
+    # win_avaliable limiting factor
+    else:
+        win_stake = win_avaliable
+        bookie_stake = win_stake * win_odds / bookie_odds
+        place_stake = (
+            ((bookie_odds - 1) * place_payout + 1) * bookie_stake
+        ) / place_odds
+    return bookie_stake, win_stake, place_stake
 
 
 def check_stakes(
@@ -197,53 +241,6 @@ def maximize_arb(
     return result.x[0]
 
 
-def get_max_stakes(
-    bookie_odds, win_odds, place_odds, win_avaliable, place_avaliable, place_payout
-):
-    place_payout = 1 / place_payout
-    win_stake_ratio = ((bookie_odds - 1) * place_payout + 1) / place_odds
-    place_stake_ratio = bookie_odds / win_odds
-    total_ratio = 1 + win_stake_ratio + place_stake_ratio
-    bookie_stake_ratio = 1 / total_ratio
-    win_stake_ratio /= total_ratio
-    place_stake_ratio /= total_ratio
-    print(bookie_stake_ratio, win_stake_ratio, place_stake_ratio)
-
-    # place_avaliable limiting factor
-    if place_stake_ratio * place_avaliable < win_stake_ratio * win_avaliable:
-        print("place is limiting")
-        place_stake = place_avaliable
-        bookie_stake = place_stake * win_odds / bookie_odds
-        win_stake = (((bookie_odds - 1) * place_payout + 1) * bookie_stake) / place_odds
-
-    # win_avaliable limiting factor
-    else:
-        print("win is limiting")
-        win_stake = win_avaliable
-        bookie_stake = win_stake * place_odds / ((bookie_odds - 1) * place_payout + 1)
-        place_stake = bookie_stake * bookie_odds / win_odds
-    return bookie_stake, win_stake, place_stake
-
-    # print(win_stake, place_stake)
-    # stake_to_avalaible_ratio = max(
-    #     win_stake / win_avaliable, place_stake / place_avaliable
-    # )
-    # print(f"stake_to_avalaible_ratio: {stake_to_avalaible_ratio}")
-    # print(f"original 'max stakes': {bookie_stake} {win_stake} {place_stake}")
-    # print(f"stakes avaliable: {win_avaliable} {place_avaliable}")
-    # a = bookie_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
-    # b = win_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
-    # c = place_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
-    # print(f"new 'max_stakes': {a} {b} {c}")
-    # pass
-
-
-# profits = get_max_stakes(10, 10.5, 1.8, 500, 100, 5)
-profits = get_max_stakes(10, 10.5, 1.8, 100, 100, 5)
-print(profits)
-print(calculate_profit(10, profits[0], 10.5, profits[1], 1.8, profits[2], 5))
-
-
 def calculate_stakes(
     bookie_balance,
     betfair_balance,
@@ -252,8 +249,6 @@ def calculate_stakes(
     win_odds,
     place_stake,
     place_odds,
-    win_avaliable,
-    place_avaliable,
 ):
     liabiltity_ratio = 1
     bookie_ratio = bookie_balance / (bookie_stake * 2)
@@ -334,6 +329,23 @@ def calculate_stakes(
     return True, bookie_stake, win_stake, place_stake
 
 
+# N.B bookie_stake is half actual stake
+def calculate_stakes_from_profit(
+    place_profit,
+    lose_profit,
+    bookie_stake,
+    bookie_odds,
+    place_odds,
+    place_payout,
+):
+    place_profit -= bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
+    lose_profit -= -bookie_stake * 2
+
+    place_stake = (place_profit - lose_profit) / (COMMISSION - place_odds)
+    win_stake = lose_profit / (1 - COMMISSION) - place_stake
+    return round(win_stake, 2), round(place_stake, 2)
+
+
 def calculate_expected_return(
     total_balance, win_odds, place_odds, win_profit, place_profit, lose_profit
 ):
@@ -350,39 +362,6 @@ def calculate_expected_return(
         )
         return 0, 0
     return exp_growth, exp_growth * total_balance
-
-
-def round_odd(odd):
-    if odd is None:
-        return None
-    for price in odds_increments:
-        if odd > price:
-            odd = odds_increments[price] * round(odd / odds_increments[price])
-
-    return round(odd, 2)
-
-
-def get_next_odd_increment(odd):
-    for price in odds_increments:
-        if odd < price:
-            return round(odd + odds_increments[price], 2)
-    return None
-
-
-def get_valid_horse_name(horses, target_horse):
-    for horse in horses:
-        if horse.lower() == target_horse.lower():
-            return horse, horse
-
-    # sometimes runnerName is 1. horse_name
-    for horse in horses:
-        if target_horse.lower() in horse.lower():
-            return target_horse, horse
-
-    # for horses with punctuation taken out by oddsmonkey
-    close_horse = difflib.get_close_matches(target_horse, horses, n=1)[0]
-    print("Close horse found: %s (%s)" % (close_horse, target_horse))
-    return close_horse, close_horse
 
 
 def minimize_calculate_profit(
