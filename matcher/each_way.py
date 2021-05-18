@@ -323,12 +323,20 @@ def scrape_races(driver, lay):
                 )
                 .text.title()
             )
+            avaliable_to_lay_start = time()
             if lay and odds_monkey.avaliable_to_lay(driver, row):
+                print(f"avaliable_to_lay took: {time() - avaliable_to_lay_start}")
+                find_races_start = time()
                 race.update(odds_monkey.find_races(driver, row))
+                print(f"find_races took: {time() - find_races_start}")
+                evaluate_arb_start = time()
                 evaluate_arb(driver, race)
+                print(f"evaluate arb took: {time() - evaluate_arb_start}")
 
             if horse_name not in processed_horses:
+                find_races_start = time()
                 race.update(odds_monkey.find_races(driver, row))
+                print(f"find_races took: {time() - find_races_start}")
                 processed_horses.append(race["horse_name"])
                 evaluate_punt(driver, race)
 
