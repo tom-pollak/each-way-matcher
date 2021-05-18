@@ -197,6 +197,53 @@ def maximize_arb(
     return result.x[0]
 
 
+def get_max_stakes(
+    bookie_odds, win_odds, place_odds, win_avaliable, place_avaliable, place_payout
+):
+    place_payout = 1 / place_payout
+    win_stake_ratio = ((bookie_odds - 1) * place_payout + 1) / place_odds
+    place_stake_ratio = bookie_odds / win_odds
+    total_ratio = 1 + win_stake_ratio + place_stake_ratio
+    bookie_stake_ratio = 1 / total_ratio
+    win_stake_ratio /= total_ratio
+    place_stake_ratio /= total_ratio
+    print(bookie_stake_ratio, win_stake_ratio, place_stake_ratio)
+
+    # place_avaliable limiting factor
+    if place_stake_ratio * place_avaliable < win_stake_ratio * win_avaliable:
+        print("place is limiting")
+        place_stake = place_avaliable
+        bookie_stake = place_stake * win_odds / bookie_odds
+        win_stake = (((bookie_odds - 1) * place_payout + 1) * bookie_stake) / place_odds
+
+    # win_avaliable limiting factor
+    else:
+        print("win is limiting")
+        win_stake = win_avaliable
+        bookie_stake = win_stake * place_odds / ((bookie_odds - 1) * place_payout + 1)
+        place_stake = bookie_stake * bookie_odds / win_odds
+    return bookie_stake, win_stake, place_stake
+
+    # print(win_stake, place_stake)
+    # stake_to_avalaible_ratio = max(
+    #     win_stake / win_avaliable, place_stake / place_avaliable
+    # )
+    # print(f"stake_to_avalaible_ratio: {stake_to_avalaible_ratio}")
+    # print(f"original 'max stakes': {bookie_stake} {win_stake} {place_stake}")
+    # print(f"stakes avaliable: {win_avaliable} {place_avaliable}")
+    # a = bookie_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
+    # b = win_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
+    # c = place_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
+    # print(f"new 'max_stakes': {a} {b} {c}")
+    # pass
+
+
+# profits = get_max_stakes(10, 10.5, 1.8, 500, 100, 5)
+profits = get_max_stakes(10, 10.5, 1.8, 100, 100, 5)
+print(profits)
+print(calculate_profit(10, profits[0], 10.5, profits[1], 1.8, profits[2], 5))
+
+
 def calculate_stakes(
     bookie_balance,
     betfair_balance,
@@ -205,22 +252,11 @@ def calculate_stakes(
     win_odds,
     place_stake,
     place_odds,
-    win_availiable,
+    win_avaliable,
     place_avaliable,
 ):
     liabiltity_ratio = 1
     bookie_ratio = bookie_balance / (bookie_stake * 2)
-
-    stake_to_avalaible_ratio = max(
-        win_stake / win_avaliable, place_stake / place_avaliable
-    )
-    print(f"stake_to_avalaible_ratio: {stake_to_avalaible_ratio}")
-    print(f"original 'max stakes': {bookie_stake} {win_stake} {place_stake}")
-    print(f"stakes avaliable: {win_availiable} {place_avaliable}")
-    a = bookie_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
-    b = win_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
-    c = place_stake * PERCENTAGE_AVALIABLE / stake_to_avaliable_ratio
-    print(f"new 'max_stakes': {a} {b} {c}")
 
     max_win_liability = (win_odds - 1) * win_stake
     max_place_liability = (place_odds - 1) * place_stake

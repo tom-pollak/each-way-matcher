@@ -316,6 +316,8 @@ def scrape_races(driver, lay):
                 )
                 .text.title()
             )
+            driver.switch_to.window(driver.window_handles[0])
+            driver.switch_to.default_content()
             if lay and odds_monkey.avaliable_to_lay(driver, row):
                 race.update(odds_monkey.find_races(driver, row))
                 evaluate_arb(driver, race)

@@ -72,8 +72,6 @@ def avaliable_to_lay(driver, row):
 
 
 def find_races(driver, row=0):
-    driver.switch_to.window(driver.window_handles[0])
-    driver.switch_to.default_content()
     horse_name = driver.find_element_by_xpath(
         f'//table//tr[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]//td[9]'
     ).text.title()
