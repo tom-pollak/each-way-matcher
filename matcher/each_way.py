@@ -128,7 +128,7 @@ def evaluate_arb(driver, race):
     race["win_odds"] = win_info["lay_odds_1"]
     race["place_odds"] = place_info["lay_odds_1"]
 
-    race["bookie_stake"], race["win_stake"], race["place_stake"] = get_max_stake(
+    max_bookie_stake, max_win_stake, max_place_stake = get_max_stake(
         race["bookie_odds"],
         race["win_odds"],
         race["place_odds"],
@@ -144,10 +144,10 @@ def evaluate_arb(driver, race):
     ) = calculate_stakes(
         race["bookie_balance"],
         race["betfair_balance"],
-        race["bookie_stake"],
-        race["win_stake"],
+        max_bookie_stake,
+        max_win_stake,
         race["win_odds"],
-        race["place_stake"],
+        max_place_stake,
         race["place_odds"],
     )
 
