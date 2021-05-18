@@ -250,6 +250,10 @@ def calculate_stakes(
     place_stake,
     place_odds,
 ):
+    bookie_stake *= PERCENTAGE_AVALIABLE
+    win_stake *= PERCENTAGE_AVALIABLE
+    place_stake *= PERCENTAGE_AVALIABLE
+
     liabiltity_ratio = 1
     bookie_ratio = bookie_balance / (bookie_stake * 2)
 

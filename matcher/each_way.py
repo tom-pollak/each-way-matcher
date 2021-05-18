@@ -120,6 +120,9 @@ def evaluate_arb(driver, race):
     race["horse_name"], betfair_horse_name = get_valid_horse_name(
         horses, race["horse_name"]
     )
+    market_ids, selection_id = betfair.get_race_ids(
+        race["race_time"], race["venue"], betfair_horse_name
+    )
     win_info = betfair.get_odds(market_ids["win"])[betfair_horse_name]
     place_info = betfair.get_odds(market_ids["place"])[betfair_horse_name]
     race["win_odds"] = win_info["lay_odds_1"]
@@ -189,10 +192,6 @@ def evaluate_arb(driver, race):
         if not stakes_ok:
             print(f"Arb bet not profitable: {profits} - {stake_proportion}")
             return
-
-    market_ids, selection_id = betfair.get_race_ids(
-        race["race_time"], race["venue"], betfair_horse_name
-    )
 
     if not betfair.check_odds(race, market_ids):
         evaluate_arb(driver, race)
