@@ -56,12 +56,12 @@ def login(driver):
     except ElementClickInterceptedException:
         print("Dismiss one time pop-up boxes and setup oddsmonkey")
         raise KeyboardInterrupt
-    driver.find_element_by_xpath(
-        f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_Arrow"]'
-    ).click()
-    driver.find_element_by_xpath(
-        '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_DropDown"]/div/ul/li[3]'
-    ).click()
+    # driver.find_element_by_xpath(
+    #     f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_Arrow"]'
+    # ).click()
+    # driver.find_element_by_xpath(
+    #     '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_DropDown"]/div/ul/li[3]'
+    # ).click()
 
 
 def avaliable_to_lay(driver, row):
