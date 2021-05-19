@@ -35,11 +35,15 @@ def check_repeat_bets(horse_name, race_time, venue):
     win_odds_proportion = 1 - sum(1 / horses.loc[horses["bet_type"] == "Punt"].win_odds)
 
     horse_races = horses.loc[horses["horse_name"] == horse_name]
+    profits = horse_races.loc[
+        horse_races["bet_type"] == "Lay Punt",
+        ["win_profit", "place_profit", "lose_profit"],
+    ].sum()
     bet_types = horse_races["bet_type"].unique()
     if win_odds_proportion > 1:
         print(f"win_odds_proportion {win_odds_proportion}")
         win_odds_proportion = 1
-    return bet_types, win_odds_proportion
+    return bet_types, win_odds_proportion, tuple(profits)
 
 
 def calc_unfinished_races(index=-1):
