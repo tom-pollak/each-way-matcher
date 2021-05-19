@@ -68,33 +68,6 @@ def get_valid_horse_name(horses, target_horse):
     return close_horse, close_horse
 
 
-# N.B bookie_stake is half actual stake
-def calculate_profit(
-    bookie_odds,
-    bookie_stake,
-    win_odds,
-    win_stake,
-    place_odds,
-    place_stake,
-    place_payout,
-    round_profit=True,
-):
-    win_profit = place_profit = lose_profit = 0
-    commission_lose = (win_stake + place_stake) * COMMISSION
-    commission_place = win_stake * COMMISSION
-
-    place_profit = bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
-    win_profit = bookie_stake * (bookie_odds - 1) + place_profit + bookie_stake
-    lose_profit = -bookie_stake * 2
-
-    win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
-    place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
-    lose_profit += win_stake + place_stake - commission_lose
-    if round_profit:
-        return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
-    return win_profit, place_profit, lose_profit
-
-
 def get_min_stake(win_odds, place_odds):
     win_min_stake = 10 / (win_odds - 1)
     win_min_stake = min(win_min_stake, 2)
@@ -148,6 +121,51 @@ def check_stakes(
     ):
         return False
     return True
+
+
+# N.B bookie_stake is half actual stake
+def calculate_profit(
+    bookie_odds,
+    bookie_stake,
+    win_odds,
+    win_stake,
+    place_odds,
+    place_stake,
+    place_payout,
+    round_profit=True,
+):
+    win_profit = place_profit = lose_profit = 0
+    commission_lose = (win_stake + place_stake) * COMMISSION
+    commission_place = win_stake * COMMISSION
+
+    place_profit = bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
+    win_profit = bookie_stake * (bookie_odds - 1) + place_profit + bookie_stake
+    lose_profit = -bookie_stake * 2
+
+    win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
+    place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
+    lose_profit += win_stake + place_stake - commission_lose
+    if round_profit:
+        return round(win_profit, 2), round(place_profit, 2), round(lose_profit, 2)
+    return win_profit, place_profit, lose_profit
+
+
+def calculate_expected_return(
+    total_balance, win_odds, place_odds, win_profit, place_profit, lose_profit
+):
+    win_prob = 1 / win_odds
+    place_prob = 1 / place_odds - win_prob
+    lose_prob = 1 - win_prob - place_prob
+
+    exp_growth = (1 + win_profit / total_balance) ** win_prob * (
+        1 + place_profit / total_balance
+    ) ** place_prob * (1 + lose_profit / total_balance) ** lose_prob - 1
+    if isinstance(exp_growth, complex):
+        print(
+            "ERROR: exp_growth complex - a profit loses more than is in total_balance"
+        )
+        return 0, 0
+    return exp_growth, exp_growth * total_balance
 
 
 def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
@@ -207,36 +225,6 @@ def arb_kelly_criterion(
         ]
     )
     return stake_proporiton
-
-
-def maximize_arb(
-    bookie_balance,
-    betfair_balance,
-    win_odds,
-    place_odds,
-    win_profit,
-    place_profit,
-    lose_profit,
-    bounds=True,
-):
-    if bounds:
-        bnds = ((0, 1),)
-    else:
-        bnds = ((None, None),)
-    result = optimize.minimize(
-        arb_kelly_criterion,
-        x0=1,
-        args=(
-            bookie_balance + betfair_balance,
-            win_profit,
-            place_profit,
-            lose_profit,
-            win_odds,
-            place_odds,
-        ),
-        bounds=bnds,
-    )
-    return result.x[0]
 
 
 def calculate_stakes(
@@ -328,8 +316,6 @@ def calculate_stakes(
         )
         return False, 0, 0, 0
 
-    return True, bookie_stake, win_stake, place_stake
-
 
 # N.B bookie_stake is half actual stake
 def calculate_stakes_from_profit(
@@ -348,22 +334,36 @@ def calculate_stakes_from_profit(
     return round(win_stake, 2), round(place_stake, 2)
 
 
-def calculate_expected_return(
-    total_balance, win_odds, place_odds, win_profit, place_profit, lose_profit
+def maximize_arb(
+    bookie_balance,
+    betfair_balance,
+    win_odds,
+    place_odds,
+    win_profit,
+    place_profit,
+    lose_profit,
+    bounds=True,
 ):
-    win_prob = 1 / win_odds
-    place_prob = 1 / place_odds - win_prob
-    lose_prob = 1 - win_prob - place_prob
+    if bounds:
+        bnds = ((0, 1),)
+    else:
+        bnds = ((None, None),)
+    result = optimize.minimize(
+        arb_kelly_criterion,
+        x0=1,
+        args=(
+            bookie_balance + betfair_balance,
+            win_profit,
+            place_profit,
+            lose_profit,
+            win_odds,
+            place_odds,
+        ),
+        bounds=bnds,
+    )
+    return result.x[0]
 
-    exp_growth = (1 + win_profit / total_balance) ** win_prob * (
-        1 + place_profit / total_balance
-    ) ** place_prob * (1 + lose_profit / total_balance) ** lose_prob - 1
-    if isinstance(exp_growth, complex):
-        print(
-            "ERROR: exp_growth complex - a profit loses more than is in total_balance"
-        )
-        return 0, 0
-    return exp_growth, exp_growth * total_balance
+    return True, bookie_stake, win_stake, place_stake
 
 
 def minimize_calculate_profit(
