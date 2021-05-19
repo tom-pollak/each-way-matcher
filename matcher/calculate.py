@@ -315,6 +315,7 @@ def calculate_stakes(
             f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake: {bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
         )
         return False, 0, 0, 0
+    return True, bookie_stake, win_stake, place_stake
 
 
 # N.B bookie_stake is half actual stake
@@ -362,8 +363,6 @@ def maximize_arb(
         bounds=bnds,
     )
     return result.x[0]
-
-    return True, bookie_stake, win_stake, place_stake
 
 
 def minimize_calculate_profit(
