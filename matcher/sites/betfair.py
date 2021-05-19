@@ -55,6 +55,52 @@ def login():
     raise MatcherError("Can't login")
 
 
+def call_api(jsonrpc_req, url=betting_url):
+    headers = login()
+    try:
+        if url.lower().startswith("http"):
+            req = request.Request(url, jsonrpc_req.encode("utf-8"), headers)
+        else:
+            raise MatcherError("url does not start with http")
+        with request.urlopen(req) as response:
+            json_res = response.read()
+            return json.loads(json_res.decode("utf-8"))
+    except error.HTTPError as e:
+        print(f"Request failed with response: {e.response.status_code}")
+        print(url)
+    except error.URLError:
+        print(f"No service avaliable at {url}")
+    raise MatcherError(f"API request failed:\n{jsonrpc_req}")
+
+
+def get_balance():
+    account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
+    balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
+    balance_res = call_api(balance_req, url=account_url)
+    balance = balance_res["result"]["availableToBetBalance"]
+    return balance
+
+
+def get_exposure():
+    account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
+    exposure_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
+    exposure_res = call_api(exposure_req, url=account_url)
+    exposure = abs(exposure_res["result"]["exposure"])
+    return exposure
+
+
+def cancel_unmatched_bets():
+    cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
+    try:
+        cancel_res = call_api(cancel_req)
+        if cancel_res["result"]["status"] == "SUCCESS":
+            return True
+    except (KeyError, MatcherError):
+        print("ERROR: Could not cancel unmatched bets!")
+        print(cancel_res)
+    return False
+
+
 def get_odds(market_id):
     horses = {}
     resp = requests.get(
@@ -115,24 +161,6 @@ def check_odds(race, market_ids):
         print(win_info)
         print(place_info)
     return False
-
-
-def call_api(jsonrpc_req, url=betting_url):
-    headers = login()
-    try:
-        if url.lower().startswith("http"):
-            req = request.Request(url, jsonrpc_req.encode("utf-8"), headers)
-        else:
-            raise MatcherError("url does not start with http")
-        with request.urlopen(req) as response:
-            json_res = response.read()
-            return json.loads(json_res.decode("utf-8"))
-    except error.HTTPError as e:
-        print(f"Request failed with response: {e.response.status_code}")
-        print(url)
-    except error.URLError:
-        print(f"No service avaliable at {url}")
-    raise MatcherError(f"API request failed:\n{jsonrpc_req}")
 
 
 def get_bets_by_race(win_market_id, place_market_id):
@@ -221,18 +249,6 @@ def get_market_id(venue, race_time):
     return markets_ids
 
 
-def cancel_unmatched_bets():
-    cancel_req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/cancelOrders", "params": {}, "id": 7}'
-    try:
-        cancel_res = call_api(cancel_req)
-        if cancel_res["result"]["status"] == "SUCCESS":
-            return True
-    except (KeyError, MatcherError):
-        print("ERROR: Could not cancel unmatched bets!")
-        print(cancel_res)
-    return False
-
-
 def lay_bets(market_id, selection_id, price, stake):
     matched = False
     bet_made = False
@@ -270,22 +286,6 @@ def lay_bets(market_id, selection_id, price, stake):
             print("Unknown error making bet: %s\n" % bet_res)
             print(bet_req)
     return bet_made, matched_price, matched, stake_matched, bet_id
-
-
-def get_balance():
-    account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
-    balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    balance_res = call_api(balance_req, url=account_url)
-    balance = balance_res["result"]["availableToBetBalance"]
-    return balance
-
-
-def get_exposure():
-    account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
-    exposure_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    exposure_res = call_api(exposure_req, url=account_url)
-    exposure = abs(exposure_res["result"]["exposure"])
-    return exposure
 
 
 def get_horses(venue, race_time):
