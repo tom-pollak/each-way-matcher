@@ -11,7 +11,7 @@ load_dotenv(os.path.join(BASEDIR, ".env"))
 
 COMMISSION = float(os.environ.get("COMMISSION"))
 PERCENTAGE_BALANCE = float(os.environ.get("PERCENTAGE_BALANCE"))
-PERCENTAGE_AVALIABLE = 0.75
+PERCENTAGE_AVALIABLE = float(os.environ.get("PERCENTAGE_AVALIABLE"))
 
 odds_increments = {
     1: 0.01,
@@ -294,7 +294,7 @@ def calculate_stakes(
     stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = stake_proporiton * max_stake
 
-    # attempt to create stakes that are PERCENTAGE_BALANCE% the size of our total balance
+    # create stakes that are PERCENTAGE_BALANCE% the size of our total balance
     min_balance_staked = PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > max_stake:
         stake_proporiton = 1
