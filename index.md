@@ -5,4 +5,5 @@
 
 ![graph](balance.png)
 
-[returns](returns.csv)
+CSV of all bets made:  
+[returns.csv](returns.csv)
