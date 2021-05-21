@@ -24,7 +24,7 @@ from .calculate import (
     get_valid_horse_name,
     get_max_stake,
 )
-from .stats import check_repeat_bets
+from .stats import check_repeat_bets, calc_unfinished_races
 from .output import update_csv, show_info, ouput_lay, output_punt, alert_low_funds
 from .exceptions import MatcherError
 import matcher.sites.odds_monkey as odds_monkey
@@ -251,7 +251,7 @@ def evaluate_arb(driver, race):
         race["exp_growth"],
         race["exp_return"],
     ) = calculate_expected_return(
-        race["bookie_balance"] + race["betfair_balance"],
+        race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races(),
         race["win_odds"],
         race["place_odds"],
         race["win_profit"],
@@ -311,7 +311,7 @@ def evaluate_punt(driver, race):
         race["exp_growth"],
         race["exp_return"],
     ) = calculate_expected_return(
-        race["bookie_balance"] + race["betfair_balance"],
+        race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races(),
         race["win_odds"],
         race["place_odds"],
         race["win_profit"],

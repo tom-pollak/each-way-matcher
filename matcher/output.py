@@ -32,10 +32,7 @@ def show_info(count, START_TIME):
 
 def alert_low_funds(race):
     total_balance = (
-        race["bookie_balance"]
-        + race["betfair_balance"]
-        + race["betfair_exposure"]
-        + calc_unfinished_races()
+        race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races()
     )
     alerted = False
     if race["bookie_balance"] < 0.1 * total_balance:
