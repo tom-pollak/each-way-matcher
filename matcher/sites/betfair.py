@@ -160,7 +160,6 @@ def scrape_odds(market_id):
 
 
 def check_odds(race, market_ids, selection_id):
-    horses = get_horses(race["venue"], race["race_time"]).keys()
     win_odds, win_available = get_odds(market_ids["win"], selection_id)
     place_odds, place_available = get_odds(market_ids["place"], selection_id)
     try:
