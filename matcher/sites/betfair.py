@@ -55,11 +55,13 @@ def login():
     raise MatcherError("Can't login")
 
 
+HEADERS = login()
+
+
 def call_api(jsonrpc_req, url=betting_url):
-    headers = login()
     try:
         if url.lower().startswith("http"):
-            req = request.Request(url, jsonrpc_req.encode("utf-8"), headers)
+            req = request.Request(url, jsonrpc_req.encode("utf-8"), HEADERS)
         else:
             raise MatcherError("url does not start with http")
         with request.urlopen(req) as response:
@@ -69,7 +71,7 @@ def call_api(jsonrpc_req, url=betting_url):
         print(f"Request failed with response: {e.response.status_code}")
         print(url)
     except error.URLError:
-        print(f"No service avaliable at {url}")
+        print(f"No service available at {url}")
     raise MatcherError(f"API request failed:\n{jsonrpc_req}")
 
 
@@ -101,7 +103,21 @@ def cancel_unmatched_bets():
     return False
 
 
-def get_odds(market_id):
+def get_odds(market_id, selection_id):
+    price_req = (
+        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listRunnerBook", "params": {"locale":"en", "marketId": "%s", "selectionId": "%s", "priceProjection": {"priceData":["EX_BEST_OFFERS"]}, "orderProjection":"ALL"},"id":1}'
+        % (market_id, selection_id)
+    )
+    res = call_api(price_req)
+    try:
+        odds = res["result"][0]["runners"][0]["ex"]["availableToLay"][0]
+    except KeyError:
+        print(res)
+        raise MatcherError("Couldn't get odds from betfair")
+    return odds["price"], odds["size"]
+
+
+def scrape_odds(market_id):
     horses = {}
     resp = requests.get(
         f"https://www.betfair.com/www/sports/exchange/readonly/v1/bymarket?_ak=nzIFcwyWhrlwYMrh&alt=json&currencyCode=GBP&locale=en_GB&marketIds={market_id}&rollupLimit=10&rollupModel=STAKE&types=EVENT,RUNNER_DESCRIPTION,%20RUNNER_EXCHANGE_PRICES_BEST"
@@ -123,37 +139,37 @@ def get_odds(market_id):
             "lay_odds_1": 99999,
             "lay_odds_2": 99999,
             "lay_odds_3": 99999,
-            "back_avaliable_1": 0,
-            "back_avaliable_2": 0,
-            "back_avaliable_3": 0,
-            "lay_avaliable_1": 0,
-            "lay_avaliable_2": 0,
-            "lay_avaliable_3": 0,
+            "back_available_1": 0,
+            "back_available_2": 0,
+            "back_available_3": 0,
+            "lay_available_1": 0,
+            "lay_available_2": 0,
+            "lay_available_3": 0,
         }
         back = horse["exchange"].get("availableToBack")
         lay = horse["exchange"].get("availableToLay")
         if back is not None:
             for i, odds in enumerate(back):
                 horses[horse_name][f"back_odds_{i+1}"] = odds["price"]
-                horses[horse_name][f"back_avaliable_{i+1}"] = odds["size"]
+                horses[horse_name][f"back_available_{i+1}"] = odds["size"]
         if lay is not None:
             for i, odds in enumerate(lay):
                 horses[horse_name][f"lay_odds_{i+1}"] = odds["price"]
-                horses[horse_name][f"lay_avaliable_{i+1}"] = odds["size"]
+                horses[horse_name][f"lay_available_{i+1}"] = odds["size"]
     return horses
 
 
-def check_odds(race, market_ids):
+def check_odds(race, market_ids, selection_id):
     horses = get_horses(race["venue"], race["race_time"]).keys()
     _, betfair_horse_name = get_valid_horse_name(horses, race["horse_name"])
-    win_info = get_odds(market_ids["win"])[betfair_horse_name]
-    place_info = get_odds(market_ids["place"])[betfair_horse_name]
+    win_odds, win_available = get_odds(market_ids["win"], selection_id)
+    place_odds, place_available = get_odds(market_ids["place"], selection_id)
     try:
         if (
-            win_info["lay_odds_1"] <= race["win_odds"]
-            and place_info["lay_odds_1"] <= race["place_odds"]
-            and win_info["lay_avaliable_1"] >= race["win_stake"]
-            and place_info["lay_avaliable_1"] >= race["place_stake"]
+            win_oddss <= race["win_odds"]
+            and place_odds <= race["place_odds"]
+            and win_available >= race["win_stake"]
+            and place_available >= race["place_stake"]
         ):
             return True
     except KeyError as e:

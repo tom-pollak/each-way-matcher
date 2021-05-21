@@ -11,7 +11,7 @@ load_dotenv(os.path.join(BASEDIR, ".env"))
 
 COMMISSION = float(os.environ.get("COMMISSION"))
 PERCENTAGE_BALANCE = float(os.environ.get("PERCENTAGE_BALANCE"))
-PERCENTAGE_AVALIABLE = float(os.environ.get("PERCENTAGE_AVALIABLE"))
+PERCENTAGE_AVAILABLE = float(os.environ.get("PERCENTAGE_AVAILABLE"))
 
 odds_increments = {
     1: 0.01,
@@ -77,7 +77,7 @@ def get_min_stake(win_odds, place_odds):
 
 
 def get_max_stake(
-    bookie_odds, win_odds, place_odds, win_avaliable, place_avaliable, place_payout
+    bookie_odds, win_odds, place_odds, win_available, place_available, place_payout
 ):
     place_payout = 1 / place_payout
     win_stake_ratio = bookie_odds / win_odds
@@ -86,15 +86,15 @@ def get_max_stake(
     win_stake_ratio /= total_ratio
     place_stake_ratio /= total_ratio
 
-    # place_avaliable limiting factor
-    if place_stake_ratio * place_avaliable < win_stake_ratio * win_avaliable:
-        place_stake = place_avaliable
+    # place_available limiting factor
+    if place_stake_ratio * place_available < win_stake_ratio * win_available:
+        place_stake = place_available
         bookie_stake = place_stake * place_odds / ((bookie_odds - 1) * place_payout + 1)
         win_stake = bookie_stake * bookie_odds / win_odds
 
-    # win_avaliable limiting factor
+    # win_available limiting factor
     else:
-        win_stake = win_avaliable
+        win_stake = win_available
         bookie_stake = win_stake * win_odds / bookie_odds
         place_stake = (
             ((bookie_odds - 1) * place_payout + 1) * bookie_stake
@@ -108,15 +108,17 @@ def check_stakes(
     bookie_stake,
     win_stake,
     win_odds,
+    win_available,
     place_stake,
     place_odds,
+    place_available,
 ):
     total_stake = win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
     if (
         (total_stake > betfair_balance)
-        or (win_stake and win_stake < win_min_stake)
-        or (place_stake and place_stake < place_min_stake)
+        or (win_stake and win_available < win_stake < win_min_stake)
+        or (place_stake and place_available < place_stake < place_min_stake)
         or (bookie_stake * 2 > bookie_balance)
     ):
         return False
@@ -236,12 +238,14 @@ def calculate_stakes(
     bookie_stake,
     win_stake,
     win_odds,
+    win_available,
     place_stake,
     place_odds,
+    place_available,
 ):
-    bookie_stake *= PERCENTAGE_AVALIABLE
-    win_stake *= PERCENTAGE_AVALIABLE
-    place_stake *= PERCENTAGE_AVALIABLE
+    bookie_stake *= PERCENTAGE_AVAILABLE
+    win_stake *= PERCENTAGE_AVAILABLE
+    place_stake *= PERCENTAGE_AVAILABLE
 
     liabiltity_ratio = 1
     bookie_ratio = bookie_balance / (bookie_stake * 2)
@@ -309,8 +313,10 @@ def calculate_stakes(
         bookie_stake,
         win_stake,
         win_odds,
+        win_available,
         place_stake,
         place_odds,
+        place_available,
     )
     if not stakes_ok:
         print("Arb stakes not bettable:")
@@ -371,6 +377,8 @@ def maximize_arb(
 def minimize_calculate_profit(
     win_odds,
     place_odds,
+    win_available,
+    place_available,
     profits,
     betfair_balance,
     place_payout,
@@ -381,6 +389,10 @@ def minimize_calculate_profit(
         win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
         if total_stake > betfair_balance:
             return total_stake * 100
+        if win_stake > win_available:
+            return win_stake * 100
+        if place_stake > place_available:
+            return place_stake * 100
         if win_stake < win_min_stake:
             win_stake = 0
         elif place_stake < place_min_stake:
@@ -401,13 +413,23 @@ def minimize_calculate_profit(
     return make_minimize
 
 
-def minimize_loss(win_odds, place_odds, profits, betfair_balance, place_payout):
+def minimize_loss(
+    win_odds,
+    place_odds,
+    win_available,
+    place_available,
+    profits,
+    betfair_balance,
+    place_payout,
+):
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
     bnds = ((0, betfair_balance), (0, betfair_balance))
     win_stake, place_stake = optimize.differential_evolution(
         minimize_calculate_profit(
             win_odds,
             place_odds,
+            win_available,
+            place_available,
             profits,
             betfair_balance,
             place_payout,

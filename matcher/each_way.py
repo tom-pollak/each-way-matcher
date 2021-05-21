@@ -76,13 +76,19 @@ def place_arb(
 
     if not lay_win["matched"] or not lay_place["matched"]:
         betfair.cancel_unmatched_bets()
-        win_odds = betfair.get_odds(market_ids["win"])[betfair_horse_name]["lay_odds_1"]
-        place_odds = betfair.get_odds(market_ids["place"])[betfair_horse_name][
-            "lay_odds_1"
-        ]
+        win_odds, win_available = betfair.get_odds(market_ids["win"], selection_id)
+        place_odds, place_available = betfair.get_odds(
+            market_ids["place"], selection_id
+        )
         betfair_balance = betfair.get_balance()
         win_stake, place_stake = minimize_loss(
-            win_odds, place_odds, profits, betfair_balance, place_payout
+            win_odds,
+            place_odds,
+            win_available,
+            place_available,
+            profits,
+            betfair_balance,
+            place_payout,
         )
         if not check_stakes(
             0,
@@ -90,8 +96,10 @@ def place_arb(
             0,
             win_stake,
             win_odds,
+            win_available,
             place_stake,
             place_odds,
+            place_available,
         ):
             return profits
         profits = place_arb(
@@ -123,17 +131,17 @@ def evaluate_arb(driver, race):
     market_ids, selection_id = betfair.get_race_ids(
         race["race_time"], race["venue"], betfair_horse_name
     )
-    win_info = betfair.get_odds(market_ids["win"])[betfair_horse_name]
-    place_info = betfair.get_odds(market_ids["place"])[betfair_horse_name]
-    race["win_odds"] = win_info["lay_odds_1"]
-    race["place_odds"] = place_info["lay_odds_1"]
+    race["win_odds"], win_available = betfair.get_odds(market_ids["win"], selection_id)
+    race["place_odds"], place_available = betfair.get_odds(
+        market_ids["place"], selection_id
+    )
 
     max_bookie_stake, max_win_stake, max_place_stake = get_max_stake(
         race["bookie_odds"],
         race["win_odds"],
         race["place_odds"],
-        win_info["lay_avaliable_1"],
-        place_info["lay_avaliable_1"],
+        win_available,
+        place_available,
         race["place_payout"],
     )
     (
@@ -147,8 +155,10 @@ def evaluate_arb(driver, race):
         max_bookie_stake,
         max_win_stake,
         race["win_odds"],
+        win_available,
         max_place_stake,
         race["place_odds"],
+        place_available,
     )
 
     if not stakes_ok:
@@ -195,17 +205,21 @@ def evaluate_arb(driver, race):
             race["bookie_stake"],
             race["win_stake"],
             race["win_odds"],
+            win_available,
             race["place_stake"],
             race["place_odds"],
+            place_available,
         )
         if not stakes_ok:
             print(f"Arb bet not profitable: {profits} - {stake_proportion}")
             return
 
-    if not betfair.check_odds(race, market_ids):
+    if not betfair.check_odds(race, market_ids, selection_id):
         evaluate_arb(driver, race)
         return
-    race, bet_made = sporting_index.make_bet(driver, race, market_ids, lay=True)
+    race, bet_made = sporting_index.make_bet(
+        driver, race, market_ids, selection_id, lay=True
+    )
     if bet_made is None:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
@@ -229,12 +243,10 @@ def evaluate_arb(driver, race):
     if min(race["win_profit"], race["place_profit"], race["lose_profit"]) > 0:
         race["bet_type"] = "Arb"
 
-    race["win_odds"] = betfair.get_odds(market_ids["win"])[betfair_horse_name][
-        "lay_odds_1"
-    ]
-    race["place_odds"] = betfair.get_odds(market_ids["place"])[betfair_horse_name][
-        "lay_odds_1"
-    ]
+    race["win_odds"], win_available = betfair.get_odds(market_ids["win"], selection_id)
+    race["place_odds"], place_available = betfair.get_odds(
+        market_ids["place"], selection_id
+    )
     race["win_stake"], race["place_stake"] = calculate_stakes_from_profit(
         race["place_profit"],
         race["lose_profit"],
@@ -342,7 +354,7 @@ def scrape_races(driver, lay):
                 )
                 .text.title()
             )
-            if lay and odds_monkey.avaliable_to_lay(driver, row):
+            if lay and odds_monkey.available_to_lay(driver, row):
                 race.update(odds_monkey.find_races(driver, row))
                 evaluate_arb(driver, race)
 

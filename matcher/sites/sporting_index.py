@@ -133,7 +133,7 @@ def get_page(driver, race):
         raise MatcherError("Timout getting sporting index page")
 
 
-def make_bet(driver, race, market_ids=None, lay=False):
+def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     def click_horse(driver, horse_name):
         horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
         try:
@@ -194,9 +194,9 @@ def make_bet(driver, race, market_ids=None, lay=False):
         if lay:
             if market_ids is None:
                 raise MatcherError("market_ids are None")
-            if not betfair.check_odds(race, market_ids) or not check_start_time(
-                race, secs=20
-            ):
+            if not betfair.check_odds(
+                race, market_ids, selection_id
+            ) or not check_start_time(race, secs=20):
                 return race, False
         bet_made = place_bet(driver, race)
         if bet_made:

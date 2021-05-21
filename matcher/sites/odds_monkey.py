@@ -64,7 +64,7 @@ def login(driver):
     # ).click()
 
 
-def avaliable_to_lay(driver, row):
+def available_to_lay(driver, row):
     driver.switch_to.window(driver.window_handles[0])
     driver.switch_to.default_content()
     win_exchange = driver.find_element_by_xpath(
