@@ -161,12 +161,11 @@ def scrape_odds(market_id):
 
 def check_odds(race, market_ids, selection_id):
     horses = get_horses(race["venue"], race["race_time"]).keys()
-    _, betfair_horse_name = get_valid_horse_name(horses, race["horse_name"])
     win_odds, win_available = get_odds(market_ids["win"], selection_id)
     place_odds, place_available = get_odds(market_ids["place"], selection_id)
     try:
         if (
-            win_oddss <= race["win_odds"]
+            win_odds <= race["win_odds"]
             and place_odds <= race["place_odds"]
             and win_available >= race["win_stake"]
             and place_available >= race["place_stake"]
@@ -174,8 +173,6 @@ def check_odds(race, market_ids, selection_id):
             return True
     except KeyError as e:
         print("ERROR scraping betfair %s" % e)
-        print(win_info)
-        print(place_info)
     return False
 
 
