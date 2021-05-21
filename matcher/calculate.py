@@ -157,6 +157,9 @@ def calculate_expected_return(
     place_prob = 1 / place_odds - win_prob
     lose_prob = 1 - win_prob - place_prob
 
+    exp_value = (
+        win_prob * win_profit + place_prob * place_profit + lose_prob * lose_profit
+    )
     exp_growth = (1 + win_profit / total_balance) ** win_prob * (
         1 + place_profit / total_balance
     ) ** place_prob * (1 + lose_profit / total_balance) ** lose_prob - 1
@@ -165,7 +168,7 @@ def calculate_expected_return(
             "ERROR: exp_growth complex - a profit loses more than is in total_balance"
         )
         return 0, 0
-    return exp_growth, exp_growth * total_balance
+    return exp_value, exp_growth, exp_growth * total_balance
 
 
 def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):

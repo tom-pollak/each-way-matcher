@@ -131,7 +131,7 @@ def output_profit():
         f"""\
 Total profit: £{total_profit} ({total_percentage_profit}%)
 Profit today: £{profit_today} ({today_percentage_profit}%)
-Sporting index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance} Balance in bets: £{in_bet_balance}\
+Sporting Index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance} Balance in bets: £{in_bet_balance}\
     """
     )
 

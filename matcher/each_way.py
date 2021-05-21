@@ -246,7 +246,11 @@ def evaluate_arb(driver, race):
     race["betfair_balance"] = betfair.get_balance()
     race["bookie_balance"] = sporting_index.get_balance(driver)
     race["betfair_exposure"] = betfair.get_exposure()
-    (race["exp_growth"], race["exp_return"],) = calculate_expected_return(
+    (
+        race["exp_value"],
+        race["exp_growth"],
+        race["exp_return"],
+    ) = calculate_expected_return(
         race["bookie_balance"] + race["betfair_balance"],
         race["win_odds"],
         race["place_odds"],
@@ -302,7 +306,11 @@ def evaluate_punt(driver, race):
     race["betfair_balance"] = betfair.get_balance()
     race["betfair_exposure"] = betfair.get_exposure()
     race["win_stake"] = race["place_stake"] = 0
-    (race["exp_growth"], race["exp_return"],) = calculate_expected_return(
+    (
+        race["exp_value"],
+        race["exp_growth"],
+        race["exp_return"],
+    ) = calculate_expected_return(
         race["bookie_balance"] + race["betfair_balance"],
         race["win_odds"],
         race["place_odds"],
