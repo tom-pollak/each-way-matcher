@@ -99,7 +99,7 @@ def get_max_stake(
         place_stake = (
             ((bookie_odds - 1) * place_payout + 1) * bookie_stake
         ) / place_odds
-    return bookie_stake, win_stake, place_stake
+    return round(bookie_stake, 2), round(win_stake, 2), round(place_stake, 2)
 
 
 def check_stakes(
@@ -117,8 +117,8 @@ def check_stakes(
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
     if (
         (total_stake > betfair_balance)
-        or (win_stake and win_available < win_stake < win_min_stake)
-        or (place_stake and place_available < place_stake < place_min_stake)
+        or (win_stake and not win_min_stake <= win_stake <= win_available)
+        or (place_stake and not win_min_stake <= place_stake <= place_available)
         or (bookie_stake * 2 > bookie_balance)
     ):
         return False
@@ -293,18 +293,21 @@ def calculate_stakes(
     min_balance_staked = PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > max_stake:
         stake_proporiton = 1
+        # rounds down when possiblility of stakes exceding balance
+        bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
+        win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
+        place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
     elif min_balance_staked > min_stake:
         stake_proporiton = min_balance_staked / max_stake
+        # rounds down when possiblility of stakes exceding balance
+        bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
+        win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
+        place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
     else:
         # rounds up to reach £2 limit and £10 liability (otherwise can have £1.99)
         bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
         win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
         place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
-
-    # rounds down when possiblility of stakes exceding balance
-    bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
-    win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
-    place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
 
     # postcondition
     stakes_ok = check_stakes(
