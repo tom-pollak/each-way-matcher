@@ -13,7 +13,7 @@ from matcher.calculate import round_odd, get_valid_horse_name
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
-venue_names = {"Cagnes-Sur-Mer": "Cagnes Sur Mer"}
+venue_names = {"Cagnes-Sur-Mer": "Cagnes Sur Mer", "Bangor": "Bangor-on-Dee"}
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -306,11 +306,17 @@ def get_horses(venue, race_time):
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
         "params": {"filter": {"marketIds": ["%s"]}, \
         "maxResults": "1", "sort":"FIRST_TO_START", \
-        "marketProjection": ["RUNNER_DESCRIPTION"]}}'
+        "marketProjection": ["RUNNER_DESCRIPTION", "RUNNER_METADATA"]}}'
         % (market_ids["win"])
     )
     horses_res = call_api(horses_req)["result"][0]["runners"]
-    horses = {horse["runnerName"]: horse["selectionId"] for horse in horses_res}
+    horses = {
+        horse["runnerName"]: {
+            "selection_id": horse["selectionId"],
+            "cloth_no": horse["metadata"]["CLOTH_NUMBER"],
+        }
+        for horse in horses_res
+    }
     return horses
 
 
@@ -318,7 +324,7 @@ def get_race_ids(race_time, venue, horse):
     markets_ids = get_market_id(venue, race_time)
     horses = get_horses(venue, race_time)
     try:
-        selection_id = horses[horse]
+        selection_id = horses[horse]["selection_id"]
     except KeyError:
         print(f"Can't get horse selection id: {horse}\n{horses}")
         raise MatcherError("Can't get selection id")

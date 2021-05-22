@@ -79,8 +79,10 @@ def create_race_df(races):
             market_ids = betfair.get_market_id(race["venue"], time)
             win_market_id = market_ids["win"]
             place_market_id = market_ids["place"]
-        except MatcherError:
+        except:  # debug
             continue
+        # except MatcherError:
+        #     continue
         indexes.append((race["venue"], time))
         data.append(
             [
@@ -113,18 +115,20 @@ def create_odds_df(races_df, races):
     for i in [x["bookies"].keys() for x in races]:
         bookies.update(i)
     indexes = []
+    horse_id_data = []
 
     for race in races_df.iterrows():
         key = race[0]
         try:
-            for horse in betfair.get_horses(key[0], key[1])[1]["runners"]:  # wrong!
-                indexes.append((key[0], key[1], horse["runnerName"], None))
-                horse_ids[horse["runnerName"]] = horse["selectionId"]
+            horses = betfair.get_horses(race.venue, race.race_time)
+            for horse in horses:
+                indexes.append((key[0], key[1], horses[horse["cloth_no"]], None))
+                horse_id_data = [horse, horses[horse]["selection_id"]]
         except MatcherError:
             continue
 
     indexes = pd.MultiIndex.from_tuples(
-        indexes, names=["venue", "time", "horse", "current_time"]
+        indexes, names=["venue", "time", "cloth_no", "current_time"]
     )
     columns = pd.MultiIndex.from_product(
         [bookies, ["back_odds"]], names=["bookies", "data"]
@@ -155,10 +159,12 @@ def create_odds_df(races_df, races):
     odds_df = odds_df.join(df_betfair)
 
     horse_id_df = pd.DataFrame(
-        index=indexes.droplevel("current_time"), columns=["horse_id"]
+        horse_id_data,
+        index=indexes.droplevel("current_time"),
+        columns=["horse_name", "selection_id"],
     )
-    for i, _ in horse_id_df.iterrows():
-        horse_id_df.loc[i] = horse_ids[i[2]]
+    # for i, _ in horse_id_df.iterrows():
+    #     horse_id_df.loc[i] = horse_ids[i[2]]
     return odds_df, horse_id_df
 
 

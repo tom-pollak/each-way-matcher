@@ -105,6 +105,6 @@ def run_extra_places():
 
         # debug
         odds_df.sort_index(0, inplace=True)
-        print(races_df)
-        print(odds_df.dropna(how="all").dropna(how="all", axis=1))
+        # print(races_df)
+        # print(odds_df.dropna(how="all").dropna(how="all", axis=1))
         return
