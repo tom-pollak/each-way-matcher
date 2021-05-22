@@ -118,14 +118,12 @@ def create_odds_df(races_df, races):
         key = race[0]
         try:
             for horse in betfair.get_horses(key[0], key[1])[1]["runners"]:  # wrong!
-                indexes.append((key[0], key[1], horse["runnerName"], None))
+                indexes.append((key[0], key[1], horse["runnerName"]))
                 horse_ids[horse["runnerName"]] = horse["selectionId"]
         except MatcherError:
             continue
 
-    indexes = pd.MultiIndex.from_tuples(
-        indexes, names=["venue", "time", "horse", "current_time"]
-    )
+    indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
     columns = pd.MultiIndex.from_product(
         [bookies, ["back_odds"]], names=["bookies", "data"]
     )
@@ -147,19 +145,14 @@ def create_odds_df(races_df, races):
                     "lay_available_1",
                     "lay_available_2",
                     "lay_available_3",
+                    "selection_id",
                 ],
             ],
         ),
         index=odds_df.index,
     )
     odds_df = odds_df.join(df_betfair)
-
-    horse_id_df = pd.DataFrame(
-        index=indexes.droplevel("current_time"), columns=["horse_id"]
-    )
-    for i, _ in horse_id_df.iterrows():
-        horse_id_df.loc[i] = horse_ids[i[2]]
-    return odds_df, horse_id_df
+    return odds_df
 
 
 def create_bookies_df(races_df, odds_df, races):
