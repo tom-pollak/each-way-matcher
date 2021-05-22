@@ -172,21 +172,6 @@ def evaluate_arb(driver, race):
         race["place_payout"],
     )
     if min(*profits) < 0:
-        race["bet_type"] = "Lay Punt"
-        bet_types, _, new_profits = check_repeat_bets(
-            race["horse_name"], race["race_time"], race["venue"]
-        )
-        if "Lay Punt" in bet_types:
-            stake_proportion = maximize_arb(
-                race["bookie_balance"],
-                race["betfair_balance"],
-                race["win_odds"],
-                race["place_odds"],
-                *tuple(map(sum, zip(profits, new_profits))),
-            )
-            if stake_proportion != 1:
-                return
-
         stake_proportion = maximize_arb(
             race["bookie_balance"],
             race["betfair_balance"],
@@ -194,6 +179,22 @@ def evaluate_arb(driver, race):
             race["place_odds"],
             *profits,
         )
+
+        race["bet_type"] = "Lay Punt"
+        bet_types, _, new_profits = check_repeat_bets(
+            race["horse_name"], race["race_time"], race["venue"]
+        )
+        if "Lay Punt" in bet_types:
+            new_stake_proportion = maximize_arb(
+                race["bookie_balance"],
+                race["betfair_balance"],
+                race["win_odds"],
+                race["place_odds"],
+                *tuple(map(sum, zip(profits, new_profits))),
+            )
+            if stake_proportion != 1 or new_stake_proportion != 1:
+                return
+
         race["bookie_stake"] = round(race["bookie_stake"] * stake_proportion, 2)
         race["win_stake"] = round(race["win_stake"] * stake_proportion, 2)
         race["place_stake"] = round(race["place_stake"] * stake_proportion, 2)
