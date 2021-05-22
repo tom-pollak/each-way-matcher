@@ -9,10 +9,6 @@ import matcher.sites.william_hill as william_hill
 idx = pd.IndexSlice
 enabled_sites = {"William Hill": william_hill}
 
-# bookies = {
-#     "Betfair Exchange Win": {"get": get_betfair_page, "scrape": scrape_odds_betfair}
-# }
-
 
 def update_odds_df(odds_df, horses, bookie):
     current_time = datetime.now()
@@ -85,6 +81,7 @@ def get_betair_odds(races_df, odds_df):
         .sort_index(level=1)
         .iterrows()
     ):
+        betfair.get_race_ids(race.race_time, race.venue, race.horse)
         horses = betfair.get_odds(race.win_market_id)
         update_odds_df(odds_df, horses, "Betfair Exchange Win")
 
@@ -98,6 +95,7 @@ def close_races(driver, races_df, bookies_df):
 
 def run_extra_places():
     races_df, odds_df, bookies_df, horse_id_df = generate_df()
+    print(races_df, odds_df, bookies_df, horse_id_df)
     driver = setup_selenium()
     tab = setup_sites(driver, races_df, odds_df, bookies_df)
     odds_df.sort_index(0, inplace=True)
@@ -107,5 +105,6 @@ def run_extra_places():
 
         # debug
         odds_df.sort_index(0, inplace=True)
+        print(races_df)
         print(odds_df.dropna(how="all").dropna(how="all", axis=1))
         return

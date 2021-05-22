@@ -63,7 +63,6 @@ def get_extra_place_races():
                             bookie = bookie_tag
                             min_runners = 0
                         bookies[bookie] = min_runners
-                # bookies["Betfair Exchange"] = 0
                 race["bookies"] = bookies
     return races
 
