@@ -28,7 +28,7 @@ def read_csv():
 def check_repeat_bets(horse_name, race_time, venue):
     df = read_csv()
     if len(df) == 0:
-        return [], 1
+        return [], 1, (0, 0, 0)
     horses = df.query(
         "race_time == @race_time & venue == @venue & (bet_type == 'Punt' | bet_type == 'Lay Punt')"
     )
