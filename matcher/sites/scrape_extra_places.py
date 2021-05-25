@@ -2,6 +2,7 @@ import requests
 import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
+import numpy as np
 
 from matcher.exceptions import MatcherError
 import matcher.sites.betfair as betfair
@@ -110,62 +111,57 @@ def create_race_df(races):
 
 
 def create_odds_df(races_df, races):
-    horse_ids = {}
     bookies = set()
     for i in [x["bookies"].keys() for x in races]:
         bookies.update(i)
     indexes = []
-    horse_id_data = []
+    data = []
 
     for race in races_df.iterrows():
-        key = race[0]
+        venue, time = race[0]
         try:
-            horses = betfair.get_horses(race.venue, race.race_time)
-            for horse in horses:
-                indexes.append((key[0], key[1], horses[horse["cloth_no"]], None))
-                horse_id_data = [horse, horses[horse]["selection_id"]]
+            horses = betfair.get_horses(venue, time)
+            for horse_name, selection_id in horses.items():
+                index = (venue, time, horse_name)
+                indexes.append(index)
+                data.append(
+                    [np.NaN, np.NaN, selection_id, np.NaN, np.NaN, selection_id]
+                )
         except MatcherError:
             continue
 
-    indexes = pd.MultiIndex.from_tuples(
-        indexes, names=["venue", "time", "cloth_no", "current_time"]
-    )
+    indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
     columns = pd.MultiIndex.from_product(
         [bookies, ["back_odds"]], names=["bookies", "data"]
     )
     odds_df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
+        data,
         columns=pd.MultiIndex.from_product(
             [
                 ["Betfair Exchange Win", "Betfair Exchange Place"],
                 [
-                    "back_odds_1",
-                    "back_odds_2",
-                    "back_odds_3",
-                    "lay_odds_1",
-                    "lay_odds_2",
-                    "lay_odds_3",
-                    "back_available_1",
-                    "back_available_2",
-                    "back_available_3",
-                    "lay_available_1",
-                    "lay_available_2",
-                    "lay_available_3",
+                    # "back_odds_1",
+                    # "back_odds_2",
+                    # "back_odds_3",
+                    "odds",
+                    # "lay_odds_2",
+                    # "lay_odds_3",
+                    # "back_available_1",
+                    # "back_available_2",
+                    # "back_available_3",
+                    "available",
+                    # "lay_available_2",
+                    # "lay_available_3",
+                    "selection_id",
                 ],
             ],
         ),
         index=odds_df.index,
     )
     odds_df = odds_df.join(df_betfair)
-
-    horse_id_df = pd.DataFrame(
-        horse_id_data,
-        index=indexes.droplevel("current_time"),
-        columns=["horse_name", "selection_id"],
-    )
-    # for i, _ in horse_id_df.iterrows():
-    #     horse_id_df.loc[i] = horse_ids[i[2]]
-    return odds_df, horse_id_df
+    odds_df.sort_index(inplace=True)
+    return odds_df
 
 
 def create_bookies_df(races_df, odds_df, races):
@@ -194,6 +190,6 @@ def create_bookies_df(races_df, odds_df, races):
 def generate_df():
     races = get_extra_place_races()
     races_df = create_race_df(races)
-    odds_df, horse_id_df = create_odds_df(races_df, races)
+    odds_df = create_odds_df(races_df, races)
     bookies_df = create_bookies_df(races_df, odds_df, races)
-    return races_df, odds_df, bookies_df, horse_id_df
+    return races_df, odds_df, bookies_df

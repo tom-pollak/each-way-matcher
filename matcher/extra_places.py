@@ -10,25 +10,13 @@ idx = pd.IndexSlice
 enabled_sites = {"William Hill": william_hill}
 
 
-def update_odds_df(odds_df, horses, bookie):
-    current_time = datetime.now()
-    for horse in horses:
-        data = horses[horse]
-        values_index = pd.MultiIndex.from_product(
-            [[bookie], data.keys()], names=["bookies", "data"]
-        )
-        values = pd.Series(horses[horse].values(), index=values_index)
-        try:
-            venue, time, _, _ = odds_df.query("horse == @horse").index.values[0]
-            odds_df.loc[
-                idx[venue, time, horse, current_time], idx[bookie, data]
-            ] = values
-        except IndexError:
-            continue
-        try:
-            odds_df.drop((venue, time, horse, pd.NaT), inplace=True)
-        except KeyError:
-            pass
+def update_odds_df(odds_df, venue, time, horses, bookie):
+    for horse, odd in horses.items():
+        # values_index = pd.MultiIndex.from_product(
+        #     [[bookie], data.keys()], names=["bookies", "data"]
+        # )
+        # values = pd.Series(horses[horse].values(), index=values_index)
+        odds_df.loc[idx[venue, time, horse], idx[bookie, "back_odds"]] = odd
 
 
 def setup_sites(driver, races_df, odds_df, bookies_df):
@@ -48,8 +36,6 @@ def setup_sites(driver, races_df, odds_df, bookies_df):
             for site in sites:
                 tab = create_tab_id(driver, bookies_df, index[0], index[1], site, tab)
                 enabled_sites[site].get_page(driver, index[0], index[1], tab)
-                horses = enabled_sites[site].scrape(driver, tab)
-                update_odds_df(odds_df, horses, site)
 
     driver.switch_to.window(driver.window_handles[0])
     driver.close()
@@ -69,9 +55,10 @@ def get_odds(driver, odds_df, bookies_df, tab):
         tabs = bookies_df.loc[:, idx[:, "tab_id"]]
         row = tabs.where(tabs == i).dropna(how="all").dropna(how="all", axis=1)
         site = row.columns.get_level_values("bookies")[0]
+        print(row)
         if site in enabled_sites:
             horses = enabled_sites[site].scrape(driver, i)
-        update_odds_df(odds_df, horses, site)
+            update_odds_df(odds_df, horses, site)
 
 
 def get_betair_odds(races_df, odds_df):

@@ -41,15 +41,15 @@ def scrape(driver, tab):
     driver.switch_to.window(driver.window_handles[tab])
     horses = {}
     soup = BeautifulSoup(driver.page_source, "html.parser")
-    table = soup.select("tbody[role='rowgroup']")
+    table = soup.select("tbody[role='rowgroup']")[0]
     rows = table.select("tr[role='row']")
     for row in rows:
-        name = row.find("span", class_="selection__title")
-        odds = row.find("button", class_="sp-betbutton")
+        name = row.find("span", class_="selection__title").text
+        odds = row.find("button", class_="sp-betbutton").text.split("/")
         if odds[0] == "EVS":
             odds = 1
         else:
             odds = float(odds[0]) / float(odds[1]) + 1
         if "- N/R" not in name:
-            horses[name] = {"back_odds": odds}
+            horses[name] = odds
     return horses

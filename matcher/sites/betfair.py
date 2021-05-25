@@ -310,13 +310,7 @@ def get_horses(venue, race_time):
         % (market_ids["win"])
     )
     horses_res = call_api(horses_req)["result"][0]["runners"]
-    horses = {
-        horse["runnerName"]: {
-            "selection_id": horse["selectionId"],
-            "cloth_no": horse["metadata"]["CLOTH_NUMBER"],
-        }
-        for horse in horses_res
-    }
+    horses = {horse["runnerName"]: horse["selectionId"] for horse in horses_res}
     return horses
 
 
@@ -324,7 +318,7 @@ def get_race_ids(race_time, venue, horse):
     markets_ids = get_market_id(venue, race_time)
     horses = get_horses(venue, race_time)
     try:
-        selection_id = horses[horse]["selection_id"]
+        selection_id = horses[horse]
     except KeyError:
         print(f"Can't get horse selection id: {horse}\n{horses}")
         raise MatcherError("Can't get selection id")
