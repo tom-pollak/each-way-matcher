@@ -385,9 +385,6 @@ def maximize_arb(
     return result.x[0]
 
 
-print(maximize_arb(250, 500, 2.4, 1.25, 0, -0.06, -0.09))
-
-
 def minimize_calculate_profit(
     win_odds,
     place_odds,
