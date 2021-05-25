@@ -248,7 +248,9 @@ def get_market_id(venue, race_time):
             if race_time == start_time:
                 markets.append(market)
         if len(markets) < 2:
-            raise MatcherError("Not enough markets returned: %s %s %s" % (venue, race_time, markets))
+            raise MatcherError(
+                "Not enough markets returned: %s %s %s" % (venue, race_time, markets)
+            )
     except KeyError:
         try:
             print("Error in getting market: %s" % markets_response["error"])
