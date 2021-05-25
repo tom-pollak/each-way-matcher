@@ -102,8 +102,7 @@ def cancel_unmatched_bets():
         if cancel_res["result"]["status"] == "SUCCESS":
             return True
     except (KeyError, MatcherError):
-        print("ERROR: Could not cancel unmatched bets!")
-        print(cancel_res)
+        print("ERROR: Could not cancel unmatched bets!\n %s" % cancel_res)
     return False
 
 
@@ -116,8 +115,7 @@ def get_odds(market_id, selection_id):
     try:
         odds = res["result"][0]["runners"][0]["ex"]["availableToLay"][0]
     except (KeyError, IndexError):
-        print(res)
-        raise MatcherError("Couldn't get odds from betfair")
+        raise MatcherError("Couldn't get odds from betfair:\n%s" % res)
     return odds["price"], odds["size"]
 
 
@@ -250,8 +248,7 @@ def get_market_id(venue, race_time):
             if race_time == start_time:
                 markets.append(market)
         if len(markets) < 2:
-            print(venue, race_time, markets)
-            raise MatcherError("Not enough markets returned")
+            raise MatcherError("Not enough markets returned: %s %s %s" % (venue, race_time, markets))
     except KeyError:
         try:
             print("Error in getting market: %s" % markets_response["error"])
