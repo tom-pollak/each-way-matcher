@@ -80,10 +80,8 @@ def create_race_df(races):
             market_ids = betfair.get_market_id(race["venue"], time)
             win_market_id = market_ids["win"]
             place_market_id = market_ids["place"]
-        except:  # debug
+        except MatcherError:
             continue
-        # except MatcherError:
-        #     continue
         indexes.append((race["venue"], time))
         data.append(
             [

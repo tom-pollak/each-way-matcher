@@ -1,12 +1,12 @@
-from datetime import datetime
-from matcher.exceptions import MatcherError
-from typing import Match
 import pandas as pd
 import numpy as np
-from .setup import setup_selenium
-from matcher.sites.scrape_extra_places import generate_df
+from datetime import datetime
+
 import matcher.sites.betfair as betfair
 import matcher.sites.william_hill as william_hill
+from matcher.setup import setup_selenium
+from matcher.exceptions import MatcherError
+from matcher.sites.scrape_extra_places import generate_df
 
 
 idx = pd.IndexSlice
@@ -21,7 +21,7 @@ def update_odds_df(odds_df, venue, time, horses, bookie):
         odds_df.loc[idx[venue, time, horse], idx[bookie, "odds"]] = odd
 
 
-def setup_sites(driver, races_df, odds_df, bookies_df):
+def setup_sites(driver, races_df, bookies_df):
     tab = 0
     for index, race in (
         races_df.query("time > @datetime.now()")
@@ -76,9 +76,9 @@ def get_betair_odds(races_df, odds_df):
             "selection_id"
         ].items():
             try:
-                horses_win[name] = betfair.get_odds(race.win_market_id, selection_id)
+                horses_win[name] = betfair.get_odds(race["win_market_id"], selection_id)
                 horses_place[name] = betfair.get_odds(
-                    race.place_market_id, selection_id
+                    race["place_market_id"], selection_id
                 )
             except (MatcherError, ValueError):
                 odds_df.drop((index[0], index[1], name), inplace=True)
@@ -97,7 +97,7 @@ def run_extra_places():
     races_df, odds_df, bookies_df = generate_df()
     print(races_df, odds_df, bookies_df)
     driver = setup_selenium()
-    tab = setup_sites(driver, races_df, odds_df, bookies_df)
+    tab = setup_sites(driver, races_df, bookies_df)
     odds_df.sort_index(0, inplace=True)
     while True:
         get_bookie_odds(driver, odds_df, bookies_df, tab)
