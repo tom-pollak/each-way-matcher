@@ -13,7 +13,11 @@ from matcher.calculate import round_odd, get_valid_horse_name
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
-venue_names = {"Cagnes-Sur-Mer": "Cagnes Sur Mer", "Bangor": "Bangor-on-Dee"}
+venue_names = {
+    "Cagnes-Sur-Mer": "Cagnes Sur Mer",
+    "Bangor": "Bangor-on-Dee",
+    "Bangor": "Bangor-on-Dee",
+}
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -111,7 +115,7 @@ def get_odds(market_id, selection_id):
     res = call_api(price_req)
     try:
         odds = res["result"][0]["runners"][0]["ex"]["availableToLay"][0]
-    except KeyError:
+    except (KeyError, IndexError):
         print(res)
         raise MatcherError("Couldn't get odds from betfair")
     return odds["price"], odds["size"]
@@ -225,6 +229,8 @@ def get_bets_by_bet_id(win_bet_id, place_bet_id):
 def get_market_id(venue, race_time):
     markets = []
     markets_ids = {}
+    if venue_names.get(venue) is not None:
+        venue = venue_names.get(venue)
     markets_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
         "params": {"filter": {"venues": ["%s"], "marketTypeCodes": ["WIN", "PLACE"], "bspOnly": true}, \

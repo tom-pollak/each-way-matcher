@@ -171,6 +171,8 @@ def evaluate_arb(driver, race):
         race["place_stake"],
         race["place_payout"],
     )
+    if max(*profits) < 0:
+        return
     if min(*profits) < 0:
         stake_proportion = maximize_arb(
             race["bookie_balance"],

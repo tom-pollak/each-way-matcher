@@ -212,6 +212,7 @@ def arb_kelly_criterion(
     win_odds,
     place_odds,
 ):
+    proportion = proportion[0]
     win_prob = 1 / win_odds
     place_prob = 1 / place_odds - win_prob
     lose_prob = 1 - win_prob - place_prob
@@ -220,16 +221,23 @@ def arb_kelly_criterion(
     place_bankroll = total_balance + place_profit * proportion
     lose_bankroll = total_balance + lose_profit * proportion
 
-    stake_proporiton = -sum(
+    stake_proportion = -sum(
         [
             p * e
             for p, e in zip(
                 [win_prob, place_prob, lose_prob],
-                np.log([win_bankroll, place_bankroll, lose_bankroll]),
+                np.log(
+                    [
+                        win_bankroll,
+                        place_bankroll,
+                        lose_bankroll,
+                    ]
+                ),
             )
         ]
     )
-    return stake_proporiton
+
+    return stake_proportion
 
 
 def calculate_stakes(
@@ -286,28 +294,28 @@ def calculate_stakes(
     if lay_min_stake_proportion == 0:  # max stake not above 2 or liability above 10
         return False, 0, 0, 0
 
-    stake_proporiton = max(bookie_min_stake_proportion, lay_min_stake_proportion)
-    min_stake = stake_proporiton * max_stake
+    stake_proportion = max(bookie_min_stake_proportion, lay_min_stake_proportion)
+    min_stake = stake_proportion * max_stake
 
     # create stakes that are PERCENTAGE_BALANCE% the size of our total balance
     min_balance_staked = PERCENTAGE_BALANCE * (betfair_balance + bookie_balance)
     if min_balance_staked > max_stake:
-        stake_proporiton = 1
+        stake_proportion = 1
         # rounds down when possiblility of stakes exceding balance
-        bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
-        win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
-        place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
+        bookie_stake = math.floor(bookie_stake * stake_proportion * 100) / 100
+        win_stake = math.floor(win_stake * stake_proportion * 100) / 100
+        place_stake = math.floor(place_stake * stake_proportion * 100) / 100
     elif min_balance_staked > min_stake:
-        stake_proporiton = min_balance_staked / max_stake
+        stake_proportion = min_balance_staked / max_stake
         # rounds down when possiblility of stakes exceding balance
-        bookie_stake = math.floor(bookie_stake * stake_proporiton * 100) / 100
-        win_stake = math.floor(win_stake * stake_proporiton * 100) / 100
-        place_stake = math.floor(place_stake * stake_proporiton * 100) / 100
+        bookie_stake = math.floor(bookie_stake * stake_proportion * 100) / 100
+        win_stake = math.floor(win_stake * stake_proportion * 100) / 100
+        place_stake = math.floor(place_stake * stake_proportion * 100) / 100
     else:
         # rounds up to reach £2 limit and £10 liability (otherwise can have £1.99)
-        bookie_stake = math.ceil(bookie_stake * stake_proporiton * 100) / 100
-        win_stake = math.ceil(win_stake * stake_proporiton * 100) / 100
-        place_stake = math.ceil(place_stake * stake_proporiton * 100) / 100
+        bookie_stake = math.ceil(bookie_stake * stake_proportion * 100) / 100
+        win_stake = math.ceil(win_stake * stake_proportion * 100) / 100
+        place_stake = math.ceil(place_stake * stake_proportion * 100) / 100
 
     # postcondition
     stakes_ok = check_stakes(
@@ -375,6 +383,9 @@ def maximize_arb(
         bounds=bnds,
     )
     return result.x[0]
+
+
+print(maximize_arb(250, 500, 2.4, 1.25, 0, -0.06, -0.09))
 
 
 def minimize_calculate_profit(
