@@ -23,7 +23,7 @@ def update_odds_df(odds_df, venue, time, horses, bookie):
 
 def setup_sites(driver, races_df, bookies_df):
     tab = 0
-    for index, race in (
+    for index, _ in (
         races_df.query("time > @datetime.now()")
         .sort_values("time", ascending=True)
         .sort_index(level=1)
