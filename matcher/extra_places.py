@@ -81,8 +81,8 @@ def close_races(driver, races_df, bookies_df):
 
 
 def run_extra_places():
-    races_df, odds_df, bookies_df, horse_id_df = generate_df()
-    print(races_df, odds_df, bookies_df, horse_id_df)
+    races_df, odds_df, bookies_df = generate_df()
+    print(races_df, odds_df, bookies_df)
     driver = setup_selenium()
     tab = setup_sites(driver, races_df, odds_df, bookies_df)
     odds_df.sort_index(0, inplace=True)
