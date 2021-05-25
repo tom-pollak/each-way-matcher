@@ -118,7 +118,7 @@ def check_stakes(
     if (
         (total_stake > betfair_balance)
         or (win_stake and not win_min_stake <= win_stake <= win_available)
-        or (place_stake and not win_min_stake <= place_stake <= place_available)
+        or (place_stake and not place_min_stake <= place_stake <= place_available)
         or (bookie_stake * 2 > bookie_balance)
     ):
         return False
@@ -294,6 +294,7 @@ def calculate_stakes(
     if lay_min_stake_proportion == 0:  # max stake not above 2 or liability above 10
         return False, 0, 0, 0
 
+    print(lay_min_stake_proportion, bookie_min_stake_proportion)
     stake_proportion = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = stake_proportion * max_stake
 
@@ -332,7 +333,7 @@ def calculate_stakes(
     if not stakes_ok:
         print("Arb stakes not bettable:")
         print(
-            f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake: {bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance}"
+            f"win_stake: {win_stake} win_odds: {win_odds} place_stake: {place_stake} place_odds: {place_odds} bookie_stake: {bookie_stake} bookie_balance: {bookie_balance} betfair_balance: {betfair_balance} win_available: {win_available} place_available: {place_available}"
         )
         return False, 0, 0, 0
     return True, bookie_stake, win_stake, place_stake
