@@ -294,7 +294,6 @@ def calculate_stakes(
     if lay_min_stake_proportion == 0:  # max stake not above 2 or liability above 10
         return False, 0, 0, 0
 
-    print(lay_min_stake_proportion, bookie_min_stake_proportion)
     stake_proportion = max(bookie_min_stake_proportion, lay_min_stake_proportion)
     min_stake = stake_proportion * max_stake
 
