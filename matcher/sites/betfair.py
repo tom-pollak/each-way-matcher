@@ -15,7 +15,7 @@ betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
 venue_names = {
     "Cagnes-Sur-Mer": "Cagnes Sur Mer",
-    "Bangor": "Bangor-on-Dee",
+    "Bangor-On-Dee": "Bangor-on-Dee",
     "Bangor": "Bangor-on-Dee",
 }
 
