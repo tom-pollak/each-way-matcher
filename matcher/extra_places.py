@@ -72,15 +72,21 @@ def get_betair_odds(races_df, odds_df):
     ):
         horses_win = {}
         horses_place = {}
-        for name, selection_id in odds_df.loc[index, 'Betfair Exchange Win']['selection_id'].items():
+        for name, selection_id in odds_df.loc[index, "Betfair Exchange Win"][
+            "selection_id"
+        ].items():
             try:
                 horses_win[name] = betfair.get_odds(race.win_market_id, selection_id)
-                horses_place[name] = betfair.get_odds(race.place_market_id, selection_id)
+                horses_place[name] = betfair.get_odds(
+                    race.place_market_id, selection_id
+                )
             except (MatcherError, ValueError):
                 odds_df.drop((index[0], index[1], name), inplace=True)
                 continue
         update_odds_df(odds_df, index[0], index[1], horses_win, "Betfair Exchange Win")
-        update_odds_df(odds_df, index[0], index[1], horses_place, "Betfair Exchange Place")
+        update_odds_df(
+            odds_df, index[0], index[1], horses_place, "Betfair Exchange Place"
+        )
 
 
 def close_races(driver, races_df, bookies_df):
