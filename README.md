@@ -3,7 +3,7 @@
 - Scrapes OddsMonkey for profitable each way horse races, then automatically
   places bets on
   Sporting Index.
-- Also lays arbitrage bets on Sporting Index and Betfair.
+- Lays arbitrage bets on Sporting Index and Betfair.
 
 ![graph](https://tom-pollak.github.io/each-way-matcher/balance.png)
 
