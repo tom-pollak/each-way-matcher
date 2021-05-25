@@ -107,8 +107,10 @@ def find_races(driver, row=0):
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[10]/a'
     ).get_attribute("href")
     if "sportingindex" not in bookie_exchange:
-        print("Bookie is not SportingIndex, have you adjusted the filters?")
-        print(bookie_exchange)
+        print(
+            "Bookie is not SportingIndex, have you adjusted the filters? (%s)"
+            % bookie_exchange
+        )
         raise KeyboardInterrupt
 
     try:

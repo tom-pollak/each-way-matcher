@@ -102,8 +102,7 @@ def cancel_unmatched_bets():
         if cancel_res["result"]["status"] == "SUCCESS":
             return True
     except (KeyError, MatcherError):
-        print("ERROR: Could not cancel unmatched bets!")
-        print(cancel_res)
+        print("ERROR: Could not cancel unmatched bets!\n %s" % cancel_res)
     return False
 
 
@@ -116,51 +115,8 @@ def get_odds(market_id, selection_id):
     try:
         odds = res["result"][0]["runners"][0]["ex"]["availableToLay"][0]
     except (KeyError, IndexError):
-        print(res)
-        raise MatcherError("Couldn't get odds from betfair")
+        raise MatcherError("Couldn't get odds from betfair:\n%s" % res)
     return odds["price"], odds["size"]
-
-
-def scrape_odds(market_id):
-    horses = {}
-    resp = requests.get(
-        f"https://www.betfair.com/www/sports/exchange/readonly/v1/bymarket?_ak=nzIFcwyWhrlwYMrh&alt=json&currencyCode=GBP&locale=en_GB&marketIds={market_id}&rollupLimit=10&rollupModel=STAKE&types=EVENT,RUNNER_DESCRIPTION,%20RUNNER_EXCHANGE_PRICES_BEST"
-    )
-    try:
-        horses_resp = resp.json()["eventTypes"][0]["eventNodes"][0]["marketNodes"][0][
-            "runners"
-        ]
-    except JSONDecodeError:
-        print(json)
-        raise MatcherError("Couldn't decode JSON")
-
-    for horse in horses_resp:
-        horse_name = horse["description"]["runnerName"]
-        horses[horse_name] = {
-            "back_odds_1": 0,
-            "back_odds_2": 0,
-            "back_odds_3": 0,
-            "lay_odds_1": 99999,
-            "lay_odds_2": 99999,
-            "lay_odds_3": 99999,
-            "back_available_1": 0,
-            "back_available_2": 0,
-            "back_available_3": 0,
-            "lay_available_1": 0,
-            "lay_available_2": 0,
-            "lay_available_3": 0,
-        }
-        back = horse["exchange"].get("availableToBack")
-        lay = horse["exchange"].get("availableToLay")
-        if back is not None:
-            for i, odds in enumerate(back):
-                horses[horse_name][f"back_odds_{i+1}"] = odds["price"]
-                horses[horse_name][f"back_available_{i+1}"] = odds["size"]
-        if lay is not None:
-            for i, odds in enumerate(lay):
-                horses[horse_name][f"lay_odds_{i+1}"] = odds["price"]
-                horses[horse_name][f"lay_available_{i+1}"] = odds["size"]
-    return horses
 
 
 def check_odds(race, market_ids, selection_id):
@@ -250,8 +206,9 @@ def get_market_id(venue, race_time):
             if race_time == start_time:
                 markets.append(market)
         if len(markets) < 2:
-            print(venue, race_time, markets)
-            raise MatcherError("Not enough markets returned")
+            raise MatcherError(
+                "Not enough markets returned: %s %s %s" % (venue, race_time, markets)
+            )
     except KeyError:
         try:
             print("Error in getting market: %s" % markets_response["error"])
