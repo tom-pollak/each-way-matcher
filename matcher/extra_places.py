@@ -62,13 +62,13 @@ def get_odds(driver, odds_df, bookies_df, tab):
 
 
 def get_betair_odds(races_df, odds_df):
-    for _, race in (
+    for index, race in (
         races_df.query("time > @datetime.now()")
         .sort_values("time", ascending=True)
         .sort_index(level=1)
         .iterrows()
     ):
-        betfair.get_race_ids(race.race_time, race.venue, race.horse)
+        print("index", index)
         horses = betfair.get_odds(race.win_market_id)
         update_odds_df(odds_df, horses, "Betfair Exchange Win")
 
