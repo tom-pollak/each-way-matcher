@@ -74,6 +74,9 @@ def place_arb(
     profits = tuple(map(sum, zip(profits, new_profits)))
 
     if not lay_win["matched"] or not lay_place["matched"]:
+        print("bet not matched")
+        print(lay_win)
+        print(lay_place)
         betfair.cancel_unmatched_bets()
         win_odds, win_available = betfair.get_odds(market_ids["win"], selection_id)
         place_odds, place_available = betfair.get_odds(
