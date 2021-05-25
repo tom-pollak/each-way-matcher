@@ -109,8 +109,8 @@ def cancel_unmatched_bets():
 
 def get_odds(market_id, selection_id):
     price_req = (
-        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listRunnerBook", "params": {"locale":"en", "marketId": "%s", "selectionId": "%s", "priceProjection": {"priceData":["EX_BEST_OFFERS"]}, "orderProjection":"ALL"},"id":1}'
-        % (market_id, selection_id)
+        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listRunnerBook", "params": {"locale":"en", "marketId": "%s", "selectionId": "%s", "priceProjection": {"priceData":["EX_BEST_OFFERS"], "virtualise":"true"}, "orderProjection":"ALL"},"id":1}'
+        % (market_id, int(selection_id))
     )
     res = call_api(price_req)
     try:

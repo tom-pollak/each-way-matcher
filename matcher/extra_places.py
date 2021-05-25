@@ -1,5 +1,8 @@
 from datetime import datetime
+from matcher.exceptions import MatcherError
+from typing import Match
 import pandas as pd
+import numpy as np
 from .setup import setup_selenium
 from matcher.sites.scrape_extra_places import generate_df
 import matcher.sites.betfair as betfair
@@ -12,11 +15,10 @@ enabled_sites = {"William Hill": william_hill}
 
 def update_odds_df(odds_df, venue, time, horses, bookie):
     for horse, odd in horses.items():
-        # values_index = pd.MultiIndex.from_product(
-        #     [[bookie], data.keys()], names=["bookies", "data"]
-        # )
-        # values = pd.Series(horses[horse].values(), index=values_index)
-        odds_df.loc[idx[venue, time, horse], idx[bookie, "back_odds"]] = odd
+        if isinstance(odd, tuple):
+            odd, available = odd
+            odds_df.loc[idx[venue, time, horse], idx[bookie, "available"]] = available
+        odds_df.loc[idx[venue, time, horse], idx[bookie, "odds"]] = odd
 
 
 def setup_sites(driver, races_df, odds_df, bookies_df):
@@ -50,15 +52,15 @@ def create_tab_id(driver, bookies_df, venue, time, site, tab):
     return tab
 
 
-def get_odds(driver, odds_df, bookies_df, tab):
+def get_bookie_odds(driver, odds_df, bookies_df, tab):
     for i in range(tab):
         tabs = bookies_df.loc[:, idx[:, "tab_id"]]
         row = tabs.where(tabs == i).dropna(how="all").dropna(how="all", axis=1)
         site = row.columns.get_level_values("bookies")[0]
-        print(row)
+        venue, time = row.index[0]
         if site in enabled_sites:
             horses = enabled_sites[site].scrape(driver, i)
-            update_odds_df(odds_df, horses, site)
+            update_odds_df(odds_df, venue, time, horses, site)
 
 
 def get_betair_odds(races_df, odds_df):
@@ -68,12 +70,17 @@ def get_betair_odds(races_df, odds_df):
         .sort_index(level=1)
         .iterrows()
     ):
-        print("index", index)
-        horses = betfair.get_odds(race.win_market_id)
-        update_odds_df(odds_df, horses, "Betfair Exchange Win")
-
-        horses = betfair.get_odds(race.place_market_id)
-        update_odds_df(odds_df, horses, "Betfair Exchange Place")
+        horses_win = {}
+        horses_place = {}
+        for name, selection_id in odds_df.loc[index, 'Betfair Exchange Win']['selection_id'].items():
+            try:
+                horses_win[name] = betfair.get_odds(race.win_market_id, selection_id)
+                horses_place[name] = betfair.get_odds(race.place_market_id, selection_id)
+            except (MatcherError, ValueError):
+                odds_df.drop((index[0], index[1], name), inplace=True)
+                continue
+        update_odds_df(odds_df, index[0], index[1], horses_win, "Betfair Exchange Win")
+        update_odds_df(odds_df, index[0], index[1], horses_place, "Betfair Exchange Place")
 
 
 def close_races(driver, races_df, bookies_df):
@@ -87,11 +94,12 @@ def run_extra_places():
     tab = setup_sites(driver, races_df, odds_df, bookies_df)
     odds_df.sort_index(0, inplace=True)
     while True:
-        get_odds(driver, odds_df, bookies_df, tab)
+        get_bookie_odds(driver, odds_df, bookies_df, tab)
         get_betair_odds(races_df, odds_df)
 
         # debug
         odds_df.sort_index(0, inplace=True)
-        # print(races_df)
-        # print(odds_df.dropna(how="all").dropna(how="all", axis=1))
+        print(races_df)
+        print(odds_df.dropna(how="all").dropna(how="all", axis=1).to_string())
+        driver.quit()
         return

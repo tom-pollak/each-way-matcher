@@ -125,14 +125,14 @@ def create_odds_df(races_df, races):
                 index = (venue, time, horse_name)
                 indexes.append(index)
                 data.append(
-                    [np.NaN, np.NaN, selection_id, np.NaN, np.NaN, selection_id]
+                    [np.NaN, np.NaN, str(selection_id), np.NaN, np.NaN, str(selection_id)]
                 )
         except MatcherError:
             continue
 
     indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
     columns = pd.MultiIndex.from_product(
-        [bookies, ["back_odds"]], names=["bookies", "data"]
+        [bookies, ["odds"]], names=["bookies", "data"]
     )
     odds_df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
