@@ -80,14 +80,12 @@ def get_max_stake(
     bookie_odds, win_odds, place_odds, win_available, place_available, place_payout
 ):
     place_payout = 1 / place_payout
-    win_stake_ratio = bookie_odds / win_odds
-    place_stake_ratio = ((bookie_odds - 1) * place_payout + 1) / place_odds
-    total_ratio = 1 + win_stake_ratio + place_stake_ratio
-    win_stake_ratio /= total_ratio
-    place_stake_ratio /= total_ratio
-
+    bookie_stake_win = win_available * win_odds / bookie_odds
+    bookie_stake_place = (
+        place_available * place_odds / ((bookie_odds - 1) * place_payout + 1)
+    )
     # place_available limiting factor
-    if place_stake_ratio * place_available < win_stake_ratio * win_available:
+    if bookie_stake_place < bookie_stake_win:
         place_stake = place_available
         bookie_stake = place_stake * place_odds / ((bookie_odds - 1) * place_payout + 1)
         win_stake = bookie_stake * bookie_odds / win_odds
