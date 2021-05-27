@@ -32,7 +32,6 @@ odds_increments = {
 def check_start_time(race, secs):
     seconds_until_race = (race["race_time"] - datetime.now()).total_seconds()
     if seconds_until_race <= secs:
-        print("Race too close to start time: %s" % seconds_until_race)
         return False
     return True
 

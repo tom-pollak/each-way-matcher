@@ -420,6 +420,7 @@ def run_each_way(lay):
         except KeyboardInterrupt:
             break
         except WebDriverException as e:
+            print()
             if "cannot activate web view" in e:
                 print("WebDriver error occured: cannot activate web view")
             elif "chrome not reachable" in e:

@@ -22,8 +22,8 @@ def show_info(count, START_TIME):
     diff = time() - START_TIME
     time_alive = convert_time(diff)
 
-    print(f"Time is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}")
-    print(f"Refreshes: {count}\n")
+    print(f"\nTime is: {datetime.now().strftime('%H:%M:%S')}\tTime alive: {time_alive}")
+    print(f"Refreshes: {count}n")
     if datetime.now().hour >= 19:
         print("\nFinished matching today")
         print("---------------------------------------------")
