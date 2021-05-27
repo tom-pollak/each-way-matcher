@@ -23,6 +23,7 @@ from .calculate import (
     check_start_time,
     get_valid_horse_name,
     get_max_stake,
+    bet_profitable,
 )
 from .stats import check_repeat_bets, calc_unfinished_races
 from .output import update_csv, show_info, ouput_lay, output_punt, alert_low_funds
@@ -175,14 +176,6 @@ def evaluate_arb(driver, race):
         race["place_payout"],
     )
     if min(*profits) < 0:
-        (_, exp_growth, _) = calculate_expected_return(
-            race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races(),
-            race["win_odds"],
-            race["place_odds"],
-            *profits,
-        )
-        if exp_growth < 0:
-            return
         stake_proportion = maximize_arb(
             race["bookie_balance"],
             race["betfair_balance"],
@@ -209,6 +202,10 @@ def evaluate_arb(driver, race):
         race["bookie_stake"] = round(race["bookie_stake"] * stake_proportion, 2)
         race["win_stake"] = round(race["win_stake"] * stake_proportion, 2)
         race["place_stake"] = round(race["place_stake"] * stake_proportion, 2)
+
+        if not bet_profitable(race):
+            return
+
         stakes_ok = check_stakes(
             race["bookie_balance"],
             race["betfair_balance"],
@@ -287,6 +284,7 @@ def evaluate_arb(driver, race):
 
 def evaluate_punt(driver, race):
     race["bet_type"] = "Punt"
+    race["win_stake"] = race["place_stake"] = 0
     horses = betfair.get_horses(race["venue"], race["race_time"]).keys()
     race["horse_name"], _ = get_valid_horse_name(horses, race["horse_name"])
     bet_types, win_odds_proportion, _ = check_repeat_bets(
@@ -303,22 +301,7 @@ def evaluate_punt(driver, race):
         race["bookie_balance"],
     )
 
-    profits = calculate_profit(
-        race["bookie_odds"],
-        race["bookie_stake"],
-        race["win_odds"],
-        0,
-        race["place_odds"],
-        0,
-        race["place_payout"],
-    )
-    (_, exp_growth, _) = calculate_expected_return(
-        race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races(),
-        race["win_odds"],
-        race["place_odds"],
-        *profits,
-    )
-    if exp_growth < 0:
+    if not bet_profitable(race):
         return
 
     if race["bookie_stake"] < 0.1:
@@ -344,7 +327,6 @@ def evaluate_punt(driver, race):
     race["bookie_balance"] = sporting_index.get_balance(driver)
     race["betfair_balance"] = betfair.get_balance()
     race["betfair_exposure"] = betfair.get_exposure()
-    race["win_stake"] = race["place_stake"] = 0
     (
         race["exp_value"],
         race["exp_growth"],

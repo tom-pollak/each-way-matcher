@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import numpy as np
 from scipy import optimize
 
+from .stats import calc_unfinished_races
+
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
@@ -199,6 +201,27 @@ def kelly_criterion(bookie_odds, win_odds, place_odds, place_payout, balance):
         return 0
     bookie_stake = stake_proportion * balance
     return round(bookie_stake, 2)
+
+
+def bet_profitable(race):
+    profits = calculate_profit(
+        race["bookie_odds"],
+        race["bookie_stake"],
+        race["win_odds"],
+        race["win_stake"],
+        race["place_odds"],
+        race["place_stake"],
+        race["place_payout"],
+    )
+    (_, exp_growth, _) = calculate_expected_return(
+        race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races(),
+        race["win_odds"],
+        race["place_odds"],
+        *profits,
+    )
+    if exp_growth < 0:
+        return False
+    return True
 
 
 def arb_kelly_criterion(
