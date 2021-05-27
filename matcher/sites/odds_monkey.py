@@ -36,12 +36,12 @@ def login(driver):
         raise MatcherError("Couldn't login to Oddsmonkey")
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(PASS)
     driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
-    WebDriverWait(driver, 60).until(
-        EC.visibility_of_element_located((By.XPATH, '//*[@id="mainTitle"]'))
-    )
-
-    driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
     try:
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located((By.XPATH, '//*[@id="mainTitle"]'))
+        )
+
+        driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
         WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable(
                 (
@@ -51,17 +51,10 @@ def login(driver):
             )
         ).click()
     except TimeoutException:
-        print("Need Oddsmonkey premium membership (OM12FOR1)")
-        raise MatcherError("Couldn't access each way matcher")
+        raise MatcherError("Failed to login to Oddsmonkey")
     except ElementClickInterceptedException:
         print("Dismiss one time pop-up boxes and setup oddsmonkey")
         raise KeyboardInterrupt
-    # driver.find_element_by_xpath(
-    #     f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_Arrow"]'
-    # ).click()
-    # driver.find_element_by_xpath(
-    #     '//*[@id="dnn_ctr1157_View_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_DropDown"]/div/ul/li[3]'
-    # ).click()
 
 
 def available_to_lay(driver, row):

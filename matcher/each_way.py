@@ -174,9 +174,15 @@ def evaluate_arb(driver, race):
         race["place_stake"],
         race["place_payout"],
     )
-    if max(*profits) < 0:
-        return
     if min(*profits) < 0:
+        (_, exp_growth, _) = calculate_expected_return(
+            race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races(),
+            race["win_odds"],
+            race["place_odds"],
+            *profits,
+        )
+        if exp_growth < 0:
+            return
         stake_proportion = maximize_arb(
             race["bookie_balance"],
             race["betfair_balance"],
@@ -297,6 +303,24 @@ def evaluate_punt(driver, race):
         race["bookie_balance"],
     )
 
+    profits = calculate_profit(
+        race["bookie_odds"],
+        race["bookie_stake"],
+        race["win_odds"],
+        0,
+        race["place_odds"],
+        0,
+        race["place_payout"],
+    )
+    (_, exp_growth, _) = calculate_expected_return(
+        race["bookie_balance"] + race["betfair_balance"] + calc_unfinished_races(),
+        race["win_odds"],
+        race["place_odds"],
+        *profits,
+    )
+    if exp_growth < 0:
+        return
+
     if race["bookie_stake"] < 0.1:
         return
 
@@ -409,8 +433,11 @@ def run_each_way(lay):
         except KeyboardInterrupt:
             break
         except WebDriverException as e:
-            print("WebDriver error occured: %s" % e)
-            print(traceback.format_exc())
+            if e == "Message: unknown error: cannot activate web view":
+                print("WebDriver error occured: cannot activate web view")
+            else:
+                print("WebDriver error occured: %s" % e)
+                print(traceback.format_exc())
         except Exception as e:
             print("Unknown error occured: %s" % e)
             print(traceback.format_exc())
