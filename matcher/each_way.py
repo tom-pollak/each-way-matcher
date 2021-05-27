@@ -420,10 +420,14 @@ def run_each_way(lay):
         except KeyboardInterrupt:
             break
         except WebDriverException as e:
-            if e == "Message: unknown error: cannot activate web view":
+            if "cannot activate web view" in e:
                 print("WebDriver error occured: cannot activate web view")
-            elif e == "Message: tab crashed":
+            elif "chrome not reachable" in e:
+                print("WebDriver error occured: chrome not reachable")
+            elif "tab crashed" in e:
                 print("WebDriver error occured: tab crashed")
+            elif "cannot determine loading status" in e:
+                print("WebDriver error occured: cannot determine loading status")
             else:
                 print("Unknown WebDriver error occured: %s" % e)
                 print(traceback.format_exc())
