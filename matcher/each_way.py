@@ -313,8 +313,10 @@ def evaluate_punt(driver, race):
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
         )
         return
+
     if not bet_made:
         return
+
     race["win_profit"], race["place_profit"], race["lose_profit"] = calculate_profit(
         race["bookie_odds"],
         race["bookie_stake"],
@@ -345,7 +347,10 @@ def evaluate_punt(driver, race):
 
 
 def scrape_races(driver, lay):
-    race = {"bookie_balance": sporting_index.get_balance(driver)}
+    race = {
+        "bookie_balance": sporting_index.get_balance(driver),
+        "betfair_balance": betfair.get_balance(),
+    }
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     odds_monkey.refresh(driver)
@@ -417,8 +422,10 @@ def run_each_way(lay):
         except WebDriverException as e:
             if e == "Message: unknown error: cannot activate web view":
                 print("WebDriver error occured: cannot activate web view")
+            elif e == "Message: tab crashed":
+                print("WebDriver error occured: tab crashed")
             else:
-                print("WebDriver error occured: %s" % e)
+                print("Unknown WebDriver error occured: %s" % e)
                 print(traceback.format_exc())
         except Exception as e:
             print("Unknown error occured: %s" % e)
