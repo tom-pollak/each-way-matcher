@@ -417,7 +417,8 @@ def run_each_way(lay):
             start_matcher(driver, lay)
         except MatcherError as e:
             print(e)
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as e:
+            print(e)
             break
         except WebDriverException as e:
             print()

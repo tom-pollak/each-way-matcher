@@ -52,8 +52,7 @@ def login(driver):
     except TimeoutException:
         raise MatcherError("Failed to login to Oddsmonkey")
     except ElementClickInterceptedException:
-        print("Dismiss one time pop-up boxes and setup oddsmonkey")
-        raise KeyboardInterrupt
+        raise KeyboardInterrupt("Dismiss one time pop-up boxes and setup oddsmonkey")
 
 
 def available_to_lay(driver, row):
@@ -99,11 +98,10 @@ def find_races(driver, row=0):
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[10]/a'
     ).get_attribute("href")
     if "sportingindex" not in bookie_exchange:
-        print(
+        raise KeyboardInterrupt(
             "Bookie is not SportingIndex, have you adjusted the filters? (%s)"
             % bookie_exchange
         )
-        raise KeyboardInterrupt
 
     try:
         driver.find_element_by_xpath(
