@@ -27,8 +27,8 @@ PASS = os.environ.get("ODD_M_PASS")
 def login(driver):
     driver.get("https://www.oddsmonkey.com/oddsmonkeyLogin.aspx?returnurl=%2f")
     try:
-        WebDriverWait(driver, 60).until(
-            EC.visibility_of_element_located(
+        WebDriverWait(driver, 100).until(
+            EC.element_to_be_clickable(
                 (By.ID, "dnn_ctr433_Login_Login_DNN_txtUsername")
             )
         ).send_keys(USERNAME)
@@ -41,7 +41,7 @@ def login(driver):
         )
 
         driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 100).until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
