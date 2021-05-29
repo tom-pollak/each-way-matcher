@@ -249,9 +249,6 @@ def refresh(driver):
                     (By.XPATH, '//*[@id="dnn_LOGO1_imgLogo"]')
                 )
             )
-            # if betfair:
-            #     trigger_betfair_options(driver)
-            #     driver.switch_to.default_content()
     raise MatcherError("Couldn't refresh Oddsmonkey")
 
 

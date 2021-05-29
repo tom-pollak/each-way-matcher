@@ -422,13 +422,13 @@ def run_each_way(lay):
             break
         except WebDriverException as e:
             print()
-            if "cannot activate web view" in e:
+            if "cannot activate web view" in str(e):
                 print("WebDriver error occured: cannot activate web view")
-            elif "chrome not reachable" in e:
+            elif "chrome not reachable" in str(e):
                 print("WebDriver error occured: chrome not reachable")
-            elif "tab crashed" in e:
+            elif "tab crashed" in str(e):
                 print("WebDriver error occured: tab crashed")
-            elif "cannot determine loading status" in e:
+            elif "cannot determine loading status" in str(e):
                 print("WebDriver error occured: cannot determine loading status")
             else:
                 print("Unknown WebDriver error occured: %s" % e)
