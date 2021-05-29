@@ -38,10 +38,9 @@ def login(driver):
         )
         driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
         print("clicked login")
-        # WebDriverWait(driver, 60).until(
-        #     EC.visibility_of_element_located((By.XPATH, '//*[@id="mainTitle"]'))
-        # )
-        driver.implicitly_wait(15)
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located((By.XPATH, '//*[@id="mainTitle"]'))
+        )
         print("got logged in page")
 
         driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
