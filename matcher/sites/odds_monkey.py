@@ -39,9 +39,11 @@ def login(driver):
         driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
         print("clicked login")
         WebDriverWait(driver, 100).until(
-            EC.visibility_of_element_located((By.XPATH, '//*[@id="mainTitle"]'))
-        )
-        print("got logged in page")
+            EC.element_to_be_clickable(
+                (By.XPATH, '//*[@id="Body"]/div[9]/div/div/div[2]/div[1]/button')
+            )
+        ).click()
+        print("clicked dismiss button")
 
         driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
         WebDriverWait(driver, 100).until(
