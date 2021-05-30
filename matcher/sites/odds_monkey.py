@@ -33,12 +33,10 @@ def login(driver):
                 (By.ID, "dnn_ctr433_Login_Login_DNN_txtUsername")
             )
         ).send_keys(USERNAME)
-        print("sent username")
         driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_txtPassword").send_keys(
             PASS
         )
         driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
-        print("clicked login")
         sleep(10)
         driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
         WebDriverWait(driver, 100).until(
@@ -49,7 +47,6 @@ def login(driver):
                 )
             )
         ).click()
-        print("got each way page")
     except TimeoutException:
         raise MatcherError("Failed to login to Oddsmonkey")
     except ElementClickInterceptedException:
