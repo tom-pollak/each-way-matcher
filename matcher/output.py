@@ -52,8 +52,7 @@ Punt bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {r
     {race['race_time']} - {race['venue']}
     Win odds: {race['win_odds']} Place odds: {race['place_odds']}
     Expected Value: {round(race['exp_value'] * 100, 2)}% Expected Growth: {round(race['exp_growth'] * 100, 2)}% (£{format(race['exp_return'], '.2f')})
-    Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, Stake: £{format(race['bookie_stake'], '.2f')}
-    """
+    Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, Stake: £{format(race['bookie_stake'], '.2f')}"""
     )
 
 
@@ -65,8 +64,7 @@ def ouput_lay(race):
     Bookie odds: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}
     Win profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}
     Expected Value: {round(race['exp_value'] * 100, 2)}% Expected Growth: {round(race['exp_growth'] * 100, 2)}% (£{format(race['exp_return'], '.2f')})
-    Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, Betfair balance: £{format(race['betfair_balance'], '.2f')} In bet balance: {format(calc_unfinished_races(), '.2f')}
-    """
+    Sporting Index balance: £{format(race['bookie_balance'], '.2f')}, Betfair balance: £{format(race['betfair_balance'], '.2f')} In bet balance: {format(calc_unfinished_races(), '.2f')}"""
     )
 
 
