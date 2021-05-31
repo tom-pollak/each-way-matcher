@@ -204,6 +204,7 @@ def evaluate_arb(driver, race):
         race["place_stake"] = round(race["place_stake"] * stake_proportion, 2)
 
         if not bet_profitable(race):
+            print("lay bet is not profitable")
             return
 
         stakes_ok = check_stakes(

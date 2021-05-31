@@ -47,7 +47,8 @@ def alert_low_funds(race):
 
 def output_punt(race):
     print(
-        f"""No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}
+        f"""
+No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}
     {race['race_time']} - {race['venue']}
     Win odds: {race['win_odds']} Place odds: {race['place_odds']}
     Expected Value: {round(race['exp_value'] * 100, 2)}% Expected Growth: {round(race['exp_growth'] * 100, 2)}% (£{format(race['exp_return'], '.2f')})
@@ -58,7 +59,8 @@ def output_punt(race):
 
 def ouput_lay(race):
     print(
-        f"""{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']}
+        f"""
+{race['bet_type']} bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']}
     {race['race_time']} - {race['venue']}
     Bookie odds: {race['bookie_odds']} - £{format(race['bookie_stake'], '.2f')} Lay win: {race['win_odds']} - £{format(race['win_stake'], '.2f')} Lay place: {race['place_odds']} - £{format(race['place_stake'], '.2f')}
     Win profit: £{format(race['win_profit'], '.2f')} Place profit: £{format(race['place_profit'], '.2f')} Lose profit: £{format(race['lose_profit'], '.2f')}
