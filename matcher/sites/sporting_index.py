@@ -182,9 +182,9 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     get_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
     if cur_odd_price is None:
-        return race, None
+        return None
     if not cur_odd_price:
-        return race, False
+        return False
     cur_odd_price_frac = cur_odd_price.split("/")
     cur_odd_price = round(
         int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1, 2
@@ -197,9 +197,9 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
             if not betfair.check_odds(
                 race, market_ids, selection_id
             ) or not check_start_time(race, secs=20):
-                return race, False
+                return False
         bet_made = place_bet(driver, race)
         if bet_made:
-            return race, True
+            return True
         close_bet(driver)
-    return race, False
+    return False

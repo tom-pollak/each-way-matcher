@@ -225,9 +225,7 @@ def evaluate_arb(driver, race):
     if not betfair.check_odds(race, market_ids, selection_id):
         evaluate_arb(driver, race)
         return
-    race, bet_made = sporting_index.make_bet(
-        driver, race, market_ids, selection_id, lay=True
-    )
+    bet_made = sporting_index.make_bet(driver, race, market_ids, selection_id, lay=True)
     if bet_made is None:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
@@ -308,7 +306,7 @@ def evaluate_punt(driver, race):
     if race["bookie_stake"] < 0.1:
         return
 
-    race, bet_made = sporting_index.make_bet(driver, race)
+    bet_made = sporting_index.make_bet(driver, race)
     if bet_made is None:  # horse not found
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
