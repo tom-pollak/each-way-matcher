@@ -63,19 +63,20 @@ HEADERS = login()
 
 
 def call_api(jsonrpc_req, url=betting_url):
-    try:
-        if url.lower().startswith("http"):
-            req = request.Request(url, jsonrpc_req.encode("utf-8"), HEADERS)
-        else:
-            raise MatcherError("url does not start with http")
-        with request.urlopen(req) as response:
-            json_res = response.read()
-            return json.loads(json_res.decode("utf-8"))
-    except error.HTTPError as e:
-        print(f"Request failed with response: {e.response.status_code}")
-        print(url)
-    except error.URLError:
-        print(f"No service available at {url}")
+    for _ in range(3):
+        try:
+            if url.lower().startswith("http"):
+                req = request.Request(url, jsonrpc_req.encode("utf-8"), HEADERS)
+            else:
+                raise MatcherError("url does not start with http")
+            with request.urlopen(req) as response:
+                json_res = response.read()
+                return json.loads(json_res.decode("utf-8"))
+        except error.HTTPError as e:
+            print(f"\nRequest failed with response: {e.response.status_code}")
+            print(url)
+        except error.URLError:
+            print(f"\nNo service available at {url}")
     raise MatcherError(f"API request failed:\n{jsonrpc_req}")
 
 
