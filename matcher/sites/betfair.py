@@ -75,8 +75,10 @@ def call_api(jsonrpc_req, url=betting_url):
         except error.HTTPError as e:
             print(f"\nRequest failed with response: {e.response.status_code}")
             print(url)
+            continue
         except error.URLError:
             print(f"\nNo service available at {url}")
+            continue
     raise MatcherError(f"API request failed:\n{jsonrpc_req}")
 
 
