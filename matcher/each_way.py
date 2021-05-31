@@ -387,7 +387,7 @@ def start_matcher(driver, lay):
     driver.switch_to.window(driver.window_handles[0])
     while True:
         loop_time = time()
-        # So sporting index dosent logout
+        # So Sporting Index dosen't logout
         if count % 4 == 0:
             sporting_index.refresh(driver)
         if count % 10 == 0:

@@ -48,7 +48,7 @@ def alert_low_funds(race):
 def output_punt(race):
     print(
         f"""
-No Lay bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}
+Punt bet made ({datetime.now().strftime('%H:%M:%S')}): {race['horse_name']} - {race['bookie_odds']}
     {race['race_time']} - {race['venue']}
     Win odds: {race['win_odds']} Place odds: {race['place_odds']}
     Expected Value: {round(race['exp_value'] * 100, 2)}% Expected Growth: {round(race['exp_growth'] * 100, 2)}% (£{format(race['exp_return'], '.2f')})
