@@ -85,9 +85,15 @@ def call_api(jsonrpc_req, url=betting_url):
 def get_balance():
     account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
     balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    balance_res = call_api(balance_req, url=account_url)
-    balance = balance_res["result"]["availableToBetBalance"]
-    return balance
+    for _ in range(3):
+        balance_res = call_api(balance_req, url=account_url)
+        try:
+            balance = balance_res["result"]["availableToBetBalance"]
+            return balance
+        except KeyError:
+            print("Couldn't get balance: %s" % balance_res)
+            continue
+    raise MatcherError("Couldn't get balance")
 
 
 def get_exposure():
