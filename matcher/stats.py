@@ -128,8 +128,7 @@ def output_profit():
         current_betfair_balance = df["betfair_balance"].values[-1]
         in_bet_balance = format(calc_unfinished_races(), ".2f")
     print(
-        f"""\
-Total profit: £{total_profit} ({total_percentage_profit}%)
+        f"""Total profit: £{total_profit} ({total_percentage_profit}%)
 Profit today: £{profit_today} ({today_percentage_profit}%)
 Sporting Index balance: £{current_sporting_index_balance} Betfair balance: £{current_betfair_balance} Balance in bets: £{in_bet_balance}\
     """
