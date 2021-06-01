@@ -359,6 +359,9 @@ def scrape_races(driver, lay):
         "bookie_balance": sporting_index.get_balance(driver),
         "betfair_balance": betfair.get_balance(),
     }
+    if race["bookie_balance"] == 0:
+        print("Sporting Index balance: 0")
+        return
     processed_horses = []
     driver.switch_to.window(driver.window_handles[0])
     odds_monkey.refresh(driver)
@@ -377,8 +380,11 @@ def scrape_races(driver, lay):
                 .text.title()
             )
             if lay and odds_monkey.available_to_lay(driver, row):
-                race.update(odds_monkey.find_races(driver, row))
-                evaluate_arb(driver, race)
+                if race["betfair_balance"] == 0:
+                    print("Betfair balance: 0")
+                else:
+                    race.update(odds_monkey.find_races(driver, row))
+                    evaluate_arb(driver, race)
 
             if horse_name not in processed_horses:
                 race.update(odds_monkey.find_races(driver, row))
