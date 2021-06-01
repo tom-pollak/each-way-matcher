@@ -164,7 +164,7 @@ def get_bets_by_race(win_market_id, place_market_id):
     return win_stake, round(win_odds, 2), place_stake, round(place_odds, 2)
 
 
-def get_bets_by_bet_id(**bet_ids):
+def get_bets_by_bet_id(*bet_ids):
     bet_ids = [x for x in bet_ids if x is not None]
     bet_info = {}
     order_req = (
