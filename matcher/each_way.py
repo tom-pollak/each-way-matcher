@@ -146,6 +146,21 @@ def evaluate_arb(driver, race):
         place_available,
         race["place_payout"],
     )
+    stakes_ok = check_stakes(
+        race["bookie_balance"],
+        race["betfair_balance"],
+        max_bookie_stake,
+        max_win_stake,
+        race["win_odds"],
+        win_available,
+        max_place_stake,
+        race["place_odds"],
+        place_available,
+    )
+
+    if not stakes_ok:
+        return
+
     (
         stakes_ok,
         race["bookie_stake"],
@@ -204,7 +219,6 @@ def evaluate_arb(driver, race):
         race["place_stake"] = round(race["place_stake"] * stake_proportion, 2)
 
         if not bet_profitable(race):
-            print("lay bet is not profitable")
             return
 
         stakes_ok = check_stakes(
@@ -219,7 +233,6 @@ def evaluate_arb(driver, race):
             place_available,
         )
         if not stakes_ok:
-            print(f"Arb bet not profitable: {profits} - {stake_proportion}")
             return
 
     if not betfair.check_odds(race, market_ids, selection_id):

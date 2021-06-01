@@ -164,14 +164,12 @@ def get_bets_by_race(win_market_id, place_market_id):
     return win_stake, round(win_odds, 2), place_stake, round(place_odds, 2)
 
 
-def get_bets_by_bet_id(win_bet_id, place_bet_id):
-    if None in (win_bet_id, place_bet_id):
-        print("Couldn't get bet ids")
-        return {}
+def get_bets_by_bet_id(**bet_ids):
+    bet_ids = [x for x in bet_ids if x is not None]
     bet_info = {}
     order_req = (
-        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"betIds": ["%s", "%s"]}, "id": 1}'
-        % (win_bet_id, place_bet_id)
+        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"betIds": %s}, "id": 1}'
+        % bet_ids
     )
     bets = call_api(order_req)["result"]["currentOrders"]
     for bet in bets:
