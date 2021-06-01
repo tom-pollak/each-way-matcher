@@ -145,6 +145,7 @@ def get_bets_by_race(win_market_id, place_market_id):
         % (win_market_id, place_market_id)
     )
     bets = call_api(order_req)["result"]["currentOrders"]
+    print(bets)
     for bet in bets:
         odds = bet["averagePriceMatched"]
         stake = bet["sizeMatched"]
@@ -164,8 +165,8 @@ def get_bets_by_race(win_market_id, place_market_id):
     return win_stake, round(win_odds, 2), place_stake, round(place_odds, 2)
 
 
-def get_bets_by_bet_id(*bet_ids):
-    bet_ids = [str(x) for x in bet_ids if x is not None]
+def get_bets_by_bet_id(win_market_id, place_market_id, *bet_ids):
+    bet_ids = [int(x) for x in bet_ids if x is not None]
     bet_info = {}
     order_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"betIds": %s}, "id": 1}'
@@ -176,9 +177,9 @@ def get_bets_by_bet_id(*bet_ids):
         odds = bet["averagePriceMatched"]
         stake = bet["sizeMatched"]
         temp = {"odds": odds, "stake": stake}
-        if bet["betId"] == win_bet_id:
+        if bet["marketId"] == win_market_id:
             bet_info["win"] = temp
-        elif bet["betId"] == place_bet_id:
+        elif bet["marketId"] == place_market_id:
             bet_info["place"] = temp
     return bet_info
 

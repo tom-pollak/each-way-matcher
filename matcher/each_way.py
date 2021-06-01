@@ -62,7 +62,15 @@ def place_arb(
         "win": {"odds": 0, "stake": 0},
         "place": {"odds": 0, "stake": 0},
     }
-    bet_info.update(betfair.get_bets_by_bet_id(lay_win["bet_id"], lay_place["bet_id"]))
+    betfair.cancel_unmatched_bets()
+    bet_info.update(
+        betfair.get_bets_by_bet_id(
+            market_ids["win"],
+            market_ids["place"],
+            lay_win["bet_id"],
+            lay_place["bet_id"],
+        )
+    )
     new_profits = calculate_profit(
         bookie_odds,
         bookie_stake,
@@ -78,7 +86,6 @@ def place_arb(
         print("bet not matched")
         print(lay_win)
         print(lay_place)
-        betfair.cancel_unmatched_bets()
         win_odds, win_available = betfair.get_odds(market_ids["win"], selection_id)
         place_odds, place_available = betfair.get_odds(
             market_ids["place"], selection_id
