@@ -165,7 +165,7 @@ def get_bets_by_race(win_market_id, place_market_id):
 
 
 def get_bets_by_bet_id(*bet_ids):
-    bet_ids = [x for x in bet_ids if x is not None]
+    bet_ids = [str(x) for x in bet_ids if x is not None]
     bet_info = {}
     order_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listCurrentOrders", "params": {"betIds": %s}, "id": 1}'

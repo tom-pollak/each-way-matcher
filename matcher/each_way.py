@@ -146,19 +146,8 @@ def evaluate_arb(driver, race):
         place_available,
         race["place_payout"],
     )
-    stakes_ok = check_stakes(
-        race["bookie_balance"],
-        race["betfair_balance"],
-        max_bookie_stake,
-        max_win_stake,
-        race["win_odds"],
-        win_available,
-        max_place_stake,
-        race["place_odds"],
-        place_available,
-    )
 
-    if not stakes_ok:
+    if min(max_bookie_stake, max_win_stake, max_place_stake) <= 0:
         return
 
     (
