@@ -408,8 +408,6 @@ def maximize_arb(
 def minimize_calculate_profit(
     win_odds,
     place_odds,
-    win_available,
-    place_available,
     profits,
     betfair_balance,
     place_payout,
@@ -420,13 +418,9 @@ def minimize_calculate_profit(
         win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
         if total_stake > betfair_balance:
             return total_stake * 100
-        if win_stake > win_available:
-            return win_stake * 100
-        if place_stake > place_available:
-            return place_stake * 100
         if win_stake < win_min_stake:
             win_stake = 0
-        elif place_stake < place_min_stake:
+        if place_stake < place_min_stake:
             place_stake = 0
         new_profits = calculate_profit(
             0,
@@ -454,13 +448,11 @@ def minimize_loss(
     place_payout,
 ):
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
-    bnds = ((0, betfair_balance), (0, betfair_balance))
+    bnds = ((0, win_available), (0, place_available))
     win_stake, place_stake = optimize.differential_evolution(
         minimize_calculate_profit(
             win_odds,
             place_odds,
-            win_available,
-            place_available,
             profits,
             betfair_balance,
             place_payout,
@@ -469,6 +461,89 @@ def minimize_loss(
     ).x
     if win_stake < win_min_stake:
         win_stake = 0
-    elif place_stake < place_min_stake:
+    if place_stake < place_min_stake:
         place_stake = 0
     return round(win_stake, 2), round(place_stake, 2)
+
+
+def maximize_expected_growth(
+    bookie_odds,
+    win_odds,
+    place_odds,
+    betfair_balance,
+    bookie_balance,
+    place_payout,
+):
+    def make_minimize(*stakes):
+        bookie_stake, win_stake, place_stake = stakes[0]
+        total_stake = win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
+        win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
+        if total_stake > betfair_balance:
+            return total_stake * 100
+        if bookie_stake < 0.1:
+            bookie_stake = 0
+        if win_stake < win_min_stake:
+            win_stake = 0
+        if place_stake < place_min_stake:
+            place_stake = 0
+
+        profits = calculate_profit(
+            bookie_odds,
+            bookie_stake,
+            win_odds,
+            win_stake,
+            place_odds,
+            place_stake,
+            place_payout,
+            round_profit=False,
+        )
+        _, exp_growth, _ = calculate_expected_return(
+            betfair_balance + bookie_balance + calc_unfinished_races(),
+            win_odds,
+            place_odds,
+            *profits,
+        )
+        print(stakes[0], exp_growth, profits)
+        return -exp_growth
+
+    return make_minimize
+
+
+def maximize_growth(
+    bookie_odds,
+    win_odds,
+    place_odds,
+    win_available,
+    place_available,
+    betfair_balance,
+    bookie_balance,
+    place_payout,
+):
+    win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
+    bnds = (
+        (0, math.floor(bookie_balance / 2 * 100) / 100),
+        (0, win_available),
+        (0, place_available),
+    )
+    bookie_stake, win_stake, place_stake = optimize.differential_evolution(
+        maximize_expected_growth(
+            bookie_odds,
+            win_odds,
+            place_odds,
+            betfair_balance,
+            bookie_balance,
+            place_payout,
+        ),
+        bounds=bnds,
+    ).x
+    if bookie_stake < 0.1:
+        bookie_stake = 0
+    if win_stake < win_min_stake:
+        win_stake = 0
+    if place_stake < place_min_stake:
+        place_stake = 0
+    return round(bookie_stake, 2), round(win_stake, 2), round(place_stake, 2)
+
+
+profits = calculate_profit(4.33, 5.09, 4.8, 4.8, 1.64, 5.69, 5)
+maximize_arb(300, 500, 4.33, 1.64, *profits)
