@@ -510,13 +510,13 @@ def maximize_expected_growth(
 
 
 def maximize_growth(
+    betfair_balance,
+    bookie_balance,
     bookie_odds,
     win_odds,
     place_odds,
     win_available,
     place_available,
-    betfair_balance,
-    bookie_balance,
     place_payout,
 ):
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
