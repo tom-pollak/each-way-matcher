@@ -543,7 +543,3 @@ def maximize_growth(
     if place_stake < place_min_stake:
         place_stake = 0
     return round(bookie_stake, 2), round(win_stake, 2), round(place_stake, 2)
-
-
-profits = calculate_profit(4.33, 5.09, 4.8, 4.8, 1.64, 5.69, 5)
-maximize_arb(300, 500, 4.33, 1.64, *profits)
