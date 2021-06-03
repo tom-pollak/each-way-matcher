@@ -37,7 +37,7 @@ def get_extra_place_races():
             elif tag.text == make_date(1):
                 break
             else:
-                race_time, venue = tuple(tag.text.split())
+                race_time, venue = tuple(tag.text.split(" ", 1))
                 race = {"time": race_time, "venue": venue}
 
         elif tag.name == "p":
