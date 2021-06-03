@@ -122,15 +122,15 @@ def place_bet(driver, race):
 
 def get_page(driver, race):
     driver.switch_to.window(driver.window_handles[1])
-    driver.get(race["bookie_exchange"])
     try:
+        driver.get(race["bookie_exchange"])
         WebDriverWait(driver, 60).until(
             EC.visibility_of_element_located(
                 (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
             )
         )
     except TimeoutException:
-        raise MatcherError("Timout getting sporting index page")
+        raise MatcherError("Timeout getting sporting index page")
 
 
 def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
