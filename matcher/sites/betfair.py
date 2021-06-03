@@ -6,10 +6,9 @@ import time
 
 from urllib import error, request
 from dotenv import load_dotenv
-from json.decoder import JSONDecodeError
 
 from matcher.exceptions import MatcherError
-from matcher.calculate import round_odd, get_valid_horse_name
+from matcher.calculate import round_odd
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
