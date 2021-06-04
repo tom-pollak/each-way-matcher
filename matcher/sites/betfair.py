@@ -122,7 +122,9 @@ def get_odds(market_id, selection_id):
     res = call_api(price_req)
     try:
         odds = res["result"][0]["runners"][0]["ex"]["availableToLay"][0]
-    except (KeyError, IndexError):
+    except IndexError:
+        return 9999, 0
+    except KeyError:
         raise MatcherError("Couldn't get odds from betfair:\n%s" % res)
     return odds["price"], odds["size"]
 
