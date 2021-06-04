@@ -25,7 +25,10 @@ load_dotenv(os.path.join(BASEDIR, ".env"))
 APP_KEY = os.environ.get("APP_KEY")
 USERNAME = os.environ.get("BETFAIR_USR")
 PASSWORD = os.environ.get("BETFAIR_PASS")
-HEADERS = ast.literal_eval(os.environ.get("HEADERS"))
+try:
+    HEADERS = ast.literal_eval(os.environ.get("HEADERS"))
+except SyntaxError:
+    HEADERS = {}
 CERT = os.path.join(BASEDIR, "client-2048.crt")
 KEY = os.path.join(BASEDIR, "client-2048.key")
 
@@ -73,10 +76,10 @@ def call_api(jsonrpc_req, url=betting_url):
                 res = json.loads(json_res.decode("utf-8"))
                 if res.get("error"):
                     exception_name = res["error"]["data"]["exceptionname"]
-                    if (
-                        res["error"]["data"][exception_name]["errorCode"]
-                        == "INVALID_SESSION_INFORMATION"
-                    ):
+                    if res["error"]["data"][exception_name]["errorCode"] in [
+                        "INVALID_SESSION_INFORMATION",
+                        "NO_SESSION",
+                    ]:
                         HEADERS = login()
                         write_new_headers(HEADERS)
                         return call_api(jsonrpc_req, url=url)
