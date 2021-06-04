@@ -36,6 +36,17 @@ def check_start_time(race, secs):
     return True
 
 
+def write_new_headers(HEADERS):
+    env = open(os.path.join(BASEDIR, ".env"), "r")
+    vars = env.readlines()
+    for i, var in enumerate(vars):
+        if "HEADERS" in var:
+            vars[i] = "export HEADERS=%s" % HEADERS
+    env = open(os.path.join(BASEDIR, ".env"), "w")
+    env.writelines(vars)
+    env.close()
+
+
 def round_odd(odd):
     if odd is None:
         return None

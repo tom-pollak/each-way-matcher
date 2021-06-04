@@ -3,12 +3,13 @@ import json
 import os
 import requests
 import time
+import ast
 
 from urllib import error, request
 from dotenv import load_dotenv
 
 from matcher.exceptions import MatcherError
-from matcher.calculate import round_odd
+from matcher.calculate import round_odd, write_new_headers
 
 betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 
@@ -24,6 +25,7 @@ load_dotenv(os.path.join(BASEDIR, ".env"))
 APP_KEY = os.environ.get("APP_KEY")
 USERNAME = os.environ.get("BETFAIR_USR")
 PASSWORD = os.environ.get("BETFAIR_PASS")
+HEADERS = ast.literal_eval(os.environ.get("HEADERS"))
 CERT = os.path.join(BASEDIR, "client-2048.crt")
 KEY = os.path.join(BASEDIR, "client-2048.key")
 
@@ -58,10 +60,8 @@ def login():
     raise MatcherError("Can't login")
 
 
-HEADERS = login()
-
-
 def call_api(jsonrpc_req, url=betting_url):
+    global HEADERS
     for _ in range(3):
         try:
             if url.lower().startswith("http"):
@@ -70,7 +70,18 @@ def call_api(jsonrpc_req, url=betting_url):
                 raise MatcherError("url does not start with http")
             with request.urlopen(req) as response:
                 json_res = response.read()
-                return json.loads(json_res.decode("utf-8"))
+                res = json.loads(json_res.decode("utf-8"))
+                if res.get("error"):
+                    exception_name = res["error"]["data"]["exceptionname"]
+                    if (
+                        res["error"]["data"][exception_name]["errorCode"]
+                        == "INVALID_SESSION_INFORMATION"
+                    ):
+                        HEADERS = login()
+                        write_new_headers(HEADERS)
+                        return call_api(jsonrpc_req, url=url)
+                return res
+
         except error.HTTPError as e:
             print(f"\nRequest failed with response: {e.response.status_code}")
             print(url)
