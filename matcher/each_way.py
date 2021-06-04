@@ -194,8 +194,6 @@ def evaluate_arb(driver, race):
             race["place_odds"],
             *profits,
         )
-
-        race["bet_type"] = "Lay Punt"
         bet_types, _, new_profits = check_repeat_bets(
             race["horse_name"], race["race_time"], race["venue"]
         )
@@ -256,6 +254,8 @@ def evaluate_arb(driver, race):
     )
     if min(race["win_profit"], race["place_profit"], race["lose_profit"]) > 0:
         race["bet_type"] = "Arb"
+    else:
+        race["bet_type"] = "Lay Punt"
 
     race["win_odds"], win_available = betfair.get_odds(market_ids["win"], selection_id)
     race["place_odds"], place_available = betfair.get_odds(
