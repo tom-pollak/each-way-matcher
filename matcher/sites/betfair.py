@@ -5,6 +5,7 @@ import requests
 import time
 import ast
 
+from http.client import RemoteDisconnected
 from urllib import error, request
 from dotenv import load_dotenv
 
@@ -71,19 +72,22 @@ def call_api(jsonrpc_req, url=betting_url):
                 req = request.Request(url, jsonrpc_req.encode("utf-8"), HEADERS)
             else:
                 raise MatcherError("url does not start with http")
-            with request.urlopen(req) as response:
-                json_res = response.read()
-                res = json.loads(json_res.decode("utf-8"))
-                if res.get("error"):
-                    exception_name = res["error"]["data"]["exceptionname"]
-                    if res["error"]["data"][exception_name]["errorCode"] in [
-                        "INVALID_SESSION_INFORMATION",
-                        "NO_SESSION",
-                    ]:
-                        HEADERS = login()
-                        write_new_headers(HEADERS)
-                        return call_api(jsonrpc_req, url=url)
-                return res
+            try:
+                with request.urlopen(req) as response:
+                    json_res = response.read()
+                    res = json.loads(json_res.decode("utf-8"))
+                    if res.get("error"):
+                        exception_name = res["error"]["data"]["exceptionname"]
+                        if res["error"]["data"][exception_name]["errorCode"] in [
+                            "INVALID_SESSION_INFORMATION",
+                            "NO_SESSION",
+                        ]:
+                            HEADERS = login()
+                            write_new_headers(HEADERS)
+                            return call_api(jsonrpc_req, url=url)
+                    return res
+            except RemoteDisconnected as e:
+                raise MatcherError("API request failed: %s" % e)
 
         except error.HTTPError as e:
             print(f"\nRequest failed with response: {e.response.status_code}")
@@ -92,21 +96,18 @@ def call_api(jsonrpc_req, url=betting_url):
         except error.URLError:
             print(f"\nNo service available at {url}")
             continue
-    raise MatcherError(f"API request failed:\n{jsonrpc_req}")
+    raise MatcherError("API request failed: %s\n" % jsonrpc_req)
 
 
 def get_balance():
     account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
     balance_req = '{"jsonrpc": "2.0", "method": "AccountAPING/v1.0/getAccountFunds"}'
-    for _ in range(3):
-        balance_res = call_api(balance_req, url=account_url)
-        try:
-            balance = balance_res["result"]["availableToBetBalance"]
-            return balance
-        except KeyError:
-            print("Couldn't get balance: %s" % balance_res)
-            continue
-    raise MatcherError("Couldn't get balance")
+    balance_res = call_api(balance_req, url=account_url)
+    try:
+        balance = balance_res["result"]["availableToBetBalance"]
+        return balance
+    except KeyError:
+        raise MatcherError("Couldn't get balance: %s" % balance_res)
 
 
 def get_exposure():
