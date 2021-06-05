@@ -28,7 +28,7 @@ USERNAME = os.environ.get("BETFAIR_USR")
 PASSWORD = os.environ.get("BETFAIR_PASS")
 try:
     HEADERS = ast.literal_eval(os.environ.get("HEADERS"))
-except SyntaxError:
+except (ValueError, SyntaxError):
     HEADERS = {}
 CERT = os.path.join(BASEDIR, "client-2048.crt")
 KEY = os.path.join(BASEDIR, "client-2048.key")
