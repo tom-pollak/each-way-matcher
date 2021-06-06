@@ -95,7 +95,7 @@ def click_betslip(driver):
                 )
             )
         ).click()
-    except ElementClickInterceptedException:
+    except (ElementClickInterceptedException, StaleElementReferenceException):
         raise MatcherError("Couldn't click betslip")
 
 
