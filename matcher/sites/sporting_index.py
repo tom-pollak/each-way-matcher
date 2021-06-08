@@ -52,10 +52,10 @@ def change_to_decimal(driver):
 
 
 def get_balance(driver):
-    driver.switch_to.window(driver.window_handles[1])
-    driver.refresh()
-    for _ in range(5):
-        try:
+    try:
+        driver.switch_to.window(driver.window_handles[1])
+        driver.refresh()
+        for _ in range(5):
             balance = (
                 WebDriverWait(driver, 15)
                 .until(EC.visibility_of_element_located((By.CLASS_NAME, "btn-balance")))
@@ -66,8 +66,8 @@ def get_balance(driver):
             balance = balance.replace("£", "")
             if balance not in ["BALANCE", ""]:
                 return float(balance)
-        except WebDriverException:
-            driver.refresh()
+    except WebDriverException:
+        driver.refresh()
     raise MatcherError("Couldn't get balance")
 
 
