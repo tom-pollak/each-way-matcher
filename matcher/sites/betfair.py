@@ -60,8 +60,7 @@ def login():
             "X-Authentication": SESS_TOK,
             "content-type": "application/json",
         }
-
-    raise MatcherError("Can't login")
+    raise MatcherError("Can't login: %s" % response.status_code)
 
 
 def call_api(jsonrpc_req, url=betting_url):
