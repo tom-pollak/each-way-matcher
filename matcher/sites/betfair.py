@@ -66,7 +66,8 @@ def login():
 
 def call_api(jsonrpc_req, url=betting_url):
     global HEADERS
-    for _ in range(3):
+    log = ""
+    for _ in range(5):
         try:
             if url.lower().startswith("http"):
                 req = request.Request(url, jsonrpc_req.encode("utf-8"), HEADERS)
@@ -90,12 +91,16 @@ def call_api(jsonrpc_req, url=betting_url):
                 raise MatcherError("API request failed: %s" % e)
 
         except error.HTTPError as e:
-            print(f"\nRequest failed with response: {e.response.status_code}")
-            print(url)
+            err = f"\nRequest failed with response: {e.response.status_code}\n{url}"
+            if err not in log:
+                log += err
             continue
         except error.URLError:
-            print(f"\nNo service available at {url}")
+            err = f"\nNo service available at {url}"
+            if err not in log:
+                log += err
             continue
+    print(log)
     raise MatcherError("API request failed: %s\n" % jsonrpc_req)
 
 
