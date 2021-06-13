@@ -111,7 +111,7 @@ def get_balance():
         balance = balance_res["result"]["availableToBetBalance"]
         return balance
     except KeyError:
-        raise MatcherError("Couldn't get balance: %s" % balance_res)
+        raise MatcherError("Couldn't get Betfair balance: %s" % balance_res)
 
 
 def get_exposure():

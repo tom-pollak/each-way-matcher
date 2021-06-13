@@ -68,7 +68,7 @@ def get_balance(driver):
                 return float(balance)
     except WebDriverException:
         driver.refresh()
-    raise MatcherError("Couldn't get balance")
+    raise MatcherError("Couldn't get Sporting Index balance")
 
 
 def refresh(driver):
