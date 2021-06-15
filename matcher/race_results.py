@@ -27,12 +27,12 @@ def get_race_id(venue, time):
     res = call_api("https://horse-racing.p.rapidapi.com/results", params=params)
     for race in res:
         race_time = datetime.strptime(race["date"], "%Y-%m-%d %H:%M:%S")
-        if race["course"] == venue and time == race_time:
+        if venue in race["course"] and time == race_time:
             return race["id_race"]
     raise MatcherError
 
 
-def get_position(venue, time, horse_name, places_paid):
+def get_position(venue, time, horse_name):
     try:
         race_id = get_race_id(venue, time)
         res = call_api("https://horse-racing.p.rapidapi.com/race/%s" % race_id)
