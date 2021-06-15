@@ -92,6 +92,7 @@ def update_csv(race):
         "bet_type",
         "place_payout",
         "places_paid",
+        "postion",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
         csv_writer = DictWriter(

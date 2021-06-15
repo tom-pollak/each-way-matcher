@@ -356,6 +356,7 @@ def evaluate_punt(driver, race):
 
 def scrape_races(driver, punt, lay):
     race = {
+        "position": None,
         "bookie_balance": sporting_index.get_balance(driver),
         "betfair_balance": betfair.get_balance(),
     }
