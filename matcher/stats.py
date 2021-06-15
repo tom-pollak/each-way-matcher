@@ -71,8 +71,8 @@ def update_horse_places():
             race.venue, race.race_time, race.horse_name, race.places_paid
         )
         if pos is not None:
-            df.at[race.index, "position"] = pos
-    df.to_csv(RETURNS_CSV, index=False)
+            df.at[index, "position"] = pos
+    df.to_csv(RETURNS_CSV)
 
 
 def get_today_starting_balance():
