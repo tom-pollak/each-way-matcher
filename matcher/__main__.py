@@ -3,7 +3,7 @@ import sys
 
 from .each_way import run_each_way
 from .extra_places import run_extra_places
-from .stats import output_profit, plot_bal_time_series_graph
+from .stats import output_profit, plot_bal_time_series_graph, update_horse_places
 from .setup import reset_csv
 
 parser = argparse.ArgumentParser(
@@ -38,6 +38,7 @@ elif args.run:
         print("Must either punt, lay or both to run each-way matcher")
     else:
         run_each_way(args.punt, args.lay)
+        update_horse_places()
 
 elif args.extra:
     run_extra_places()
