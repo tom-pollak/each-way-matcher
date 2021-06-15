@@ -5,16 +5,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 from selenium import webdriver
 
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import (
-    TimeoutException,
-    ElementClickInterceptedException,
-)
-
-from .exceptions import MatcherError
-
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
@@ -71,7 +61,7 @@ def reset_csv():
     if not os.path.isfile(".env"):
         shutil.copyfile(".env.template", ".env")
     now = datetime.now().strftime("%d-%m-%Y")
-    RETURNS_HEADER = "current_time,race_time,venue,horse_name,exp_value,exp_growth,exp_return,bookie_stake,bookie_odds,win_stake,win_odds,place_stake,place_odds,bookie_balance,betfair_balance,betfair_exposure,win_profit,place_profit,lose_profit,bet_type,place_payout\n"
+    RETURNS_HEADER = "current_time,race_time,venue,horse_name,exp_value,exp_growth,exp_return,bookie_stake,bookie_odds,win_stake,win_odds,place_stake,place_odds,bookie_balance,betfair_balance,betfair_exposure,win_profit,place_profit,lose_profit,bet_type,place_payout,places_paid,position\n"
     RETURNS_BAK = os.path.join(BASEDIR, "stats/returns-%s.csv" % now)
     create_new_returns = "y"
 

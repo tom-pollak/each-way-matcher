@@ -1,6 +1,5 @@
 import sys
 import os
-from time import time
 
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By

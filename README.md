@@ -29,6 +29,7 @@ at default program location (/usr/bin/chromedriver for linux)
 
 - client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>) (put in git root directory)
 - [APP_KEY](https://support.developer.betfair.com/hc/en-us/articles/115003864651-How-do-I-get-started-)
+- [Horse results](https://rapidapi.com/ortegalex/api/horse-racing/) - sign up for free subsciption
 
 ### Create environmental variables
 
@@ -37,6 +38,7 @@ at default program location (/usr/bin/chromedriver for linux)
 - Sporting index: S_INDEX_USER S_INDEX_PASS
 - Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS
 - Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
+- Horse results API key: RAPID_API_KEY
 
 ### Modify filters
 

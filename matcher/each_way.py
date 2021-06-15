@@ -354,7 +354,7 @@ def evaluate_punt(driver, race):
     alert_low_funds(race)
 
 
-def scrape_races(driver, lay):
+def scrape_races(driver, punt, lay):
     race = {
         "bookie_balance": sporting_index.get_balance(driver),
         "betfair_balance": betfair.get_balance(),
@@ -386,7 +386,7 @@ def scrape_races(driver, lay):
                     race.update(odds_monkey.find_races(driver, row))
                     evaluate_arb(driver, race)
 
-            if horse_name not in processed_horses:
+            if punt and horse_name not in processed_horses:
                 race.update(odds_monkey.find_races(driver, row))
                 processed_horses.append(race["horse_name"])
                 evaluate_punt(driver, race)
@@ -396,7 +396,7 @@ def scrape_races(driver, lay):
             sys.stdout.flush()
 
 
-def start_matcher(driver, lay):
+def start_matcher(driver, punt, lay):
     START_TIME = time()
     count = 0
     driver.switch_to.window(driver.window_handles[0])
@@ -408,7 +408,7 @@ def start_matcher(driver, lay):
         if count % 10 == 0:
             show_info(count, START_TIME)
 
-        scrape_races(driver, lay)
+        scrape_races(driver, punt, lay)
         sys.stdout.flush()
         diff = time() - loop_time
         if diff < REFRESH_TIME:
@@ -416,7 +416,7 @@ def start_matcher(driver, lay):
         count += 1
 
 
-def run_each_way(lay):
+def run_each_way(punt, lay):
     if datetime.now().hour < 7:
         print("\nMatcher started too early (before 7am)")
         return
@@ -428,7 +428,7 @@ def run_each_way(lay):
             driver = setup_selenium()
             odds_monkey.login(driver)
             sporting_index.login(driver)
-            start_matcher(driver, lay)
+            start_matcher(driver, punt, lay)
         except MatcherError as e:
             print(e)
         except KeyboardInterrupt as e:

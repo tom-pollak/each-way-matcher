@@ -4,7 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from csv import DictWriter
 
-from matcher.stats import calc_unfinished_races, output_profit
+from matcher.stats import calc_unfinished_races
 
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
@@ -91,6 +91,7 @@ def update_csv(race):
         "lose_profit",
         "bet_type",
         "place_payout",
+        "places_paid",
     ]
     with open(RETURNS_CSV, "a+", newline="") as returns_csv:
         csv_writer = DictWriter(

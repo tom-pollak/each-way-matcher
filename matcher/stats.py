@@ -3,6 +3,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 import pandas as pd
 
+from .race_results import get_position
+
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
@@ -59,6 +61,16 @@ def calc_unfinished_races(index=-1):
     except IndexError:
         return 0
     return round(in_bet_balance, 2)
+
+
+def update_horse_places():
+    df = read_csv()
+    no_pos_rows = df[df["position"].isna()]
+    for race in no_pos_rows.iterrows():
+        pos = get_position(race.venue, race.time, race.horse_name, race.places_paid)
+        if pos is not None:
+            df.at[race.index, "position"] = pos
+    df.to_csv(RETURNS_CSV, index=False)
 
 
 def get_today_starting_balance():
