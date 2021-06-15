@@ -148,6 +148,24 @@ Sporting Index balance: £{current_sporting_index_balance} Betfair balance: £{c
 
 
 def plot_bal_time_series_graph():
+    def create_return_rows(
+        win_profit, place_profit, lose_profit, bet_type, places_paid, position
+    ):
+        punt_return = arb_return = 0
+        if position == 1:
+            profit = win_profit
+        elif position <= places_paid:
+            profit = place_profit
+        else:
+            profit = lose_profit
+
+        if bet_type == "Punt":
+            punt_return = profit
+        else:
+            arb_return = profit
+
+        return pd.Series(data={"punt_return": punt_return, "arb_return": arb_return})
+
     import matplotlib.pyplot as plt
     from matplotlib.dates import DateFormatter
 
@@ -157,6 +175,17 @@ def plot_bal_time_series_graph():
     ax.xaxis.set_major_formatter(date_fmt)
 
     balance = df["bookie_balance"] + df["betfair_balance"]
+    df[["punt_return", "arb_return"]] = df.apply(
+        lambda x: create_return_rows(
+            x["win_profit"],
+            x["place_profit"],
+            x["lose_profit"],
+            x["bet_type"],
+            x["places_paid"],
+            x["position"],
+        ),
+        axis=1,
+    )
 
     for i, _ in enumerate(balance):
         balance[i] += calc_unfinished_races(i)
@@ -165,7 +194,14 @@ def plot_bal_time_series_graph():
 
     i = df.iloc[[0]].index
     df.loc[i, "exp_return"] += STARTING_BALANCE
+    df.loc[i, "punt_return"] += STARTING_BALANCE
+    df.loc[i, "arb_return"] += STARTING_BALANCE
+    df["punt_return"] = df["punt_return"].cumsum(skipna=False)
+    df["arb_return"] = df["arb_return"].cumsum(skipna=False)
+    df.fillna(method="ffill", inplace=True)
     df["exp_return"].cumsum().plot(color="r", label="Expected return")
+    df["punt_return"].plot(color="b", label="Punt return")
+    df["arb_return"].plot(label="Arb return")
 
     fig.autofmt_xdate()
     ax.set_xlabel("Date")
