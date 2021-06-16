@@ -88,10 +88,6 @@ def get_betair_odds(races_df, odds_df):
         )
 
 
-def close_races(driver, races_df, bookies_df):
-    pass
-
-
 def run_extra_places():
     races_df, odds_df, bookies_df = generate_df()
     driver = setup_selenium()
