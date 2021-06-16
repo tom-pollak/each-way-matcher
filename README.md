@@ -25,16 +25,15 @@ at default program location (/usr/bin/chromedriver for linux)
 
 ## Login variables
 
-### Create certificates + APP_KEY
+### Create API keys + certificates
 
 - client-2048.crt/key [connected to the betfair api](<https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Non-Interactive+%28bot%29+login#Non-Interactive(bot)login-LinkingtheCertificatetoYourBetfairAccount>) (put in git root directory)
 - [APP_KEY](https://support.developer.betfair.com/hc/en-us/articles/115003864651-How-do-I-get-started-)
-- [Horse results](https://rapidapi.com/ortegalex/api/horse-racing/) - sign up for free subsciption
+- [RAPID_API_KEY](https://rapidapi.com/ortegalex/api/horse-racing/) - sign up for free subsciption
 
 ### Create environmental variables
 
-#### Copy .env.template to .env:
-
+- Copy .env.template to .env:
 - Sporting index: S_INDEX_USER S_INDEX_PASS
 - Oddsmonkey (premium account): ODD_M_USER ODD_M_PASS
 - Betfair: BETFAIR_USR BETFAIR_PASS APP_KEY
@@ -44,19 +43,20 @@ at default program location (/usr/bin/chromedriver for linux)
 
 Create a (premium) OddsMonkey account and go to [each way matcher](https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx)
 
-- Each Way Rating: 95 to 200
+- Each Way Rating: 98 to 200
 - SNR Rating, Normal Arb Rating, Back Odds: 0 to 200
 - Event Start Time: Now to 7 days
 - Sports: Horse Racing
 - Markets: Horse Racing - Winner
 - Bookmakers: Sporting Index only
-- Exchanges: All exchanges
+- Exchanges: Betfair and Smarkets
 - Click save
+- Go to settings, change betfair comission to 2%
 
 ## Run
 
 ```bash
-python3 -m matcher --run
+python3 -m matcher -rplsg
 ```
 
 or
