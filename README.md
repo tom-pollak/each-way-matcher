@@ -56,7 +56,7 @@ Create a (premium) OddsMonkey account and go to [each way matcher](https://www.o
 ## Run
 
 ```bash
-python3 -m matcher --run
+python3 -m matcher -rplsg
 ```
 
 or
