@@ -24,12 +24,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-if args.lay:
-    print("args lay")
-
-if args.stats:
-    print("args stats")
-
 if len(sys.argv) == 1:
     parser.print_help()
 

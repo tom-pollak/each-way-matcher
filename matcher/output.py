@@ -26,7 +26,7 @@ def show_info(count, START_TIME):
     print(f"Refreshes: {count}")
     if datetime.now().hour >= 19:
         print("\nFinished matching today")
-        print("---------------------------------------------")
+        print("---------------------------------------------", end="")
         raise KeyboardInterrupt
 
 
