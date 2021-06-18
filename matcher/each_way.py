@@ -129,7 +129,9 @@ def place_arb(
 
 
 def evaluate_arb(driver, race):
+    print("Evaluating arb")
     if not check_start_time(race, secs=45):
+        print("To close to race time")
         return
     race["bet_type"] = "Arb"
     race["betfair_balance"] = betfair.get_balance()
@@ -155,6 +157,7 @@ def evaluate_arb(driver, race):
     )
 
     if min(max_bookie_stake, max_win_stake, max_place_stake) <= 0:
+        print("Stake <= 0")
         return
 
     (
@@ -175,6 +178,7 @@ def evaluate_arb(driver, race):
     )
 
     if not stakes_ok:
+        print("Stakes not ok")
         return
 
     profits = calculate_profit(
@@ -206,6 +210,7 @@ def evaluate_arb(driver, race):
                 *tuple(map(sum, zip(profits, new_profits))),
             )
             if stake_proportion != 1 or new_stake_proportion != 1:
+                print("lay punt stake stake_proportion != 1")
                 return
 
         race["bookie_stake"] = round(race["bookie_stake"] * stake_proportion, 2)
@@ -213,6 +218,7 @@ def evaluate_arb(driver, race):
         race["place_stake"] = round(race["place_stake"] * stake_proportion, 2)
 
         if not bet_profitable(race):
+            print("exp return < 0")
             return
 
         stakes_ok = check_stakes(
@@ -227,6 +233,7 @@ def evaluate_arb(driver, race):
             place_available,
         )
         if not stakes_ok:
+            print("lay punt stakes not ok")
             return
 
     if not betfair.check_odds(race, market_ids, selection_id):
@@ -238,6 +245,7 @@ def evaluate_arb(driver, race):
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
         )
     elif not bet_made:
+        print("couldn't make sporting index bet")
         return
 
     race["win_profit"], race["place_profit"], race["lose_profit"] = place_arb(
