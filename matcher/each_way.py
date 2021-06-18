@@ -129,7 +129,7 @@ def place_arb(
 
 
 def evaluate_arb(driver, race):
-    print("Evaluating arb")
+    print("\nEvaluating arb")
     if not check_start_time(race, secs=45):
         print("To close to race time")
         return
