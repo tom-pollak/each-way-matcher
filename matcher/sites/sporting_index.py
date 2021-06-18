@@ -183,6 +183,7 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     if cur_odd_price is None:
         return None
     if not cur_odd_price:
+        print("Couldn't get cur_odd_price")
         return False
     cur_odd_price_frac = cur_odd_price.split("/")
     cur_odd_price = round(
@@ -201,4 +202,5 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         if bet_made:
             return True
         close_bet(driver)
+    print(f"Sporting index odds changed: {race['bookie_odds']}, {cur_odd_price}")
     return False
