@@ -200,8 +200,8 @@ def plot_bal_time_series_graph():
     df["arb_return"] = df["arb_return"].cumsum(skipna=False)
     df.fillna(method="ffill", inplace=True)
     df["exp_return"].cumsum().plot(color="r", label="Expected return")
-    df["punt_return"].plot(color="b", label="Punt return")
-    df["arb_return"].plot(label="Arb return")
+    df.set_index("race_time")["punt_return"].plot(color="b", label="Punt return")
+    df.set_index("race_time")["arb_return"].plot(label="Arb return")
 
     fig.autofmt_xdate()
     ax.set_xlabel("Date")
