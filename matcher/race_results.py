@@ -27,8 +27,9 @@ def get_race_id(venue, time):
     res = call_api("https://horse-racing.p.rapidapi.com/results", params=params)
     for race in res:
         race_time = datetime.strptime(race["date"], "%Y-%m-%d %H:%M:%S")
-        if venue in race["course"] and time == race_time:
+        if (venue in race["course"] or race["course"] in venue) and time == race_time:
             return race["id_race"]
+    # print(res)
     raise MatcherError
 
 
@@ -44,4 +45,5 @@ def get_position(venue, time, horse_name):
             if horse["non_runner"] == "1":
                 return "Non-runner"
             return horse["position"]
+    # print(res["horses"])
     return None

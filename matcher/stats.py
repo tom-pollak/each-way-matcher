@@ -70,6 +70,10 @@ def update_horse_places():
         pos = get_position(race.venue, race.race_time, race.horse_name)
         if pos is not None:
             df.at[index, "position"] = pos
+        # else:
+        #     print(
+        #         f"Couldn't get horse position: {race.horse_name} - {race.venue}, {race.race_time}\n\n\n"
+        #     )
     df.to_csv(RETURNS_CSV)
 
 
