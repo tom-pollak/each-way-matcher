@@ -102,7 +102,12 @@ def click_betslip(driver):
 def place_bet(driver, race):
     try:
         WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "ng-pristine"))
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[3]/input',
+                )
+            )
         ).send_keys(str(race["bookie_stake"]))
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
         WebDriverWait(driver, 30).until(
