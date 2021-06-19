@@ -429,7 +429,9 @@ def run_each_way(punt, lay):
             print(e)
         except KeyboardInterrupt as e:
             print(e)
-            break
+            driver.quit()
+            sys.stdout.flush()
+            return
         except WebDriverException as e:
             print()
             if "cannot activate web view" in str(e):
@@ -447,5 +449,5 @@ def run_each_way(punt, lay):
             print("Unknown error occured: %s" % e)
             print(traceback.format_exc())
         finally:
-            sys.stdout.flush()
             driver.quit()
+            sys.stdout.flush()
