@@ -190,7 +190,8 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1, 2
     )
 
-    if float(cur_odd_price) == race["bookie_odds"]:
+    if float(cur_odd_price) >= float(race["bookie_odds"]):
+        race["bookie_odds"] = cur_odd_price
         if lay:
             if market_ids is None:
                 raise MatcherError("market_ids are None")
