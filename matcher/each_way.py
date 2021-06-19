@@ -212,9 +212,6 @@ def evaluate_arb(driver, race):
             if stake_proportion != 1 or new_stake_proportion != 1:
                 print("lay punt stake stake_proportion != 1")
                 return
-            if stake_proportion == 0:
-                print("Stake proportion = 0")
-                return
 
         race["bookie_stake"] = round(race["bookie_stake"] * stake_proportion, 2)
         race["win_stake"] = round(race["win_stake"] * stake_proportion, 2)
