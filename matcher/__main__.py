@@ -48,3 +48,5 @@ if args.stats:
 
 if args.graph:
     plot_bal_time_series_graph()
+
+sys.stdout.flush()
