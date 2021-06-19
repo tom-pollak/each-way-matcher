@@ -95,7 +95,6 @@ def find_races(driver, row=0):
     bookie_exchange = driver.find_element_by_xpath(
         f'//*[@id="dnn_ctr1157_View_RadGrid1_ctl00__{row}"]/td[10]/a'
     ).get_attribute("href")
-    bookie_exchange = "https://" + bookie_exchange.split("https%3a%2f%2f")[1]
     if "sportingindex" not in bookie_exchange:
         raise KeyboardInterrupt(
             "Bookie is not SportingIndex, have you adjusted the filters? (%s)"
