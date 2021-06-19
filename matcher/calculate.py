@@ -124,6 +124,8 @@ def check_stakes(
 ):
     total_stake = win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
     win_min_stake, place_min_stake = get_min_stake(win_odds, place_odds)
+    if max(bookie_stake, win_stake, place_stake) == 0:
+        return False
     if (
         (total_stake > betfair_balance)
         or (win_stake and not win_min_stake <= win_stake <= win_available)
