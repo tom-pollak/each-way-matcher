@@ -1,5 +1,6 @@
 import sys
 import os
+import traceback
 
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
@@ -116,6 +117,7 @@ def place_bet(driver, race):
         return True
 
     except WebDriverException:
+        print(traceback.format_exc())
         return False
 
 
@@ -202,6 +204,9 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         bet_made = place_bet(driver, race)
         if bet_made:
             return True
+        else:
+            print("Bet failed to be made: %s" % race)
         close_bet(driver)
-    print(f"Sporting index odds changed: {race['bookie_odds']} -> {cur_odd_price}")
+    else:
+        print(f"Sporting index odds changed: {race['bookie_odds']} -> {cur_odd_price}")
     return False
