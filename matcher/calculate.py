@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import numpy as np
 from scipy import optimize
 
-# from .stats import calc_unfinished_races
+from .stats import calc_unfinished_races
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../")
 load_dotenv(os.path.join(BASEDIR, ".env"))
