@@ -10,7 +10,6 @@ from selenium.common.exceptions import (
     WebDriverException,
     TimeoutException,
     StaleElementReferenceException,
-    NoSuchElementException,
     ElementClickInterceptedException,
 )
 
@@ -91,39 +90,12 @@ def click_betslip(driver):
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
-                    "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[14]/a",
+                    "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[15]/a",
                 )
             )
         ).click()
     except (ElementClickInterceptedException, StaleElementReferenceException):
         raise MatcherError("Couldn't click betslip")
-
-
-def place_bet(driver, race):
-    try:
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[3]/input',
-                )
-            )
-        ).send_keys(str(race["bookie_stake"]))
-        driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
-        ).click()
-
-        WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//button[contains(text(), 'Continue')]")
-            )
-        ).click()
-        return True
-
-    except WebDriverException:
-        print(traceback.format_exc())
-        return False
 
 
 def get_page(driver, race):
@@ -139,66 +111,106 @@ def get_page(driver, race):
         raise MatcherError("Timeout getting sporting index page")
 
 
-def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
-    def click_horse(driver, horse_name):
-        horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
-        try:
-            horse_button = WebDriverWait(driver, 30).until(
-                EC.element_to_be_clickable((By.XPATH, horse_name_xpath))
-            )
-            cur_odd_price = horse_button.text
-            if cur_odd_price not in ["", "SUSP"]:
-                horse_button.click()
-                return cur_odd_price
-        except WebDriverException:
-            pass
-        return False
+def click_horse(driver, horse_name):
+    horse_name_xpath = f"//td[contains(text(), '{horse_name}')]/following-sibling::td[5]/wgt-price-button/button"
+    try:
+        horse_button = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable((By.XPATH, horse_name_xpath))
+        )
+        cur_odd_price = horse_button.text
+        if cur_odd_price not in ["", "SUSP"]:
+            horse_button.click()
+            return True
+    except WebDriverException:
+        pass
+    return False
 
-    def close_bet(driver):
-        try:
-            WebDriverWait(driver, 15).until(
-                EC.element_to_be_clickable(
-                    (
-                        By.XPATH,
-                        '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
-                    )
-                )
-            ).click()
-            return
-        except TimeoutException:
-            print("Fails first close bet")
-            pass
 
-        # deliberately two try excepts, if top fails click this
-        try:
-            click_betslip(driver)
-            WebDriverWait(driver, 10).until(
+def get_odds(driver):
+    frac_odd = driver.find_element_by_xpath(
+        '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
+    ).text.split("/")
+    return round(int(frac_odd[0]) / int(frac_odd[1]) + 1, 2)
+
+
+def close_bet(driver):
+    try:
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(
                 (
-                    EC.element_to_be_clickable(
-                        (
-                            By.XPATH,
-                            '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button',
-                        )
-                    )
+                    By.XPATH,
+                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button[1]',
                 )
             )
-            return
+        ).click()
+    except TimeoutException:
+        try:
+            driver.find_element_by_xpath(
+                '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button'
+            ).click()
         except TimeoutException:
-            print("Fails second close bet")
-            pass
+            print("Failed to close bet")
+            click_betslip(driver)
+            close_bet(driver)
 
+
+def place_bet(driver, race):
+    # click accept changes
+    try:
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-price-change-message/div/p/button',
+                )
+            )
+        ).click()
+        print("clicked accept changes")
+        if get_odds(driver) < race["bookie_odds"]:
+            print(
+                "odds changed after accept changes: %s -> %s"
+                % (race["bookie_odds"], get_odds(driver))
+            )
+            return False
+    except WebDriverException:
+        print("Couldn't click accept changes")
+
+    try:
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[3]/input',
+                )
+            )
+        ).send_keys(str(race["bookie_stake"]))
+        driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
+        ).click()
+
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[contains(text(), 'Continue')]")
+            )
+        ).click()
+        return True
+
+    except WebDriverException:
+        print("Bet failed to be made: %s\n" % race)
+        print(traceback.format_exc())
+    return False
+
+
+def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     get_page(driver, race)
-    cur_odd_price = click_horse(driver, race["horse_name"])
-    if not cur_odd_price:
+    clicked = click_horse(driver, race["horse_name"])
+    if not clicked:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
         )
         return False
-    cur_odd_price_frac = cur_odd_price.split("/")
-    cur_odd_price = round(
-        int(cur_odd_price_frac[0]) / int(cur_odd_price_frac[1]) + 1, 2
-    )
-
+    cur_odd_price = get_odds(driver)
     if float(cur_odd_price) >= float(race["bookie_odds"]):
         race["bookie_odds"] = cur_odd_price
         if lay:
@@ -211,7 +223,5 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         bet_made = place_bet(driver, race)
         if bet_made:
             return True
-        else:
-            print("Bet failed to be made: %s" % race)
         close_bet(driver)
     return False
