@@ -101,7 +101,7 @@ def click_betslip(driver):
 
 def place_bet(driver, race):
     try:
-        WebDriverWait(driver, 15).until(
+        WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
@@ -110,7 +110,7 @@ def place_bet(driver, race):
             )
         ).send_keys(str(race["bookie_stake"]))
         driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 60).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
 
@@ -150,9 +150,7 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
             if cur_odd_price not in ["", "SUSP"]:
                 horse_button.click()
                 return cur_odd_price
-        except NoSuchElementException:
-            return None
-        except (StaleElementReferenceException, TimeoutException):
+        except WebDriverException:
             pass
         return False
 
@@ -168,7 +166,10 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
             ).click()
             return
         except TimeoutException:
+            print("Fails first close bet")
             pass
+
+        # deliberately two try excepts, if top fails click this
         try:
             click_betslip(driver)
             WebDriverWait(driver, 10).until(
@@ -183,14 +184,15 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
             )
             return
         except TimeoutException:
+            print("Fails second close bet")
             pass
 
     get_page(driver, race)
     cur_odd_price = click_horse(driver, race["horse_name"])
-    if cur_odd_price is None:
-        return None
     if not cur_odd_price:
-        print("Couldn't get cur_odd_price")
+        print(
+            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
+        )
         return False
     cur_odd_price_frac = cur_odd_price.split("/")
     cur_odd_price = round(
@@ -212,6 +214,4 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         else:
             print("Bet failed to be made: %s" % race)
         close_bet(driver)
-    else:
-        print(f"Sporting index odds changed: {race['bookie_odds']} -> {cur_odd_price}")
     return False
