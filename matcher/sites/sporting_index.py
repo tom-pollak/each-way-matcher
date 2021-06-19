@@ -203,5 +203,5 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         if bet_made:
             return True
         close_bet(driver)
-    print(f"Sporting index odds changed: {race['bookie_odds']}, {cur_odd_price}")
+    print(f"Sporting index odds changed: {race['bookie_odds']} -> {cur_odd_price}")
     return False
