@@ -199,20 +199,13 @@ def plot_bal_time_series_graph():
     profits_ax.plot(balance, "g", label="Profit")
     profits_ax.plot(df["exp_return"].cumsum(), "r", label="Expected return")
 
-    width = np.min(np.diff(mdates.date2num(df["race_time"].values)))
-    bets_ax.bar(
-        df["race_time"].values,
-        df["punt_return"].fillna(0).values,
-        width=width,
+    bets_ax.plot(
+        df.set_index("race_time").sort_index()["punt_return"].cumsum(),
         label="Punt return",
-        ec="k",
     )
-    bets_ax.bar(
-        df["race_time"].values,
-        df["arb_return"].fillna(0).values,
-        width=width,
+    bets_ax.plot(
+        df.set_index("race_time").sort_index()["arb_return"].cumsum(),
         label="Arb return",
-        ec="k",
     )
 
     fig.autofmt_xdate()
