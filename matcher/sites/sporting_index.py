@@ -11,6 +11,7 @@ from selenium.common.exceptions import (
     TimeoutException,
     StaleElementReferenceException,
     ElementClickInterceptedException,
+    NoSuchElementException,
 )
 
 from matcher.exceptions import MatcherError
@@ -127,9 +128,13 @@ def click_horse(driver, horse_name):
 
 
 def get_odds(driver):
-    frac_odd = driver.find_element_by_xpath(
-        '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
-    ).text.split("/")
+    try:
+        frac_odd = driver.find_element_by_xpath(
+            '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
+        ).text.split("/")
+    except NoSuchElementException:
+        click_betslip(driver)
+        return get_odds(driver)
     return round(int(frac_odd[0]) / int(frac_odd[1]) + 1, 2)
 
 

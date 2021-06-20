@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+import numpy as np
 import pandas as pd
 
 from .race_results import get_position
@@ -171,12 +172,12 @@ def plot_bal_time_series_graph():
         return pd.Series(data={"punt_return": punt_return, "arb_return": arb_return})
 
     import matplotlib.pyplot as plt
-    from matplotlib.dates import DateFormatter
+    import matplotlib.dates as mdates
 
     df = read_csv()
-    fig, ax = plt.subplots()
-    date_fmt = DateFormatter("%d/%m")
-    ax.xaxis.set_major_formatter(date_fmt)
+    fig, (profits_ax, bets_ax) = plt.subplots(2, 1, sharex=True)
+    date_fmt = mdates.DateFormatter("%d/%m")
+    profits_ax.xaxis.set_major_formatter(date_fmt)
 
     balance = df["bookie_balance"] + df["betfair_balance"]
     df[["punt_return", "arb_return"]] = df.apply(
@@ -194,23 +195,41 @@ def plot_bal_time_series_graph():
     for i, _ in enumerate(balance):
         balance[i] += calc_unfinished_races(i)
 
-    ax.plot(balance, "g", label="Profit")
-
     i = df.iloc[[0]].index
     df.loc[i, "exp_return"] += STARTING_BALANCE
-    df.loc[i, "punt_return"] += STARTING_BALANCE
-    df.loc[i, "arb_return"] += STARTING_BALANCE
-    df["punt_return"] = df["punt_return"].cumsum(skipna=False)
-    df["arb_return"] = df["arb_return"].cumsum(skipna=False)
-    df.fillna(method="ffill", inplace=True)
-    df["exp_return"].cumsum().plot(color="r", label="Expected return")
-    df.set_index("race_time")["punt_return"].plot(color="b", label="Punt return")
-    df.set_index("race_time")["arb_return"].plot(label="Arb return")
+
+    profits_ax.plot(balance, "g", label="Profit")
+    profits_ax.plot(df["exp_return"].cumsum(), "r", label="Expected return")
+
+    width = np.min(np.diff(mdates.date2num(df["race_time"].values)))
+    bets_ax.bar(
+        df["race_time"].values,
+        df["punt_return"].fillna(0).values,
+        width=width,
+        label="Punt return",
+        ec="k",
+    )
+    bets_ax.bar(
+        df["race_time"].values,
+        df["arb_return"].fillna(0).values,
+        width=width,
+        label="Arb return",
+        ec="k",
+    )
+
+    # df.loc[i, "punt_return"] += STARTING_BALANCE
+    # df.loc[i, "arb_return"] += STARTING_BALANCE
+    # df["punt_return"] = df["punt_return"].cumsum(skipna=False)
+    # df["arb_return"] = df["arb_return"].cumsum(skipna=False)
+    # df.fillna(method="ffill", inplace=True)
+    # df.set_index("race_time")["punt_return"].plot(color="b", label="Punt return")
+    # df.set_index("race_time")["arb_return"].plot(label="Arb return")
 
     fig.autofmt_xdate()
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Balance (£)")
-    ax.legend(loc="best")
+    plt.xlabel("Date")
+    plt.ylabel("Balance (£)")
+    profits_ax.legend(loc="best")
+    bets_ax.legend(loc="best")
 
     (
         total_profit,
