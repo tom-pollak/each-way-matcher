@@ -233,7 +233,7 @@ def place_bet(driver, race):
 def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     get_page(driver, race)
     print(
-        f"Race found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}, {race['current_time']}"
+        f"\nRace found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}, {race['current_time']}"
     )
 
     for i in range(1, 4):
@@ -261,7 +261,11 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
             if bet_made:
                 print("Bet completed on attempt: %s" % i)
                 return True
+            else:
+                close_bet(driver)
+                continue
         else:
             print("Odds have changed: %s -> %s" % (race["bookie_odds"], cur_odd_price))
-        close_bet(driver)
+            close_bet(driver)
+            return False
     return False
