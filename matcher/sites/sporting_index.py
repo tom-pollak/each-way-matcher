@@ -225,6 +225,8 @@ def place_bet(driver, race):
     except WebDriverException:
         print("Bet failed to be made: %s\n" % race)
         print(traceback.format_exc())
+        with open("page.html", "w") as f:
+            f.write(driver.page_source)
     return False
 
 
