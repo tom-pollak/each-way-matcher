@@ -42,12 +42,7 @@ def get_position(venue, time, horse_name):
 
     for horse in res["horses"]:
         if horse_name in horse["horse"]:
-            if horse["non_runner"] == "1":
+            if horse["non_runner"] == "1" or horse["position"] == "pu":
                 return "Non-runner"
-            try:
-                return float(horse["position"])
-            except ValueError:
-                print(horse)
-
-    # print(res["horses"])
+            return float(horse["position"])
     return None
