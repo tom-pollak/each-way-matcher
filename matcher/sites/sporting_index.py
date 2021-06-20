@@ -85,18 +85,24 @@ def refresh(driver):
 
 
 def click_betslip(driver):
-    driver.refresh()
     try:
-        WebDriverWait(driver, 60).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[15]/a",
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="top"]/wgt-betslip/div/div'))
+        )
+
+    # betslip not clicked
+    except NoSuchElementException:
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        "/html/body/cmp-app/div/ng-component/wgt-fo-top-navigation/nav/ul/li[15]/a",
+                    )
                 )
-            )
-        ).click()
-    except (ElementClickInterceptedException, StaleElementReferenceException):
-        raise MatcherError("Couldn't click betslip")
+            ).click()
+        except (ElementClickInterceptedException, StaleElementReferenceException):
+            raise MatcherError("Couldn't click betslip")
 
 
 def get_page(driver, race):
@@ -128,17 +134,28 @@ def click_horse(driver, horse_name):
 
 
 def get_odds(driver):
+    # click accept changes
     try:
-        frac_odd = driver.find_element_by_xpath(
-            '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
-        ).text.split("/")
-    except NoSuchElementException:
-        click_betslip(driver)
-        return get_odds(driver)
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-price-change-message/div/p/button',
+                )
+            )
+        ).click()
+        print("Clicked accept changes")
+    except WebDriverException:
+        print("Couldn't click accept changes")
+
+    frac_odd = driver.find_element_by_xpath(
+        '//*[@id="top"]/wgt-betslip/div/div/div/div/div/div/div/wgt-single-bet/ul/li[1]/span[2]/wgt-live-price-raw'
+    ).text.split("/")
     return round(int(frac_odd[0]) / int(frac_odd[1]) + 1, 2)
 
 
 def close_bet(driver):
+    click_betslip(driver)
     try:
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable(
@@ -150,36 +167,19 @@ def close_bet(driver):
         ).click()
     except TimeoutException:
         try:
-            driver.find_element_by_xpath(
-                '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button'
+            WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        '//*[@id="top"]/wgt-betslip/div/div/div/wgt-bet-errors/div/div/button',
+                    )
+                )
             ).click()
         except TimeoutException:
             print("Failed to close bet")
-            click_betslip(driver)
-            close_bet(driver)
 
 
 def place_bet(driver, race):
-    # click accept changes
-    try:
-        WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    '//*[@id="top"]/wgt-betslip/div/div/div/wgt-price-change-message/div/p/button',
-                )
-            )
-        ).click()
-        print("clicked accept changes")
-        if get_odds(driver) < race["bookie_odds"]:
-            print(
-                "odds changed after accept changes: %s -> %s"
-                % (race["bookie_odds"], get_odds(driver))
-            )
-            return False
-    except WebDriverException:
-        print("Couldn't click accept changes")
-
     try:
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable(
@@ -209,12 +209,15 @@ def place_bet(driver, race):
 
 def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     get_page(driver, race)
+    close_bet(driver)
+
     clicked = click_horse(driver, race["horse_name"])
     if not clicked:
         print(
             f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
         )
         return False
+
     cur_odd_price = get_odds(driver)
     if float(cur_odd_price) >= float(race["bookie_odds"]):
         race["bookie_odds"] = cur_odd_price
@@ -228,5 +231,5 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         bet_made = place_bet(driver, race)
         if bet_made:
             return True
-        close_bet(driver)
+    close_bet(driver)
     return False
