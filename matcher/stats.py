@@ -71,10 +71,6 @@ def update_horse_places():
         pos = get_position(race.venue, race.race_time, race.horse_name)
         if pos is not None:
             df.at[index, "position"] = pos
-        # else:
-        #     print(
-        #         f"Couldn't get horse position: {race.horse_name} - {race.venue}, {race.race_time}\n\n\n"
-        #     )
     df.to_csv(RETURNS_CSV)
 
 
@@ -175,7 +171,9 @@ def plot_bal_time_series_graph():
     import matplotlib.dates as mdates
 
     df = read_csv()
-    fig, (profits_ax, bets_ax) = plt.subplots(2, 1, sharex=True)
+    fig, (profits_ax, bets_ax) = plt.subplots(
+        2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
+    )
     date_fmt = mdates.DateFormatter("%d/%m")
     profits_ax.xaxis.set_major_formatter(date_fmt)
 
@@ -217,19 +215,11 @@ def plot_bal_time_series_graph():
         ec="k",
     )
 
-    # df.loc[i, "punt_return"] += STARTING_BALANCE
-    # df.loc[i, "arb_return"] += STARTING_BALANCE
-    # df["punt_return"] = df["punt_return"].cumsum(skipna=False)
-    # df["arb_return"] = df["arb_return"].cumsum(skipna=False)
-    # df.fillna(method="ffill", inplace=True)
-    # df.set_index("race_time")["punt_return"].plot(color="b", label="Punt return")
-    # df.set_index("race_time")["arb_return"].plot(label="Arb return")
-
     fig.autofmt_xdate()
+    fig.legend(bbox_to_anchor=[0.3, 0.94], loc="center", ncol=2)
     plt.xlabel("Date")
-    plt.ylabel("Balance (£)")
-    profits_ax.legend(loc="best")
-    bets_ax.legend(loc="best")
+    profits_ax.set_ylabel("Balance (£)")
+    bets_ax.set_ylabel("Bet returns (£)")
 
     (
         total_profit,
@@ -238,8 +228,7 @@ def plot_bal_time_series_graph():
         today_percentage_profit,
     ) = calculate_returns()
     profit_string = f"Total profit: £{total_profit} ({total_percentage_profit}%) \nProfit today: £{profit_today} ({today_percentage_profit}%)"
-    plt.gcf().text(0.55, 0.92, profit_string)
-
+    plt.gcf().text(0.58, 0.92, profit_string)
     plt.savefig(BALANCE_PNG)
 
 
