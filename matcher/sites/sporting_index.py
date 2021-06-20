@@ -166,7 +166,6 @@ def get_odds(driver):
             .text.split("/")
         )
     except TimeoutException:
-        print("Couldn't get horse odds")
         return False
     return round(int(frac_odd[0]) / int(frac_odd[1]) + 1, 2)
 
@@ -223,7 +222,7 @@ def place_bet(driver, race):
         return True
 
     except WebDriverException:
-        print("Bet failed to be made: %s\n" % race)
+        print("Bet failed:\n%s\n" % race)
         print(traceback.format_exc())
         with open("page.html", "w") as f:
             f.write(driver.page_source)
@@ -245,6 +244,7 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
 
         cur_odd_price = get_odds(driver)
         if not cur_odd_price:
+            print("Couldn't get horse odds")
             close_bet(driver)
             continue
 
@@ -256,7 +256,9 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
                 if not betfair.check_odds(
                     race, market_ids, selection_id
                 ) or not check_start_time(race, secs=20):
+                    print("Betfair odds have changed or too close to start time")
                     return False
+
             bet_made = place_bet(driver, race)
             if bet_made:
                 print("Bet completed on attempt: %s" % i)
