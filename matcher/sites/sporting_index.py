@@ -126,9 +126,11 @@ def click_horse(driver, horse_name):
             EC.element_to_be_clickable((By.XPATH, horse_name_xpath))
         )
         cur_odd_price = horse_button.text
-        if cur_odd_price not in ["", "SUSP"]:
+        if cur_odd_price != "SUSP":
             horse_button.click()
             return True
+        else:
+            print("Horse is SUSP")
     except WebDriverException:
         pass
     return False
