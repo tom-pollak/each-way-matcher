@@ -1,6 +1,9 @@
 import sys
 import os
+
+# debug
 import traceback
+from datetime import datetime
 
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
@@ -227,17 +230,20 @@ def place_bet(driver, race):
 
 def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     get_page(driver, race)
+    print(
+        f"Race found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}, {race['current_time']}"
+    )
 
-    for i in range(3):
+    for i in range(1, 4):
+        print("Attempt: %s" % i)
         clicked = click_horse(driver, race["horse_name"])
         if not clicked:
-            print(
-                f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
-            )
+            print(f"Horse not found - time: {datetime.now()}")
             return False
 
         cur_odd_price = get_odds(driver)
         if not cur_odd_price:
+            close_bet(driver)
             continue
 
         if float(cur_odd_price) >= float(race["bookie_odds"]):
@@ -251,9 +257,9 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
                     return False
             bet_made = place_bet(driver, race)
             if bet_made:
-                print("Bet completed on try: %s" % i)
+                print("Bet completed on attempt: %s" % i)
                 return True
         else:
             print("Odds have changed: %s -> %s" % (race["bookie_odds"], cur_odd_price))
-    close_bet(driver)
+        close_bet(driver)
     return False

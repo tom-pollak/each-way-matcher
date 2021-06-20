@@ -316,7 +316,7 @@ def get_race_ids(race_time, venue, horse):
     return markets_ids, selection_id
 
 
-def make_bets(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
+def make_bet(markets_ids, selection_id, win_stake, win_odds, place_stake, place_odds):
     win_dict = place_dict = {"matched": True, "bet_id": None}
     if win_stake:
         lay_win, win_odds, win_matched, win_stake_matched, win_bet_id = lay_bets(

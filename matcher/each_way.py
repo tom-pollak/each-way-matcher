@@ -50,7 +50,7 @@ def place_arb(
     place_payout,
     profits=(0, 0, 0),
 ):
-    lay_win, lay_place = betfair.make_bets(
+    lay_win, lay_place = betfair.make_bet(
         market_ids,
         selection_id,
         win_stake,
@@ -311,12 +311,6 @@ def evaluate_punt(driver, race):
         return
 
     bet_made = sporting_index.make_bet(driver, race)
-    if bet_made is None:  # horse not found
-        print(
-            f"Horse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}"
-        )
-        return
-
     if not bet_made:
         return
 
