@@ -83,6 +83,19 @@ def refresh(driver):
         raise MatcherError("Timeout refreshing sporting index")
 
 
+def get_page(driver, race):
+    driver.switch_to.window(driver.window_handles[1])
+    try:
+        driver.get(race["bookie_exchange"])
+        WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
+            )
+        )
+    except TimeoutException:
+        raise MatcherError("Timeout getting sporting index page")
+
+
 def click_betslip(driver):
     # betslip clicked
     try:
@@ -105,19 +118,6 @@ def click_betslip(driver):
             ).click()
         except (ElementClickInterceptedException, StaleElementReferenceException):
             raise MatcherError("Couldn't click betslip")
-
-
-def get_page(driver, race):
-    driver.switch_to.window(driver.window_handles[1])
-    try:
-        driver.get(race["bookie_exchange"])
-        WebDriverWait(driver, 60).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, "/html/body/cmp-app/div/div/div/div/header[1]/wgt-logo/a")
-            )
-        )
-    except TimeoutException:
-        raise MatcherError("Timeout getting sporting index page")
 
 
 def click_horse(driver, horse_name):
@@ -191,7 +191,7 @@ def place_bet(driver, race):
                 )
             )
         ).send_keys(str(race["bookie_stake"]))
-        driver.find_element_by_xpath('// input[ @ type = "checkbox"]').click()
+        driver.find_element_by_xpath('//input[@type="checkbox"]').click()
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
