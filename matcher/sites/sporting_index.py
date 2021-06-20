@@ -99,7 +99,7 @@ def get_page(driver, race):
 def click_betslip(driver):
     # betslip clicked
     try:
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
                 (By.XPATH, '//*[@id="top"]/wgt-betslip/div/div')
             )
@@ -233,5 +233,7 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
         bet_made = place_bet(driver, race)
         if bet_made:
             return True
+    else:
+        print("Odds have changed: %s -> %s" % (race["bookie_odds"], cur_odd_price))
     close_bet(driver)
     return False
