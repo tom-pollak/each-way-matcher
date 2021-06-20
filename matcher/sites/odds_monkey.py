@@ -39,6 +39,9 @@ def login(driver):
         driver.find_element_by_id("dnn_ctr433_Login_Login_DNN_cmdLogin").click()
         sleep(10)
         driver.get("https://www.oddsmonkey.com/Tools/Matchers/EachwayMatcher.aspx")
+    except TimeoutException:
+        raise MatcherError("Failed to login to Oddsmonkey")
+    try:
         WebDriverWait(driver, 100).until(
             EC.element_to_be_clickable(
                 (
@@ -48,7 +51,9 @@ def login(driver):
             )
         ).click()
     except TimeoutException:
-        raise MatcherError("Failed to login to Oddsmonkey")
+        raise KeyboardInterrupt(
+            "Getting EW page failed: Purchase premium membership or dismiss Oddsmonkey pop-up boxes"
+        )
     except ElementClickInterceptedException:
         raise KeyboardInterrupt("Dismiss one time pop-up boxes and setup oddsmonkey")
 
