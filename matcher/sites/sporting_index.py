@@ -11,7 +11,6 @@ from selenium.common.exceptions import (
     TimeoutException,
     StaleElementReferenceException,
     ElementClickInterceptedException,
-    NoSuchElementException,
 )
 
 from matcher.exceptions import MatcherError
@@ -94,7 +93,7 @@ def click_betslip(driver):
         )
 
     # click betslip
-    except NoSuchElementException:
+    except TimeoutException:
         try:
             WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable(
