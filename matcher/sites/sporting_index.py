@@ -53,26 +53,6 @@ def change_to_decimal(driver):
     ).click()
 
 
-def get_balance(driver):
-    try:
-        driver.switch_to.window(driver.window_handles[1])
-        driver.refresh()
-        for _ in range(5):
-            balance = (
-                WebDriverWait(driver, 15)
-                .until(EC.visibility_of_element_located((By.CLASS_NAME, "btn-balance")))
-                .text
-            )
-            balance = balance.replace(" ", "")
-            balance = balance.replace("▸", "")
-            balance = balance.replace("£", "")
-            if balance not in ["BALANCE", ""]:
-                return float(balance)
-    except WebDriverException:
-        driver.refresh()
-    raise MatcherError("Couldn't get Sporting Index balance")
-
-
 def refresh(driver):
     driver.switch_to.window(driver.window_handles[1])
     driver.refresh()
@@ -84,6 +64,22 @@ def refresh(driver):
         )
     except TimeoutException:
         raise MatcherError("Timeout refreshing sporting index")
+
+
+def get_balance(driver):
+    driver.switch_to.window(driver.window_handles[1])
+    refresh()
+    balance = (
+        WebDriverWait(driver, 15)
+        .until(EC.visibility_of_element_located((By.CLASS_NAME, "btn-balance")))
+        .text
+    )
+    balance = balance.replace(" ", "")
+    balance = balance.replace("▸", "")
+    balance = balance.replace("£", "")
+    if balance not in ["BALANCE", ""]:
+        return float(balance)
+    raise MatcherError("Couldn't get Sporting Index balance")
 
 
 def get_page(driver, race):
@@ -224,8 +220,7 @@ def place_bet(driver, race):
     except WebDriverException:
         print("Bet failed:\n%s\n" % race)
         print(traceback.format_exc())
-        with open("page.html", "w") as f:
-            f.write(driver.page_source)
+        driver.save_screenshot("failed-bet.png")
     return False
 
 
