@@ -85,12 +85,15 @@ def refresh(driver):
 
 
 def click_betslip(driver):
+    # betslip clicked
     try:
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="top"]/wgt-betslip/div/div'))
+        WebDriverWait(driver, 30).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, '//*[@id="top"]/wgt-betslip/div/div')
+            )
         )
 
-    # betslip not clicked
+    # click betslip
     except NoSuchElementException:
         try:
             WebDriverWait(driver, 10).until(
