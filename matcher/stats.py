@@ -82,13 +82,22 @@ def get_today_starting_balance():
         today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[0]
     except KeyError:
         return None
-    num_races = df[:today_first_bet].shape[0] - 1
+    num_races = df[:today_first_bet].shape[0]
 
     return (
         df.loc[datetime.now().strftime("%Y-%m-%d")]["bookie_balance"].values[0]
         + df.loc[datetime.now().strftime("%Y-%m-%d")]["betfair_balance"].values[0]
         + calc_unfinished_races(num_races)
     )
+
+
+def get_num_races_today():
+    df = read_csv()
+    try:
+        today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[0]
+    except KeyError:
+        return 0
+    return df[today_first_bet:].shape[0]
 
 
 def calculate_returns():

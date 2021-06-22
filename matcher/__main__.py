@@ -3,7 +3,7 @@ import sys
 
 from .each_way import run_each_way
 from .extra_places import run_extra_places
-from .stats import output_profit, plot_bal_time_series_graph, update_horse_places
+from .stats import output_profit, plot_bal_time_series_graph
 from .setup import reset_csv
 
 parser = argparse.ArgumentParser(
@@ -39,7 +39,6 @@ elif args.run:
     else:
         run_each_way(args.punt, args.lay)
         print("in __main__ after each way")
-        update_horse_places()
 
 elif args.extra:
     run_extra_places()

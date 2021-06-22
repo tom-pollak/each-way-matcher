@@ -25,7 +25,12 @@ from .calculate import (
     get_max_stake,
     bet_profitable,
 )
-from .stats import check_repeat_bets, calc_unfinished_races
+from .stats import (
+    check_repeat_bets,
+    calc_unfinished_races,
+    update_horse_places,
+    get_num_races_today,
+)
 from .output import update_csv, show_info, ouput_lay, output_punt, alert_low_funds
 from .exceptions import MatcherError
 import matcher.sites.odds_monkey as odds_monkey
@@ -397,6 +402,8 @@ def start_matcher(driver, punt, lay):
             sporting_index.refresh(driver)
         if count % 10 == 0:
             show_info(count, START_TIME)
+        if get_num_races_today() % 5 == 0:
+            update_horse_places()
 
         scrape_races(driver, punt, lay)
         sys.stdout.flush()
