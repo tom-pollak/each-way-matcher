@@ -209,62 +209,55 @@ def place_bet(driver, race):
         ).click()
 
         # continue button
-        WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    '//*[@id="top"]/wgt-betslip/div/wgt-bet-placement/div/p/button[1]',
+        try:
+            WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        '//*[@id="top"]/wgt-betslip/div/wgt-bet-placement/div/p/button[1]',
+                    )
                 )
-            )
-        ).click()
+            ).click()
+        except TimeoutException:
+            driver.save_screenshot("stake-limited.png")
+            print("Account stake limited!")
+            return False
+
         return True
 
     except WebDriverException:
-        print("Bet failed:\n%s\n" % race)
-        print(traceback.format_exc())
+        print("Bet failed:\n%s\n\n%s" % (race, traceback.format_exc()))
         driver.save_screenshot("failed-bet.png")
-    return False
+        return False
 
 
 def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
     get_page(driver, race)
-    print(
-        f"\nRace found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']}, {race['current_time']}"
-    )
+    clicked = click_horse(driver, race["horse_name"])
+    if not clicked:
+        print(
+            f"\nHorse not found: {race['horse_name']}  venue: {race['venue']}  race time: {race['race_time']} - {datetime.now()}"
+        )
+        return False
 
-    for i in range(1, 4):
-        print("Attempt: %s" % i)
-        clicked = click_horse(driver, race["horse_name"])
-        if not clicked:
-            print(f"Horse not found - time: {datetime.now()}")
-            return False
+    cur_odd_price = get_odds(driver)
+    if not cur_odd_price:
+        print("Couldn't get horse odds")
 
-        cur_odd_price = get_odds(driver)
-        if not cur_odd_price:
-            print("Couldn't get horse odds")
-            close_bet(driver)
-            continue
+    elif float(cur_odd_price) >= float(race["bookie_odds"]):
+        race["bookie_odds"] = cur_odd_price
+        if lay:
+            if market_ids is None:
+                raise MatcherError("market_ids are None")
+            if not betfair.check_odds(
+                race, market_ids, selection_id
+            ) or not check_start_time(race, secs=20):
+                print("Betfair odds have changed or too close to start time")
+                return False
 
-        if float(cur_odd_price) >= float(race["bookie_odds"]):
-            race["bookie_odds"] = cur_odd_price
-            if lay:
-                if market_ids is None:
-                    raise MatcherError("market_ids are None")
-                if not betfair.check_odds(
-                    race, market_ids, selection_id
-                ) or not check_start_time(race, secs=20):
-                    print("Betfair odds have changed or too close to start time")
-                    return False
+        bet_made = place_bet(driver, race)
+        if bet_made:
+            return True
 
-            bet_made = place_bet(driver, race)
-            if bet_made:
-                print("Bet completed on attempt: %s" % i)
-                return True
-            else:
-                close_bet(driver)
-                continue
-        else:
-            print("Odds have changed: %s -> %s" % (race["bookie_odds"], cur_odd_price))
-            close_bet(driver)
-            return False
+    close_bet(driver)
     return False
