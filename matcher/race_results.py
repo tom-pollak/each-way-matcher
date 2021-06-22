@@ -29,20 +29,28 @@ def get_race_id(venue, time):
         race_time = datetime.strptime(race["date"], "%Y-%m-%d %H:%M:%S")
         if (venue in race["course"] or race["course"] in venue) and time == race_time:
             return race["id_race"]
-    # print(res)
-    raise MatcherError
+
+    races = []
+    for race in res:
+        races.append((race["course"], race["date"]))
+    raise MatcherError(races)
 
 
 def get_position(venue, time, horse_name):
     try:
         race_id = get_race_id(venue, time)
+    except MatcherError as venues:
+        print("Course not found: %s, %s\n%s" % (venue, time, venues))
+        return None
+
+    try:
         res = call_api("https://horse-racing.p.rapidapi.com/race/%s" % race_id)
     except MatcherError:
-        return None
+        return "Rate limit exceeded"
 
     for horse in res["horses"]:
         if horse_name in horse["horse"]:
             if horse["non_runner"] == "1" or horse["position"] == "pu":
-                return "Non-runner"
+                return 999
             return float(horse["position"])
     return None

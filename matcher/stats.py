@@ -69,6 +69,8 @@ def update_horse_places():
     no_pos_rows = df[df["position"].isna()]
     for index, race in no_pos_rows.iterrows():
         pos = get_position(race.venue, race.race_time, race.horse_name)
+        if pos == "Rate limit exceeded":
+            break
         if pos is not None:
             df.at[index, "position"] = pos
     df.to_csv(RETURNS_CSV)

@@ -38,6 +38,7 @@ elif args.run:
         print("Must either punt, lay or both to run each-way matcher")
     else:
         run_each_way(args.punt, args.lay)
+        print("in __main__ after each way")
         update_horse_places()
 
 elif args.extra:
