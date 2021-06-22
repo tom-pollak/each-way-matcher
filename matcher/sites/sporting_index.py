@@ -69,11 +69,14 @@ def refresh(driver):
 def get_balance(driver):
     driver.switch_to.window(driver.window_handles[1])
     refresh(driver)
-    balance = (
-        WebDriverWait(driver, 15)
-        .until(EC.visibility_of_element_located((By.CLASS_NAME, "btn-balance")))
-        .text
-    )
+    try:
+        balance = (
+            WebDriverWait(driver, 15)
+            .until(EC.visibility_of_element_located((By.CLASS_NAME, "btn-balance")))
+            .text
+        )
+    except TimeoutException:
+        raise MatcherError("Timeout getting Sporting Index balance")
     balance = balance.replace(" ", "")
     balance = balance.replace("▸", "")
     balance = balance.replace("£", "")
