@@ -252,7 +252,7 @@ def evaluate_arb(driver, race):
         race["place_odds"],
         race["place_payout"],
     )
-    if min(race["win_profit"], race["place_profit"], race["lose_profit"]) > 0:
+    if min(race["win_profit"], race["place_profit"], race["lose_profit"]) >= 0:
         race["bet_type"] = "Arb"
     else:
         race["bet_type"] = "Lay Punt"

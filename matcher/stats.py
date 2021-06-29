@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-import numpy as np
 import pandas as pd
 
 from .race_results import get_position
@@ -71,7 +70,7 @@ def update_horse_places():
         pos = get_position(race.venue, race.race_time, race.horse_name)
         if pos == "Rate limit exceeded":
             break
-        if pos is not None:
+        if pos is not None and race.race_time > datetime.now():
             df.at[index, "position"] = pos
     df.to_csv(RETURNS_CSV)
 

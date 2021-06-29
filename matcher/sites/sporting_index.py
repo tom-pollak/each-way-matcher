@@ -226,7 +226,9 @@ def place_bet(driver, race):
             driver.save_screenshot("stake-limited.png")
             print("Account stake limited!")
             return False
-
+        except ElementClickInterceptedException:
+            print("Error placing bet, retrying...")
+            return "retry"
         return True
 
     except WebDriverException:
@@ -259,7 +261,11 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
                 return False
 
         bet_made = place_bet(driver, race)
-        if bet_made:
+        if bet_made == "retry":
+            return make_bet(
+                driver, race, market_ids=market_ids, selection_id=selection_id, lay=lay
+            )
+        elif bet_made:
             return True
 
     close_bet(driver)
