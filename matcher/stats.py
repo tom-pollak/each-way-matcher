@@ -207,7 +207,11 @@ def plot_bal_time_series_graph():
     df.loc[i, "exp_return"] += STARTING_BALANCE
 
     profits_ax.plot(balance, "g", label="Profit")
-    profits_ax.plot(df["exp_return"].cumsum(), "r", label="Expected return")
+    profits_ax.plot(
+        df.set_index("race_time").sort_index()["exp_return"].cumsum(),
+        "r",
+        label="Expected return",
+    )
 
     bets_ax.plot(
         df.set_index("race_time").sort_index()["punt_return"].cumsum(),
