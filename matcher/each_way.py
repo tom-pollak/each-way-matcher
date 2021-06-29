@@ -431,7 +431,6 @@ def run_each_way(punt, lay):
         except KeyboardInterrupt as e:
             print(e)
             driver.quit()
-            print("Got to end of run_each_way")
             sys.stdout.flush()
             return
         except WebDriverException as e:
