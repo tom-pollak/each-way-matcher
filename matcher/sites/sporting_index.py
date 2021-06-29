@@ -167,6 +167,7 @@ def get_odds(driver):
             .text.split("/")
         )
     except TimeoutException:
+        driver.save_screenshot("failed-getting-odds.png")
         return False
     return round(int(frac_odd[0]) / int(frac_odd[1]) + 1, 2)
 
@@ -255,7 +256,6 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
             if not betfair.check_odds(
                 race, market_ids, selection_id
             ) or not check_start_time(race, secs=20):
-                print("Betfair odds have changed or too close to start time")
                 return False
 
         bet_made = place_bet(driver, race)
