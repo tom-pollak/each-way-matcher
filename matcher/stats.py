@@ -203,22 +203,24 @@ def plot_bal_time_series_graph():
     for i, _ in enumerate(balance):
         balance[i] += calc_unfinished_races(i)
 
-    i = df.iloc[[0]].index
-    df.loc[i, "exp_return"] += STARTING_BALANCE
+    race_time_df = (
+        df.reset_index(level=0).set_index("race_time", drop=False).sort_index()
+    )
+    race_time_df.at[race_time_df.index.min(), "exp_return"] += STARTING_BALANCE
 
     profits_ax.plot(balance, "g", label="Profit")
     profits_ax.plot(
-        df.set_index("race_time").sort_index()["exp_return"].cumsum(),
+        race_time_df["exp_return"].cumsum(),
         "r",
         label="Expected return",
     )
 
     bets_ax.plot(
-        df.set_index("race_time").sort_index()["punt_return"].cumsum(),
+        race_time_df["punt_return"].cumsum(),
         label="Punt return",
     )
     bets_ax.plot(
-        df.set_index("race_time").sort_index()["arb_return"].cumsum(),
+        race_time_df["arb_return"].cumsum(),
         label="Arb return",
     )
 
