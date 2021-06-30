@@ -398,7 +398,7 @@ def start_matcher(driver, punt, lay):
     while True:
         loop_time = time()
         # So Sporting Index dosen't logout
-        if count % 4 == 0:
+        if count % 3 == 0:
             sporting_index.refresh(driver)
         if count % 10 == 0:
             show_info(count, START_TIME)

@@ -27,11 +27,12 @@ PASS = os.environ.get("S_INDEX_PASS")
 
 
 def login(driver):
-    driver.execute_script(
-        """window.open("https://www.sportingindex.com/fixed-odds","_blank");"""
-    )
-
+    if len(driver.window_handles) == 1:
+        driver.execute_script(
+            """window.open("https://www.sportingindex.com/fixed-odds","_blank");"""
+        )
     driver.switch_to.window(driver.window_handles[1])
+
     try:
         WebDriverWait(driver, 60).until(
             EC.visibility_of_element_located((By.ID, "usernameCompact"))
@@ -40,8 +41,6 @@ def login(driver):
         raise MatcherError("Couldn't login to Sporting Index")
     driver.find_element_by_id("passwordCompact").send_keys(PASS)
     driver.find_element_by_id("submitLogin").click()
-    print("Logged in")
-    sys.stdout.flush()
 
 
 def change_to_decimal(driver):
@@ -76,14 +75,19 @@ def get_balance(driver):
             .text
         )
     except WebDriverException:
-        driver.save_screenshot("unknown-webdriver-error.png")
-        raise MatcherError("Error getting Sporting Index balance")
+        print("Couldn't get balance (not logged in?)")
+        driver.save_screenshot("failed-get-balance.png")
+        login(driver)
+        return get_balance(driver)
+        # raise MatcherError("Error getting Sporting Index balance")
 
     balance = balance.replace(" ", "")
     balance = balance.replace("▸", "")
     balance = balance.replace("£", "")
     if balance not in ["BALANCE", ""]:
         return float(balance)
+
+    driver.save_screenshot("failed-get-balance.png")
     raise MatcherError("Couldn't get Sporting Index balance")
 
 
@@ -210,6 +214,7 @@ def place_bet(driver, race):
             )
         ).send_keys(str(race["bookie_stake"]))
         driver.find_element_by_xpath('//input[@type="checkbox"]').click()
+        # can timeout if the race has started
         WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "placeBetBtn"))
         ).click()
