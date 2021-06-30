@@ -446,6 +446,7 @@ def run_each_way(punt, lay):
             else:
                 print("Unknown WebDriver error occured: %s" % e)
                 print(traceback.format_exc())
+                driver.save_screenshot("unknown-webdriver-error.png")
         except Exception as e:
             print("Unknown error occured: %s" % e)
             print(traceback.format_exc())

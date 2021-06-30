@@ -75,8 +75,10 @@ def get_balance(driver):
             .until(EC.visibility_of_element_located((By.CLASS_NAME, "btn-balance")))
             .text
         )
-    except TimeoutException:
-        raise MatcherError("Timeout getting Sporting Index balance")
+    except WebDriverException:
+        driver.save_screenshot("unknown-webdriver-error.png")
+        raise MatcherError("Error getting Sporting Index balance")
+
     balance = balance.replace(" ", "")
     balance = balance.replace("▸", "")
     balance = balance.replace("£", "")
