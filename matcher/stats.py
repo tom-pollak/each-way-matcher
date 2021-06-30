@@ -81,7 +81,7 @@ def get_today_starting_balance():
         today_first_bet = df.loc[datetime.now().strftime("%Y-%m-%d")].index.values[0]
     except KeyError:
         return None
-    num_races = df[:today_first_bet].shape[0]
+    num_races = df[:today_first_bet].shape[0] - 1
 
     return (
         df.loc[datetime.now().strftime("%Y-%m-%d")]["bookie_balance"].values[0]
