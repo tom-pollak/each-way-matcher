@@ -138,8 +138,7 @@ def click_horse(driver, horse_name):
         if cur_odd_price != "SUSP":
             horse_button.click()
             return True
-        else:
-            print("Horse is SUSP")
+        print("Horse is SUSP")
     except WebDriverException:
         pass
     return False
@@ -272,7 +271,7 @@ def make_bet(driver, race, market_ids=None, selection_id=None, lay=False):
             return make_bet(
                 driver, race, market_ids=market_ids, selection_id=selection_id, lay=lay
             )
-        elif bet_made:
+        if bet_made:
             return True
 
     close_bet(driver)
