@@ -40,7 +40,7 @@ def get_position(venue, time, horse_name):
     race_id = get_race_id(venue, time)
     if race_id is None:
         return "Rate limit exceeded"
-    elif isinstance(race_id, list):
+    if isinstance(race_id, list):
         print("\nCourse not found: %s, %s\n%s" % (venue, time, race_id))
         return None
 
