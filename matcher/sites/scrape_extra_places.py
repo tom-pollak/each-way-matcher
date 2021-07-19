@@ -78,6 +78,7 @@ def create_race_df(races):
         )
         try:
             market_ids = betfair.get_market_id(race["venue"], time)
+            print(market_ids)
             win_market_id = market_ids["win"]
             place_market_id = market_ids["place"]
         except MatcherError:

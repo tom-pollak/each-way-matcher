@@ -1,5 +1,4 @@
 import pandas as pd
-from datetime import datetime
 
 import matcher.sites.betfair as betfair
 import matcher.sites.william_hill as william_hill
