@@ -165,6 +165,7 @@ def create_odds_df(races_df, races):
     )
     odds_df = odds_df.join(df_betfair)
     odds_df.sort_index(inplace=True)
+    odds_df.columns = odds_df.sort_index(axis=1).columns
     return odds_df
 
 

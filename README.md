@@ -50,6 +50,7 @@ Create a (premium) OddsMonkey account and go to [each way matcher](https://www.o
 - Markets: Horse Racing - Winner
 - Bookmakers: Sporting Index only
 - Exchanges: Betfair and Smarkets
+- Select "Hide matches where one withdrawal will change places paid" box
 - Click save
 - Go to settings, change betfair comission to 2%
 

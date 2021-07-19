@@ -4,6 +4,23 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+def login(driver):
+    raise NotImplemented
+
+def get_balance(driver):
+    raise NotImplemented
+
+def click_betslip(driver):
+    raise NotImplemented
+
+def click_horse(driver, horse_name):
+    raise NotImplemented
+
+def close_bet(driver):
+    raise NotImplemented
+
+def click_horse(driver):
+    raise NotImplemented
 
 def get_page(driver, venue, time, tab):
     driver.switch_to.window(driver.window_handles[tab])
@@ -46,6 +63,8 @@ def scrape(driver, tab):
     for row in rows:
         name = row.find("span", class_="selection__title").text
         odds = row.find("button", class_="sp-betbutton").text.split("/")
+        if odds[0] == "SP":
+            continue
         if odds[0] == "EVS":
             odds = 1
         else:

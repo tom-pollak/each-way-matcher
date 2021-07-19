@@ -61,7 +61,7 @@ def get_bookie_odds(driver, odds_df, bookies_df, tab):
             update_odds_df(odds_df, venue, time, horses, site)
 
 
-def get_betair_odds(races_df, odds_df):
+def get_betfair_odds(races_df, odds_df):
     for index, race in (
         races_df.query("time > @datetime.now()")
         .sort_values("time", ascending=True)
@@ -91,13 +91,11 @@ def run_extra_places():
     races_df, odds_df, bookies_df = generate_df()
     driver = setup_selenium()
     tab = setup_sites(driver, races_df, bookies_df)
-    odds_df.sort_index(0, inplace=True)
     while True:
         get_bookie_odds(driver, odds_df, bookies_df, tab)
-        get_betair_odds(races_df, odds_df)
+        get_betfair_odds(races_df, odds_df)
 
         # debug
-        odds_df.sort_index(0, inplace=True)
         print(races_df)
         print(odds_df.dropna(how="all").dropna(how="all", axis=1).to_string())
         driver.quit()
