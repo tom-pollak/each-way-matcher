@@ -63,6 +63,8 @@ def scrape(driver, tab):
     for row in rows:
         name = row.find("span", class_="selection__title").text
         odds = row.find("button", class_="sp-betbutton").text.split("/")
+        if odds[0] == "SP":
+            continue
         if odds[0] == "EVS":
             odds = 1
         else:
