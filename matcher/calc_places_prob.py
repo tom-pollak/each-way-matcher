@@ -1,3 +1,5 @@
+import matcher.sites.betfair as betfair
+
 EXTRA_PLACE_POSITION = 4
 RELEVANT_PLACES = 8
 
@@ -125,6 +127,10 @@ def check_profitable_ep_races(odds_df):
     # if edge > 0
     for i, row in odds_df.iterrows():
         pass
+
+
+def run_arb_place():
+    pass
 
 
 horses = calc_horse_place_probs(horses)

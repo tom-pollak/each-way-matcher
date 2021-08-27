@@ -3,6 +3,7 @@ import sys
 
 from .each_way import run_each_way
 from .extra_places import run_extra_places
+from .calc_places_prob import run_arb_place
 from .stats import output_profit, plot_bal_time_series_graph
 from .setup import reset_csv
 
@@ -17,6 +18,7 @@ parser.add_argument("-l", "--lay", help="Lay on betfair", action="store_true")
 parser.add_argument(
     "-e", "--extra", help="Run Extra Places matcher", action="store_true"
 )
+parser.add_argument("-a", "--place", help="Arb place odds betfair", action="store_true")
 parser.add_argument("-s", "--stats", help="Display stats", action="store_true")
 parser.add_argument("-g", "--graph", help="Generate graph", action="store_true")
 parser.add_argument(
@@ -38,6 +40,10 @@ elif args.run:
         print("Must either punt, lay or both to run each-way matcher")
     else:
         run_each_way(args.punt, args.lay)
+
+elif args.place:
+    run_arb_place()
+
 
 elif args.extra:
     run_extra_places()
