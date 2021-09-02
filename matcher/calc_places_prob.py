@@ -116,8 +116,8 @@ def calc_places_prob(
 def calc_horse_place_probs(horses):
     probs = normalize_probs(list(horses.values()))
     place_probs_r = [[0 for _ in horses] for _ in horses]
-    for i in range(len(place_probs_r)):
-        place_probs_r[i][0] = list(probs)[i]
+    for i, item in enumerate(place_probs_r):
+        item[0] = list(probs)[i]
 
     horses = dict(zip(horses.keys(), place_probs_r))
     return calc_places_prob(horses)
