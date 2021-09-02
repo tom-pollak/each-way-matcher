@@ -85,10 +85,12 @@ def calc_places_prob(
     horses,  # horse place probabilities
     cur_neg_prob=1,  # total amount of prob left for the rest of the horses in solution
     cur_adj_factor=1,  # probability adjustment using amount of prob left
-    included_r=[],  # checks whether already included a runner in race solution
+    included_r=None,  # checks whether already included a runner in race solution
     recursion_level=0,
 ):
     """Recursively iterates through every horse placement position and calculates probability positions given the positions already allocated (if that makes any sense)"""
+    if included_r is None:
+        included_r = []
     recursion_level += 1
     for horse, probabilities in horses.items():
         prob = probabilities[0]
