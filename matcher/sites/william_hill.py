@@ -4,23 +4,30 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+
 def login(driver):
     raise NotImplementedError
+
 
 def get_balance(driver):
     raise NotImplementedError
 
+
 def click_betslip(driver):
     raise NotImplementedError
+
 
 def click_horse(driver, horse_name):
     raise NotImplementedError
 
+
 def close_bet(driver):
     raise NotImplementedError
 
+
 def click_horse(driver):
     raise NotImplementedError
+
 
 def get_page(driver, venue, time, tab):
     driver.switch_to.window(driver.window_handles[tab])
