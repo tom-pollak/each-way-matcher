@@ -136,11 +136,11 @@ def run_arb_place():
 
 
 horses = calc_horse_place_probs(horses)
-for horse, probs in horses.items():
+for h, p in horses.items():
     print(
-        f"""{horse}: win - {1/probs[0]}
-        2 places {places_lay[horse][0]} - {1/sum(probs[:2])}
-        3 places  {places_lay[horse][1]} - {1/sum(probs[:3])}
-        4 places {places_lay[horse][2]} - {1/sum(probs[:4])}
+        f"""{h}: win - {1/p[0]}
+        2 places {places_lay[h][0]} - {1/sum(p[:2])}
+        3 places  {places_lay[h][1]} - {1/sum(p[:3])}
+        4 places {places_lay[h][2]} - {1/sum(p[:4])}
         """
     )
