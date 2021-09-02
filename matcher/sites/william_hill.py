@@ -10,8 +10,10 @@ def login(driver):
 
 
 
+
 def get_balance(driver):
     raise NotImplementedError
+
 
 
 
@@ -20,8 +22,10 @@ def click_betslip(driver):
 
 
 
+
 def click_horse(driver, horse_name):
     raise NotImplementedError
+
 
 
 
@@ -30,8 +34,10 @@ def close_bet(driver):
 
 
 
+
 def click_horse(driver):
     raise NotImplementedError
+
 
 
 
