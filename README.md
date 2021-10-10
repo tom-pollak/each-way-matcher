@@ -1,5 +1,7 @@
 # Each Way Matcher
 
+**Sporting Index finally clocked on, banned :(**
+
 - Scrapes OddsMonkey for profitable each way horse races, then automatically
   places bets on
   Sporting Index.
