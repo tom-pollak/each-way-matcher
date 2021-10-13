@@ -31,7 +31,7 @@ RELEVANT_PLACES = 8
 #     "horse11": 13,
 # }
 
-horses = {
+HORSES = {
     "horse1": 7.6,
     "horse2": 4.6,
     "horse3": 8.2,
@@ -85,13 +85,12 @@ def calc_places_prob(
     horses,  # horse place probabilities
     cur_neg_prob=1,  # total amount of prob left for the rest of the horses in solution
     cur_adj_factor=1,  # probability adjustment using amount of prob left
-    # included_r=None,  # checks whether already included a runner in race solution
-    included_r=[],
+    included_r=None,  # checks whether already included a runner in race solution
     recursion_level=0,
 ):
     """Recursively iterates through every horse placement position and calculates probability positions given the positions already allocated (if that makes any sense)"""
-    # if included_r is None:
-    #     included_r = []
+    if included_r is None:
+        included_r = []
     recursion_level += 1
     for horse, probabilities in horses.items():
         prob = probabilities[0]
@@ -136,8 +135,8 @@ def run_arb_place():
     pass
 
 
-horses = calc_horse_place_probs(horses)
-for h, p in horses.items():
+r_probs = calc_horse_place_probs(HORSES)
+for h, p in r_probs.items():
     print(
         f"""{h}: win - {1/p[0]}
         2 places {places_lay[h][0]} - {1/sum(p[:2])}
