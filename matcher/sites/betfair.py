@@ -65,6 +65,7 @@ def login():
 
 def call_api(jsonrpc_req, url=betting_url):
     global HEADERS
+    # HEADERS = login()  # delete line
     log = ""
     for _ in range(5):
         try:
@@ -81,6 +82,7 @@ def call_api(jsonrpc_req, url=betting_url):
                         if res["error"]["data"][exception_name]["errorCode"] in [
                             "INVALID_SESSION_INFORMATION",
                             "NO_SESSION",
+                            "NO_APP_KEY",
                         ]:
                             HEADERS = login()
                             write_new_headers(HEADERS)
@@ -146,6 +148,48 @@ def get_odds(market_id, selection_id):
     except KeyError:
         raise MatcherError("Couldn't get odds from betfair:\n%s" % res)
     return odds["price"], odds["size"]
+
+
+def get_race(venue, race_time):
+    markets_ids = get_market_id(venue, race_time)
+    print(markets_ids)
+    horses = get_horses(venue, race_time)
+    horses = {i: k for k, i in horses.items()}
+
+    runners = {}
+    price_req = (
+        '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketBook", "params": {"locale":"en", "marketIds": ["%s", "%s"], "priceProjection": {"priceData":["EX_BEST_OFFERS"], "virtualise":"true"}},"id":1}'
+        % (markets_ids["win"], markets_ids["place"])
+    )
+    res = call_api(price_req)
+    # for r in res["result"]:
+    for i, r in enumerate(res["result"]):
+        if i == 0:
+            type = "win"
+        else:
+            type = "place"
+        for runner in r["runners"]:
+            try:
+                sel_id, price = (
+                    runner["selectionId"],
+                    runner["ex"]["availableToLay"][0]["price"],
+                )
+                # name =
+                if i == 0:
+                    runners[horses[sel_id]] = {type: price}
+                else:
+                    runners[horses[sel_id]][type] = price
+
+            except IndexError:
+                continue
+    return runners
+    # try:
+    #     odds = res["result"][0]["runners"][0]["ex"]["availableToLay"][0]
+    # except IndexError:
+    #     return 9999, 0
+    # except KeyError:
+    #     raise MatcherError("Couldn't get odds from betfair:\n%s" % res)
+    # return odds["price"], odds["size"]
 
 
 def check_odds(race, market_ids, selection_id):
@@ -291,6 +335,7 @@ def lay_bets(market_id, selection_id, price, stake):
 
 def get_horses(venue, race_time):
     market_ids = get_market_id(venue, race_time)
+    print(market_ids)
     horses_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
         "params": {"filter": {"marketIds": ["%s"]}, \

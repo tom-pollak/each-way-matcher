@@ -1,71 +1,42 @@
-# import matcher.sites.betfair as betfair
+from datetime import datetime
+import matcher.sites.betfair as betfair
 
 EXTRA_PLACE_POSITION = 4
-RELEVANT_PLACES = 8
+RELEVANT_PLACES = 4
 
-# horses = {
-#     "horse1": 5.03,
-#     "horse2": 28.17,
-#     "horse3": 28.34,
-#     "horse4": 8,
-#     "horse5": 6.76,
-#     "horse6": 10,
-#     "horse7": 4.61,
-#     "horse8": 77.62,
-#     "horse9": 17.22,
-#     "horse10": 16.94,
-#     "horse11": 58.24,
-# }
-#
-# places = {
-#     "horse1": 1.89,
-#     "horse2": 7.09,
-#     "horse3": 7.2,
-#     "horse4": 2.75,
-#     "horse5": 2.47,
-#     "horse6": 2.98,
-#     "horse7": 1.97,
-#     "horse8": 15,
-#     "horse9": 4.7,
-#     "horse10": 4.6,
-#     "horse11": 13,
-# }
+COMMISSION = 0.02
 
-HORSES = {
-    "horse1": 7.6,
-    "horse2": 4.6,
-    "horse3": 8.2,
-    "horse4": 8,
-    "horse5": 10,
-    "horse6": 6.6,
-    "horse7": 10,
-    "horse8": 13.5,
-    "horse9": 40,
-}
 
-places_back = {
-    "horse1": [3.4, 2.4, 1.62],
-    "horse2": [2.3, 1.86, 1.39],
-    "horse3": [3.9, 2.58, 1.78],
-    "horse4": [3.65, 2.5, 1.92],
-    "horse5": [4.2, 2.84, 1.7],
-    "horse6": [3.3, 2.28, 1.74],
-    "horse7": [4.6, 3.05, 2.08],
-    "horse8": [3.9, 3.4, 2.18],
-    "horse9": [10, 6.4, 2.78],
-}
+def calculate_profit(
+    bookie_odds,
+    bookie_stake,
+    win_odds,
+    win_stake,
+    place_odds,
+    place_stake,
+    place_payout,
+    round_profit=True,
+):
+    win_profit = place_profit = lose_profit = 0
+    commission_lose = (win_stake + place_stake) * COMMISSION
+    commission_place = win_stake * COMMISSION
 
-places_lay = {
-    "horse1": [7, 3.2, 2.54],
-    "horse2": [2.74, 2.08, 1.94],
-    "horse3": [7, 3, 2.7],
-    "horse4": [7.2, 3.05, 21],
-    "horse5": [11, 3.5, 2.9],
-    "horse6": [6, 2.58, 2.52],
-    "horse7": [11, 5.6, 3.55],
-    "horse8": [18, 9.8, 4.9],
-    "horse9": [90, 7.8, 20],
-}
+    place_profit = bookie_stake * (bookie_odds - 1) / place_payout - bookie_stake
+    ep_profit = win_profit = (
+        bookie_stake * (bookie_odds - 1) + place_profit + bookie_stake
+    )
+    lose_profit = -bookie_stake * 2
+
+    win_profit -= win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
+    ep_profit += win_stake * (win_odds - 1) + place_stake * (place_odds - 1)
+    place_profit += win_stake - place_stake * (place_odds - 1) - commission_place
+    lose_profit += win_stake + place_stake - commission_lose
+    return (
+        round(win_profit, 2),
+        round(place_profit, 2),
+        round(lose_profit, 2),
+        round(ep_profit, 2),
+    )
 
 
 def normalize_probs(probs, odds=True):
@@ -123,24 +94,75 @@ def calc_horse_place_probs(horses):
     return calc_places_prob(horses)
 
 
-def check_profitable_ep_races(odds_df):
+def get_ev_ep_races(
+    bookie_odds,
+    win_odds,
+    place_odds,
+    win_prob,
+    place_prob,
+    lose_prob,
+    ep_prob,
+    bookie_stake,
+    win_stake,
+    place_stake,
+):
     # calc implied probability max loss / win extra place
     # edge = implied probability - horse place probability
     # if edge > 0
-    for i, row in odds_df.iterrows():
-        pass
+    win_profit, place_profit, lose_profit, ep_profit = calculate_profit(
+        bookie_odds, bookie_stake, win_odds, win_stake, place_odds, place_stake, 5
+    )
+    print("\n------ PROFITS ------")
+    print(
+        f"Win profit: {win_profit}, Place profit: {place_profit}, Lose profit: {lose_profit}"
+    )
+    print(f"Extra place profit: {ep_profit}")
+    ev = (
+        win_profit * win_prob
+        + place_profit * place_prob
+        + lose_profit * lose_prob
+        + ep_profit * ep_prob
+    )
+    print(f"Expected profit: £{round(ev, 2)}")
 
 
 def run_arb_place():
     pass
 
 
-r_probs = calc_horse_place_probs(HORSES)
-for h, p in r_probs.items():
-    print(
-        f"""{h}: win - {1/p[0]}
-        2 places {places_lay[h][0]} - {1/sum(p[:2])}
-        3 places  {places_lay[h][1]} - {1/sum(p[:3])}
-        4 places {places_lay[h][2]} - {1/sum(p[:4])}
-        """
+def run_ep_cal():
+    venue = input("Enter race venue: ")
+    race_time = datetime.strptime(
+        input("Enter datetime (D/M/YY h:mm): "), "%d/%m/%y %H:%M"
     )
+    runners = betfair.get_race(venue, race_time)
+    r_probs = calc_horse_place_probs({k: v["win"] for k, v in runners.items()})
+    while True:
+        print("------ HORSES -----")
+        for i, (h, p) in enumerate(r_probs.items()):
+            print(f"({i+1}) {h} - {round(p[3] * 100, 1)}%")
+
+        horse_select = int(input("Select horse to calculate bet: "))
+        h = list(runners)[horse_select - 1]
+        print(f"{h}: {runners[h]}")
+        bookie_odds = float(input("Bookie odds: "))
+
+        win_prob = r_probs[h][0]
+        place_prob = sum(r_probs[h][:3])
+        lose_prob = sum(r_probs[h][4:])
+        ep_prob = r_probs[h][3]
+        bookie_stake, win_stake, place_stake = input(
+            "Enter bookie stake, win_stake and place_stake seperated by a space: "
+        ).split()
+        get_ev_ep_races(
+            bookie_odds,
+            runners[h]["win"],
+            runners[h]["place"],
+            win_prob,
+            place_prob,
+            lose_prob,
+            ep_prob,
+            float(bookie_stake),
+            float(win_stake),
+            float(place_stake),
+        )

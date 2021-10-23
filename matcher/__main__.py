@@ -3,7 +3,7 @@ import sys
 
 from .each_way import run_each_way
 from .extra_places import run_extra_places
-from .calc_places_prob import run_arb_place
+from .calc_places_prob import run_arb_place, run_ep_cal
 from .stats import output_profit, plot_bal_time_series_graph
 from .setup import reset_csv
 
@@ -21,6 +21,9 @@ parser.add_argument(
 parser.add_argument("-a", "--place", help="Arb place odds betfair", action="store_true")
 parser.add_argument("-s", "--stats", help="Display stats", action="store_true")
 parser.add_argument("-g", "--graph", help="Generate graph", action="store_true")
+parser.add_argument(
+    "-c", "--calculator", help="Calculator for extra places", action="store_true"
+)
 parser.add_argument(
     "--setup", help="Reset csv and generate backup", action="store_true"
 )
@@ -47,6 +50,9 @@ elif args.place:
 
 elif args.extra:
     run_extra_places()
+
+elif args.calculator:
+    run_ep_cal()
 
 if args.stats:
     output_profit()
