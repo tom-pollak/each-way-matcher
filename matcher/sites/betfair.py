@@ -18,6 +18,7 @@ venue_names = {
     "Cagnes-Sur-Mer": "Cagnes Sur Mer",
     "Bangor-On-Dee": "Bangor-on-Dee",
     "Bangor": "Bangor-on-Dee",
+    "Chelmsford": "Chelmsford City",
 }
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__) + "/../../")
@@ -175,10 +176,13 @@ def get_race(venue, race_time):
                     runner["ex"]["availableToLay"][0]["price"],
                 )
                 # name =
-                if i == 0:
-                    runners[horses[sel_id]] = {type: price}
-                else:
-                    runners[horses[sel_id]][type] = price
+                try:
+                    if i == 0:
+                        runners[horses[sel_id]] = {type: price}
+                    else:
+                        runners[horses[sel_id]][type] = price
+                except KeyError:
+                    print("No odds for ", horses[sel_id])
 
             except IndexError:
                 continue

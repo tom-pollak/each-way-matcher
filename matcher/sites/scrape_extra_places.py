@@ -25,13 +25,10 @@ def get_extra_place_races():
     )
 
     soup = BeautifulSoup(extra_places_page.text, "html.parser")
-    content = soup.find("article").find_all(class_="has-text-align-center")[1:-1]
+    content = soup.find(class_="mbb-offer-list__extra-places")
     races = []
-    race = None
     for tag in content:
         if tag.name == "h2":
-            if race is not None:
-                races.append(race)
             if tag.text == make_date(0):
                 pass
             elif tag.text == make_date(1):
@@ -40,7 +37,10 @@ def get_extra_place_races():
                 race_time, venue = tuple(tag.text.split(" ", 1))
                 race = {"time": race_time, "venue": venue}
 
-        elif tag.name == "p":
+        elif (
+            tag.name == "div"
+            and tag["class"][0] == "mbb-offer-list__extra-places__places"
+        ):
             if len(race) == 2:
                 places_paid, place_payout = tuple(
                     tag.text.replace("(", "").replace(")", "").split(", ")
@@ -51,20 +51,18 @@ def get_extra_place_races():
                 )
                 race["places_paid"] = places_paid
                 race["place_payout"] = place_payout
-            else:
-                bookies = {}
-                for bookie_tag in tag.contents:
-                    if isinstance(bookie_tag, str):
-                        try:
-                            bookie, min_runners = tuple(bookie_tag.split(" ("))
-                            min_runners = int(
-                                min_runners.replace(")", "").replace("+", "")
-                            )
-                        except ValueError:
-                            bookie = bookie_tag
-                            min_runners = 0
-                        bookies[bookie] = min_runners
-                race["bookies"] = bookies
+        else:
+            bookies = {}
+            for bookie_tag in tag.contents:
+                try:
+                    bookie, min_runners = tuple(bookie_tag.text.split(" ("))
+                    min_runners = int(min_runners.replace(")", "").replace("+", ""))
+                except ValueError:
+                    bookie = bookie_tag
+                    min_runners = 0
+                bookies[bookie] = min_runners
+            race["bookies"] = bookies
+            races.append(race)
     return races
 
 
@@ -76,23 +74,23 @@ def create_race_df(races):
         time = datetime.datetime.combine(
             datetime.date.today(), datetime.time(int(hour), int(mins))
         )
-        try:
-            market_ids = betfair.get_market_id(race["venue"], time)
-            print(market_ids)
-            win_market_id = market_ids["win"]
-            place_market_id = market_ids["place"]
-        except MatcherError:
-            continue
-        indexes.append((race["venue"], time))
-        data.append(
-            [
-                win_market_id,
-                place_market_id,
-                race["place_payout"],
-                race["places_paid"],
-                i,
-            ]
-        )
+        if time > datetime.datetime.now():
+            try:
+                market_ids = betfair.get_market_id(race["venue"], time)
+                win_market_id = market_ids["win"]
+                place_market_id = market_ids["place"]
+            except MatcherError:
+                continue
+            indexes.append((race["venue"], time))
+            data.append(
+                [
+                    win_market_id,
+                    place_market_id,
+                    race["place_payout"],
+                    race["places_paid"],
+                    i,
+                ]
+            )
     indexes = pd.MultiIndex.from_tuples(indexes, names=("venue", "time"))
     races_df = pd.DataFrame(
         data,
@@ -137,7 +135,9 @@ def create_odds_df(races_df, races):
             continue
 
     indexes = pd.MultiIndex.from_tuples(indexes, names=["venue", "time", "horse"])
-    columns = pd.MultiIndex.from_product([bookies, ["odds"]], names=["bookies", "data"])
+    columns = pd.MultiIndex.from_product(
+        [bookies, ["odds", "ep_prob"]], names=["bookies", "data"]
+    )
     odds_df = pd.DataFrame(index=indexes, columns=columns)
     df_betfair = pd.DataFrame(
         data,
@@ -145,18 +145,8 @@ def create_odds_df(races_df, races):
             [
                 ["Betfair Exchange Win", "Betfair Exchange Place"],
                 [
-                    # "back_odds_1",
-                    # "back_odds_2",
-                    # "back_odds_3",
                     "odds",
-                    # "lay_odds_2",
-                    # "lay_odds_3",
-                    # "back_available_1",
-                    # "back_available_2",
-                    # "back_available_3",
                     "available",
-                    # "lay_available_2",
-                    # "lay_available_3",
                     "selection_id",
                 ],
             ],

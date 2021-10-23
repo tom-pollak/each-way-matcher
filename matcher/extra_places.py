@@ -100,3 +100,4 @@ def run_extra_places():
         print(odds_df.dropna(how="all").dropna(how="all", axis=1).to_string())
         driver.quit()
         return
+    # odds_df.loc[idx[venue, time, horse], idx[bookie, "ep_prob"]] = ep_prob
