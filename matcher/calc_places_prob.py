@@ -1,11 +1,14 @@
 from datetime import datetime
 import matcher.sites.betfair as betfair
 from matcher.calculate import minimize_loss
+import pandas as pd
 
 EXTRA_PLACE_POSITION = 4
 RELEVANT_PLACES = 4
 
 COMMISSION = 0.02
+
+idx = pd.IndexSlice
 
 
 def calculate_profit(
@@ -48,7 +51,7 @@ def normalize_probs(probs, odds=True):
         print("Invalid probabilities: Total probability = %s" % total_prob)
         return None
     if total_prob != 1:
-        print("Normalizing prob by a factor of %s" % total_prob)
+        # print("Normalizing prob by a factor of %s" % total_prob)
         probs = map(lambda x: x / total_prob, probs)
     return list(probs)
 
@@ -103,28 +106,28 @@ def get_ev_ep_races(
     place_prob,
     lose_prob,
     ep_prob,
-    bookie_stake,
-    win_stake,
-    place_stake,
 ):
+    bookie_stake = 0.5
+    win_stake = place_stake = 1
     # calc implied probability max loss / win extra place
     # edge = implied probability - horse place probability
     # if edge > 0
     win_profit, place_profit, lose_profit, ep_profit = calculate_profit(
         bookie_odds, bookie_stake, win_odds, win_stake, place_odds, place_stake, 5
     )
-    print("\n------ PROFITS ------")
-    print(
-        f"Win profit: {win_profit}, Place profit: {place_profit}, Lose profit: {lose_profit}"
-    )
-    print(f"Extra place profit: {ep_profit}")
+    # print("\n------ PROFITS ------")
+    # print(
+    #     f"Win profit: {win_profit}, Place profit: {place_profit}, Lose profit: {lose_profit}"
+    # )
+    # print(f"Extra place profit: {ep_profit}")
     ev = (
         win_profit * win_prob
         + place_profit * place_prob
         + lose_profit * lose_prob
         + ep_profit * ep_prob
-    )
-    print(f"Expected profit: £{round(ev, 2)}")
+    ) / 3
+    # print(f"Expected profit: £{round(ev, 2)}")
+    return ev
 
 
 def run_arb_place():
@@ -134,12 +137,59 @@ def run_arb_place():
 place_payout = 5
 
 
-def run_ep_cal(win_market_id, place_market_id, selection_id):
+# def run_ep_cal(odds_df, venue, time, bookie):
+#     print(odds_df.loc[idx[venue, time]])
+#     r_probs = calc_horse_place_probs({k: v["win"] for k, v in runners.items()})
+#     bookie_odds = float(input("Bookie odds: "))
+#     bookie_stake = float(input("Enter bookie stake: "))
+#
+#     profits = calculate_profit(
+#         bookie_odds,
+#         bookie_stake,
+#         runners[h]["win"],
+#         0,
+#         runners[h]["place"],
+#         0,
+#         place_payout,
+#     )[:3]
+#
+#     win_prob = r_probs[h][0]
+#     place_prob = sum(r_probs[h][:3])
+#     lose_prob = sum(r_probs[h][4:])
+#     ep_prob = r_probs[h][3]
+#     win_stake, place_stake = minimize_loss(
+#         runners[h]["win"],
+#         runners[h]["place"],
+#         1000,
+#         1000,
+#         profits,
+#         1000,
+#         place_payout,
+#     )
+#     print(
+#         f"Win: £{win_stake} @ {runners[h]['win']}, Place: £{place_stake} @ {runners[h]['place']}"
+#     )
+#     get_ev_ep_races(
+#         bookie_odds,
+#         runners[h]["win"],
+#         runners[h]["place"],
+#         win_prob,
+#         place_prob,
+#         lose_prob,
+#         ep_prob,
+#         bookie_stake,
+#         win_stake,
+#         place_stake,
+#     )
+
+
+def run_ep_cal():
     venue = input("Enter race venue: ")
     race_time = datetime.strptime(
         input("Enter datetime (D/M/YY h:mm): "), "%d/%m/%y %H:%M"
     )
     runners = betfair.get_race(venue, race_time)
+    print({k: v["win"] for k, v in runners.items()})
     r_probs = calc_horse_place_probs({k: v["win"] for k, v in runners.items()})
     while True:
         print("------ HORSES -----")
@@ -188,59 +238,3 @@ def run_ep_cal(win_market_id, place_market_id, selection_id):
             win_stake,
             place_stake,
         )
-
-
-# def run_ep_cal():
-#     venue = input("Enter race venue: ")
-#     race_time = datetime.strptime(
-#         input("Enter datetime (D/M/YY h:mm): "), "%d/%m/%y %H:%M"
-#     )
-#     runners = betfair.get_race(venue, race_time)
-#     r_probs = calc_horse_place_probs({k: v["win"] for k, v in runners.items()})
-#     while True:
-#         print("------ HORSES -----")
-#         for i, (h, p) in enumerate(r_probs.items()):
-#             print(f"({i+1}) {h} - {round(p[3] * 100, 1)}%")
-#
-#         horse_select = int(input("Select horse to calculate bet: "))
-#         h = list(runners)[horse_select - 1]
-#         bookie_odds = float(input("Bookie odds: "))
-#         bookie_stake = float(input("Enter bookie stake: "))
-#         profits = calculate_profit(
-#             bookie_odds,
-#             bookie_stake,
-#             runners[h]["win"],
-#             0,
-#             runners[h]["place"],
-#             0,
-#             place_payout,
-#         )[:3]
-#
-#         win_prob = r_probs[h][0]
-#         place_prob = sum(r_probs[h][:3])
-#         lose_prob = sum(r_probs[h][4:])
-#         ep_prob = r_probs[h][3]
-#         win_stake, place_stake = minimize_loss(
-#             runners[h]["win"],
-#             runners[h]["place"],
-#             1000,
-#             1000,
-#             profits,
-#             1000,
-#             place_payout,
-#         )
-#         print(
-#             f"Win: £{win_stake} @ {runners[h]['win']}, Place: £{place_stake} @ {runners[h]['place']}"
-#         )
-#         get_ev_ep_races(
-#             bookie_odds,
-#             runners[h]["win"],
-#             runners[h]["place"],
-#             win_prob,
-#             place_prob,
-#             lose_prob,
-#             ep_prob,
-#             bookie_stake,
-#             win_stake,
-#             place_stake,
-#         )

@@ -153,7 +153,6 @@ def get_odds(market_id, selection_id):
 
 def get_race(venue, race_time):
     markets_ids = get_market_id(venue, race_time)
-    print(markets_ids)
     horses = get_horses(venue, race_time)
     horses = {i: k for k, i in horses.items()}
 
@@ -339,7 +338,6 @@ def lay_bets(market_id, selection_id, price, stake):
 
 def get_horses(venue, race_time):
     market_ids = get_market_id(venue, race_time)
-    print(market_ids)
     horses_req = (
         '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
         "params": {"filter": {"marketIds": ["%s"]}, \
