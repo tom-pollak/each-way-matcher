@@ -11,7 +11,7 @@ COMMISSION = 0.02
 idx = pd.IndexSlice
 
 
-def calculate_profit(
+def calc_ep_profit(
     bookie_odds,
     bookie_stake,
     win_odds,
@@ -19,7 +19,6 @@ def calculate_profit(
     place_odds,
     place_stake,
     place_payout,
-    round_profit=True,
 ):
     win_profit = place_profit = lose_profit = 0
     commission_lose = (win_stake + place_stake) * COMMISSION
@@ -112,7 +111,7 @@ def get_ev_ep_races(
     # calc implied probability max loss / win extra place
     # edge = implied probability - horse place probability
     # if edge > 0
-    win_profit, place_profit, lose_profit, ep_profit = calculate_profit(
+    win_profit, place_profit, lose_profit, ep_profit = calc_ep_profit(
         bookie_odds, bookie_stake, win_odds, win_stake, place_odds, place_stake, 5
     )
     # print("\n------ PROFITS ------")
@@ -134,56 +133,8 @@ def run_arb_place():
     pass
 
 
-place_payout = 5
-
-
-# def run_ep_cal(odds_df, venue, time, bookie):
-#     print(odds_df.loc[idx[venue, time]])
-#     r_probs = calc_horse_place_probs({k: v["win"] for k, v in runners.items()})
-#     bookie_odds = float(input("Bookie odds: "))
-#     bookie_stake = float(input("Enter bookie stake: "))
-#
-#     profits = calculate_profit(
-#         bookie_odds,
-#         bookie_stake,
-#         runners[h]["win"],
-#         0,
-#         runners[h]["place"],
-#         0,
-#         place_payout,
-#     )[:3]
-#
-#     win_prob = r_probs[h][0]
-#     place_prob = sum(r_probs[h][:3])
-#     lose_prob = sum(r_probs[h][4:])
-#     ep_prob = r_probs[h][3]
-#     win_stake, place_stake = minimize_loss(
-#         runners[h]["win"],
-#         runners[h]["place"],
-#         1000,
-#         1000,
-#         profits,
-#         1000,
-#         place_payout,
-#     )
-#     print(
-#         f"Win: £{win_stake} @ {runners[h]['win']}, Place: £{place_stake} @ {runners[h]['place']}"
-#     )
-#     get_ev_ep_races(
-#         bookie_odds,
-#         runners[h]["win"],
-#         runners[h]["place"],
-#         win_prob,
-#         place_prob,
-#         lose_prob,
-#         ep_prob,
-#         bookie_stake,
-#         win_stake,
-#         place_stake,
-#     )
-
-
 def run_ep_cal():
+    place_payout = 5
     venue = input("Enter race venue: ")
     race_time = datetime.strptime(
         input("Enter datetime (D/M/YY h:mm): "), "%d/%m/%y %H:%M"
@@ -200,7 +151,7 @@ def run_ep_cal():
         h = list(runners)[horse_select - 1]
         bookie_odds = float(input("Bookie odds: "))
         bookie_stake = float(input("Enter bookie stake: "))
-        profits = calculate_profit(
+        profits = calc_ep_profit(
             bookie_odds,
             bookie_stake,
             runners[h]["win"],
@@ -234,7 +185,4 @@ def run_ep_cal():
             place_prob,
             lose_prob,
             ep_prob,
-            bookie_stake,
-            win_stake,
-            place_stake,
         )

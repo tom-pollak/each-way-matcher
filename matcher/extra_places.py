@@ -103,7 +103,7 @@ def get_betfair_odds(races_df, odds_df):
 
 
 def update_r_probs(odds_df):
-    for race, odds in odds_df.groupby(level=["venue", "time"]):
+    for race, _ in odds_df.groupby(level=["venue", "time"]):
         data = (
             odds_df.loc[idx[race], idx["Betfair Exchange Win"]]["odds"]
             .dropna()
@@ -119,9 +119,6 @@ def update_r_probs(odds_df):
 
 
 def update_ep_ev(odds_df, race, odds):
-    place_payout = 5
-    win_available = place_available = betfair_balance = 1000
-
     bookie_odds = odds.loc["William Hill", "odds"]
     win_odds = odds.loc["Betfair Exchange Win", "odds"]
     place_odds = odds.loc["Betfair Exchange Place", "odds"]
@@ -130,25 +127,6 @@ def update_ep_ev(odds_df, race, odds):
     place_prob = sum(r_prob[:3])
     lose_prob = sum(r_prob[4:])
     ep_prob = r_prob[3]
-    bookie_stake = 10
-    profits = calculate_profit(
-        bookie_odds,
-        bookie_stake,
-        win_odds,
-        0,
-        place_odds,
-        0,
-        place_payout,
-    )
-    win_stake, place_stake = minimize_loss(
-        win_odds,
-        place_odds,
-        win_available,
-        place_available,
-        profits,
-        betfair_balance,
-        place_payout,
-    )
 
     ev = get_ev_ep_races(
         bookie_odds,

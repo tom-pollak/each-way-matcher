@@ -165,9 +165,9 @@ def get_race(venue, race_time):
     # for r in res["result"]:
     for i, r in enumerate(res["result"]):
         if i == 0:
-            type = "win"
+            m_type = "win"
         else:
-            type = "place"
+            m_type = "place"
         for runner in r["runners"]:
             try:
                 sel_id, price = (
@@ -177,9 +177,9 @@ def get_race(venue, race_time):
                 # name =
                 try:
                     if i == 0:
-                        runners[horses[sel_id]] = {type: price}
+                        runners[horses[sel_id]] = {m_type: price}
                     else:
-                        runners[horses[sel_id]][type] = price
+                        runners[horses[sel_id]][m_type] = price
                 except KeyError:
                     print("No odds for ", horses[sel_id])
 

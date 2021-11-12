@@ -76,7 +76,7 @@ def get_extra_place_races():
 def create_race_df(races):
     data = []
     indexes = []
-    for i, ((venue, time), race) in enumerate(races.items()):
+    for (venue, time), race in races.items():
         if time > datetime.datetime.now():
             try:
                 market_ids = betfair.get_market_id(venue, time)
@@ -162,7 +162,7 @@ def create_odds_df(races_df, races):
     return odds_df
 
 
-def create_bookies_df(races_df, odds_df, races):
+def create_bookies_df(races_df, races):
     idx = pd.IndexSlice
     try:
         indexes = pd.MultiIndex.from_tuples(races_df.index.values)
