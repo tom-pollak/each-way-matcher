@@ -6,6 +6,7 @@ from .extra_places import run_extra_places
 from .calc_places_prob import run_arb_place, run_ep_cal
 from .stats import output_profit, plot_bal_time_series_graph
 from .setup import reset_csv
+from .exchange_place import run_exchange_bet
 
 parser = argparse.ArgumentParser(
     description="Automated Each Way Matcher", prog="python3 -m matcher"
@@ -23,6 +24,9 @@ parser.add_argument("-s", "--stats", help="Display stats", action="store_true")
 parser.add_argument("-g", "--graph", help="Generate graph", action="store_true")
 parser.add_argument(
     "-c", "--calculator", help="Calculator for extra places", action="store_true"
+)
+parser.add_argument(
+    "--exchange", help="Run value betting exchange", action="store_true"
 )
 parser.add_argument(
     "--setup", help="Reset csv and generate backup", action="store_true"
@@ -59,5 +63,8 @@ if args.stats:
 
 if args.graph:
     plot_bal_time_series_graph()
+
+if args.exchange:
+    run_exchange_bet()
 
 sys.stdout.flush()

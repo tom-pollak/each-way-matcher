@@ -257,6 +257,15 @@ def get_bets_by_bet_id(win_market_id, place_market_id, *bet_ids):
     return bet_info
 
 
+def get_daily_races():
+    req = '{"jsonrpc": "2.0", "method": "SportsAPING/v1.0/listMarketCatalogue", \
+        "params": {"filter": {"eventTypeIds": ["7"], "marketTypeCodes": ["WIN", "PLACE"], "bspOnly": true}, \
+        "maxResults": "10000", "sort":"FIRST_TO_START", \
+        "marketProjection": ["RUNNER_DESCRIPTION", "MARKET_START_TIME"]}}'
+    res = call_api(req)
+    print(res)
+
+
 def get_market_id(venue, race_time):
     markets = []
     markets_ids = {}
