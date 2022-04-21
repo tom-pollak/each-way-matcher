@@ -7,8 +7,6 @@
   Sporting Index.
 - Lays arbitrage bets on Sporting Index and Betfair.
 
-![graph](https://tom-pollak.github.io/each-way-matcher/balance.png)
-
 ## Install
 
 ```bash
